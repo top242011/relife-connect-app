@@ -44,6 +44,9 @@ export interface Member {
     id: string;
     title: string;
     description: string;
+    isPartySponsored: boolean;
+    topic: string;
+    sponsorId?: string;
   }
   
   export interface Meeting {

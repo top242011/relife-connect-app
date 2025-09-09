@@ -22,8 +22,8 @@ export const meetings: Meeting[] = [
         attendees: ['mp-1', 'mp-2', 'mem-1', 'mem-2'],
         presidingOfficer: 'mp-2',
         motions: [
-            { id: 'motion-1', title: 'Approve allocation for infrastructure projects', description: 'To approve the proposed budget of $5M for the new bridge construction.'},
-            { id: 'motion-2', title: 'Review healthcare subsidy proposal', description: 'Discuss and vote on the new public healthcare subsidy program.'}
+            { id: 'motion-1', title: 'Approve allocation for infrastructure projects', description: 'To approve the proposed budget of $5M for the new bridge construction.', isPartySponsored: true, topic: 'Economy', sponsorId: 'mp-1'},
+            { id: 'motion-2', title: 'Review healthcare subsidy proposal', description: 'Discuss and vote on the new public healthcare subsidy program.', isPartySponsored: true, topic: 'Social', sponsorId: 'mp-1'}
         ],
         relatedDocuments: [{ name: 'Q3 Budget Proposal.pdf', url: '#'}]
     },
@@ -34,7 +34,8 @@ export const meetings: Meeting[] = [
         attendees: ['mp-1', 'mp-2', 'mp-3', 'mem-1', 'mem-4'],
         presidingOfficer: 'mp-1',
         motions: [
-            { id: 'motion-3', title: 'Adopt Carbon Neutrality Goal by 2040', description: 'Commit the party to a policy of achieving carbon neutrality across the nation by the year 2040.'},
+            { id: 'motion-3', title: 'Adopt Carbon Neutrality Goal by 2040', description: 'Commit the party to a policy of achieving carbon neutrality across the nation by the year 2040.', isPartySponsored: true, topic: 'Environment', sponsorId: 'mp-3'},
+            { id: 'motion-4', title: 'Opposition motion on industrial regulations', description: 'Vote on an opposition party motion to relax industrial emission standards.', isPartySponsored: false, topic: 'Economy' }
         ],
         relatedDocuments: []
     }
@@ -57,6 +58,12 @@ export let votes: Vote[] = [
     { id: 'vote-11', motionId: 'motion-3', memberId: 'mp-3', vote: 'Aye' },
     { id: 'vote-12', motionId: 'motion-3', memberId: 'mem-1', vote: 'Abstain' },
     { id: 'vote-13', motionId: 'motion-3', memberId: 'mem-4', vote: 'Aye' },
+     // Votes for motion-4
+     { id: 'vote-14', motionId: 'motion-4', memberId: 'mp-1', vote: 'Nay' },
+     { id: 'vote-15', motionId: 'motion-4', memberId: 'mp-2', vote: 'Nay' },
+     { id: 'vote-16', motionId: 'motion-4', memberId: 'mp-3', vote: 'Nay' },
+     { id: 'vote-17', motionId: 'motion-4', memberId: 'mem-1', vote: 'Abstain' },
+     { id: 'vote-18', motionId: 'motion-4', memberId: 'mem-4', vote: 'Nay' },
 ];
 
 

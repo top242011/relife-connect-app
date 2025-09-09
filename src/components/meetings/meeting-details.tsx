@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Edit, FileText, Trash2, User, VoteIcon } from "lucide-react"
+import { ArrowLeft, Edit, FileText, Trash2, User, VoteIcon, CheckCircle2, XCircle, MinusCircle, UserX } from "lucide-react"
 import Link from "next/link"
 import {
   AlertDialog,
@@ -114,25 +114,38 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                 <CardContent className="space-y-6">
                     {meeting.motions.map((motion, index) => (
                         <div key={motion.id} className="border rounded-lg p-4">
-                            <h3 className="font-bold text-lg mb-2">Motion {index + 1}: {motion.title}</h3>
+                             <div className="flex justify-between items-start mb-2">
+                                <div>
+                                    <h3 className="font-bold text-lg">Motion {index + 1}: {motion.title}</h3>
+                                    <div className="text-sm text-muted-foreground">Topic: <Badge variant="outline" className="ml-1">{motion.topic}</Badge></div>
+                                    {motion.sponsorId && (
+                                        <div className="text-sm text-muted-foreground mt-1">Sponsor: <Badge variant="secondary" className="ml-1">{getMemberName(motion.sponsorId)}</Badge></div>
+                                    )}
+                                </div>
+                                {motion.isPartySponsored && <Badge>Party-Sponsored</Badge>}
+                            </div>
                             <p className="text-muted-foreground mb-4">{motion.description}</p>
                             
                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 text-center">
-                                <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900">
+                                <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/50 flex flex-col items-center justify-center">
+                                    <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-400 mb-1" />
                                     <div className="text-2xl font-bold">{allVotes.filter(v => v.motionId === motion.id && v.vote === 'Aye').length}</div>
                                     <div className="text-sm text-green-700 dark:text-green-300">Aye</div>
                                 </div>
-                                <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900">
+                                <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/50 flex flex-col items-center justify-center">
+                                     <XCircle className="h-6 w-6 text-red-600 dark:text-red-400 mb-1" />
                                     <div className="text-2xl font-bold">{allVotes.filter(v => v.motionId === motion.id && v.vote === 'Nay').length}</div>
                                     <div className="text-sm text-red-700 dark:text-red-300">Nay</div>
                                 </div>
-                                <div className="p-2 rounded-lg bg-yellow-100 dark:bg-yellow-900">
+                                <div className="p-2 rounded-lg bg-yellow-100 dark:bg-yellow-900/50 flex flex-col items-center justify-center">
+                                    <MinusCircle className="h-6 w-6 text-yellow-600 dark:text-yellow-400 mb-1" />
                                     <div className="text-2xl font-bold">{allVotes.filter(v => v.motionId === motion.id && v.vote === 'Abstain').length}</div>
                                     <div className="text-sm text-yellow-700 dark:text-yellow-300">Abstain</div>
                                 </div>
-                                <div className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700">
+                                <div className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700/50 flex flex-col items-center justify-center">
+                                    <UserX className="h-6 w-6 text-gray-500 dark:text-gray-400 mb-1" />
                                     <div className="text-2xl font-bold">{meeting.attendees.length - allVotes.filter(v => v.motionId === motion.id && ['Aye', 'Nay', 'Abstain'].includes(v.vote)).length}</div>
-                                    <div className="text-sm text-gray-500 dark:text-gray-300">Absent / Not Voted</div>
+                                    <div className="text-sm text-gray-500 dark:text-gray-300">Not Voted</div>
                                 </div>
                             </div>
                             
@@ -156,7 +169,8 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                                                              <Badge variant={
                                                                 vote.vote === 'Aye' ? 'default' :
                                                                 vote.vote === 'Nay' ? 'destructive' :
-                                                                'secondary'
+                                                                vote.vote === 'Abstain' ? 'secondary' :
+                                                                'outline'
                                                             }>{vote.vote}</Badge>
                                                         ) : (
                                                             <Badge variant="outline">Not Voted</Badge>

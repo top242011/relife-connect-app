@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -32,6 +33,7 @@ import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../ui/command";
 import { Textarea } from "../ui/textarea";
+import { Checkbox } from "../ui/checkbox";
 
 const allPartyMembers = [...allMembers, ...allMps];
 
@@ -39,6 +41,9 @@ const motionSchema = z.object({
     id: z.string(),
     title: z.string().min(1, "Motion title is required"),
     description: z.string().min(1, "Motion description is required"),
+    isPartySponsored: z.boolean().default(false),
+    topic: z.string().min(1, "Topic is required"),
+    sponsorId: z.string().optional(),
 });
 
 const formSchema = z.object({
@@ -47,6 +52,16 @@ const formSchema = z.object({
   presidingOfficer: z.string().min(1, "Presiding officer is required"),
   attendees: z.array(z.string()).min(1, "At least one attendee is required"),
   motions: z.array(motionSchema).min(1, "At least one motion is required"),
+}).refine(data => {
+    for (const motion of data.motions) {
+        if (motion.isPartySponsored && !motion.sponsorId) {
+            return false;
+        }
+    }
+    return true;
+}, {
+    message: "A party-sponsored motion must have a sponsoring member.",
+    path: ["motions"],
 });
 
 
@@ -128,7 +143,10 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
                 <h3 className="text-lg font-medium mb-2">Agenda / Motions</h3>
                 <div className="space-y-4">
                 {fields.map((motion, index) => (
-                    <div key={motion.id} className="rounded-md border p-4 space-y-2 relative">
+                    <div key={motion.id} className="rounded-md border p-4 space-y-4 relative">
+                         <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 h-7 w-7" onClick={() => remove(index)}>
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
                          <FormField
                             control={form.control}
                             name={`motions.${index}.title`}
@@ -151,13 +169,57 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
                                 </FormItem>
                             )}
                         />
-                        <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 h-7 w-7" onClick={() => remove(index)}>
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <div className="grid grid-cols-2 gap-4">
+                             <FormField
+                                control={form.control}
+                                name={`motions.${index}.topic`}
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Topic</FormLabel>
+                                        <FormControl><Input placeholder="e.g. Economy, Social" {...field} /></FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                name={`motions.${index}.sponsorId`}
+                                control={form.control}
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col">
+                                        <FormLabel>Sponsoring Member</FormLabel>
+                                        <MultiSelect a-type="single" options={allMps.map(m => ({value: m.id, label: m.name}))} {...field} />
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                        <FormField
+                            control={form.control}
+                            name={`motions.${index}.isPartySponsored`}
+                            render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
+                                <FormControl>
+                                    <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                    <FormLabel>
+                                    Party-Sponsored Motion
+                                    </FormLabel>
+                                    <FormDescription>
+                                     Indicates this motion is officially put forth by the party.
+                                    </FormDescription>
+                                </div>
+                                </FormItem>
+                            )}
+                        />
                     </div>
                 ))}
                 </div>
-                <Button type="button" variant="outline" size="sm" className="mt-4" onClick={() => append({id: `new-motion-${Date.now()}`, title: '', description: ''})}>
+                {form.formState.errors.motions?.root && <FormMessage className="mt-2">{form.formState.errors.motions.root.message}</FormMessage>}
+                <Button type="button" variant="outline" size="sm" className="mt-4" onClick={() => append({id: `new-motion-${Date.now()}`, title: '', description: '', isPartySponsored: false, topic: ''})}>
                     <PlusCircle className="mr-2 h-4 w-4" /> Add Motion
                 </Button>
             </div>

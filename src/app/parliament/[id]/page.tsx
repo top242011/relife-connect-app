@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CheckCircle2, MinusCircle, UserX, XCircle } from "lucide-react";
 
 export default function MPProfilePage({ params }: { params: { id: string } }) {
     const mp = mps.find(m => m.id === params.id);
@@ -26,6 +26,15 @@ export default function MPProfilePage({ params }: { params: { id: string } }) {
     }
 
     const mpVotes = votes.filter(vote => vote.memberId === mp.id);
+    const sponsoredMotions = meetings.flatMap(m => m.motions).filter(motion => motion.sponsorId === mp.id);
+
+    const getVoteResult = (motionId: string) => {
+        const ayes = votes.filter(v => v.motionId === motionId && v.vote === 'Aye').length;
+        const nays = votes.filter(v => v.motionId === motionId && v.vote === 'Nay').length;
+        if (ayes > nays) return <Badge variant="default" className="bg-green-600">Passed</Badge>;
+        if (nays > ayes) return <Badge variant="destructive">Failed</Badge>;
+        return <Badge variant="secondary">Tied</Badge>
+    }
 
     return (
         <div className="space-y-6">
@@ -58,6 +67,47 @@ export default function MPProfilePage({ params }: { params: { id: string } }) {
                     <div className="col-span-2"><span className="font-semibold">Electoral History:</span> {mp.electoralHistory}</div>
                 </CardContent>
             </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Sponsored Motions</CardTitle>
+                    <CardDescription>Motions this member has sponsored.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Motion</TableHead>
+                                <TableHead>Topic</TableHead>
+                                <TableHead>Meeting</TableHead>
+                                <TableHead>Outcome</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {sponsoredMotions.length > 0 ? sponsoredMotions.map(motion => {
+                                const meeting = meetings.find(m => m.motions.some(mo => mo.id === motion.id));
+                                return (
+                                    <TableRow key={motion.id}>
+                                        <TableCell className="font-medium">{motion.title}</TableCell>
+                                        <TableCell><Badge variant="outline">{motion.topic}</Badge></TableCell>
+                                        <TableCell>
+                                            <Link href={`/meetings/manage/${meeting?.id}`} className="text-primary hover:underline">
+                                                {meeting?.title}
+                                            </Link>
+                                        </TableCell>
+                                        <TableCell>{getVoteResult(motion.id)}</TableCell>
+                                    </TableRow>
+                                )
+                            }) : (
+                                <TableRow>
+                                    <TableCell colSpan={4} className="text-center">No sponsored motions found.</TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+
 
             <Card>
                 <CardHeader>
