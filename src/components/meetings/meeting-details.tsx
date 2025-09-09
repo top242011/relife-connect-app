@@ -32,6 +32,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { EditMeetingForm } from "./edit-meeting-form"
 
 export function MeetingDetails({ meeting }: { meeting: Meeting }) {
     const getMemberName = (memberId: string) => {
@@ -51,7 +52,9 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                     <p className="text-muted-foreground">Meeting held on {meeting.date}</p>
                 </div>
                  <div className="flex gap-2">
-                    <Button variant="outline"><Edit className="mr-2 h-4 w-4" /> Edit</Button>
+                     <EditMeetingForm meeting={meeting}>
+                        <Button variant="outline"><Edit className="mr-2 h-4 w-4" /> Edit</Button>
+                    </EditMeetingForm>
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
                             <Button variant="destructive"><Trash2 className="mr-2 h-4 w-4" /> Delete</Button>

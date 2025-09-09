@@ -6,7 +6,8 @@ import {
   ChevronDown,
   MoreHorizontal,
   PlusCircle,
-  Eye
+  Eye,
+  Edit
 } from 'lucide-react';
 import {
   ColumnDef,
@@ -44,6 +45,7 @@ import { Badge } from '../ui/badge';
 import type { Meeting } from '@/lib/types';
 import { Card, CardContent } from '../ui/card';
 import { mps, members } from '@/lib/data';
+import { EditMeetingForm } from './edit-meeting-form';
 
 const allPartyMembers = [...members, ...mps];
 
@@ -109,7 +111,14 @@ export const columns: ColumnDef<Meeting>[] = [
                 Copy Meeting ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Edit Meeting</DropdownMenuItem>
+                 <EditMeetingForm meeting={meeting}>
+                    <button className="w-full">
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            Edit Meeting
+                        </DropdownMenuItem>
+                    </button>
+                </EditMeetingForm>
                 <DropdownMenuItem className="text-red-600">Delete Meeting</DropdownMenuItem>
             </DropdownMenuContent>
             </DropdownMenu>
