@@ -2,9 +2,9 @@
 
 import * as React from 'react';
 import {
-  CaretSortIcon,
-  ChevronDownIcon,
-} from '@radix-ui/react-icons';
+  ArrowUpDown,
+  ChevronDown,
+} from 'lucide-react';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -113,7 +113,7 @@ export function MembersTable({ data, type }: { data: DataType[], type: 'member' 
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="ml-auto">
-                    Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
+                    Columns <ChevronDown className="ml-2 h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
