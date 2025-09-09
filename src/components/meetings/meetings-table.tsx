@@ -46,6 +46,7 @@ import type { Meeting } from '@/lib/types';
 import { Card, CardContent } from '../ui/card';
 import { mps, members } from '@/lib/data';
 import { EditMeetingForm } from './edit-meeting-form';
+import { NewMeetingForm } from './new-meeting-form';
 
 const allPartyMembers = [...members, ...mps];
 
@@ -167,10 +168,12 @@ export function MeetingsTable({ data }: { data: Meeting[] }) {
                 }
                 className="max-w-sm"
                 />
-                 <Button className="ml-4">
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    New Meeting
-                </Button>
+                 <NewMeetingForm>
+                    <Button className="ml-4">
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        New Meeting
+                    </Button>
+                 </NewMeetingForm>
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="ml-auto">

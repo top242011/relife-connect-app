@@ -38,7 +38,7 @@ export function MemberProfile({ member }: { member: Member | MP }) {
                     <CardTitle>Contact Information</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><span className="font-semibold">Email:</span> {(member as Member).contact || 'N/A'}</div>
+                    <div><span className="font-semibold">Email:</span> {member.email || 'N/A'}</div>
                     <div><span className="font-semibold">Location:</span> {member.location}</div>
                 </CardContent>
             </Card>

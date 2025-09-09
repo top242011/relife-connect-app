@@ -1,6 +1,7 @@
 export interface Member {
     id: string;
     name: string;
+    email: string;
     age: number;
     gender: 'Male' | 'Female' | 'Other';
     location: string;
@@ -15,6 +16,7 @@ export interface Member {
   export interface MP {
     id: string;
     name: string;
+    email: string;
     age: number;
     gender: 'Male' | 'Female' | 'Other';
     location: string;

@@ -32,6 +32,7 @@ import { Textarea } from "../ui/textarea";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name is too short"),
+  email: z.string().email("Invalid email address"),
   contact: z.string().email("Invalid email address").optional(),
   location: z.string(),
   age: z.coerce.number().min(18, "Must be at least 18"),
@@ -62,6 +63,7 @@ export function EditProfileForm({ member }: { member: Member | MP }) {
 
   const defaultValues: Partial<ProfileFormValues> = {
     name: member.name,
+    email: member.email,
     contact: (member as Member).contact,
     location: member.location,
     age: member.age,
@@ -171,6 +173,9 @@ export function EditProfileForm({ member }: { member: Member | MP }) {
             <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
+             <FormField control={form.control} name="email" render={({ field }) => (
+                <FormItem><FormLabel>Email</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+            )}/>
             <div className="grid grid-cols-2 gap-4">
                  <FormField control={form.control} name="age" render={({ field }) => (
                     <FormItem><FormLabel>Age</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
@@ -179,9 +184,6 @@ export function EditProfileForm({ member }: { member: Member | MP }) {
                     <FormItem><FormLabel>Gender</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                 )}/>
             </div>
-             <FormField control={form.control} name="contact" render={({ field }) => (
-                <FormItem><FormLabel>Email</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-            )}/>
              <FormField control={form.control} name="location" render={({ field }) => (
                 <FormItem><FormLabel>Location / Constituency</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
             )}/>

@@ -50,6 +50,7 @@ export default function MPProfilePage({ params }: { params: { id: string } }) {
                     <CardTitle>Profile Details</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-2 gap-4">
+                    <div><span className="font-semibold">Email:</span> {mp.email}</div>
                     <div><span className="font-semibold">Age:</span> {mp.age}</div>
                     <div><span className="font-semibold">Gender:</span> {mp.gender}</div>
                     <div><span className="font-semibold">Education:</span> {mp.education}</div>
