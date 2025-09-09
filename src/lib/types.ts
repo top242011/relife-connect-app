@@ -54,9 +54,11 @@ export interface Member {
     relatedDocuments?: { name: string; url: string }[];
   }
   
+  export type VoteType = 'Aye' | 'Nay' | 'Abstain' | 'Absent';
+
   export interface Vote {
     id: string;
     motionId: string;
     memberId: string; // Member or MP ID
-    vote: 'Aye' | 'Nay' | 'Abstain' | 'Absent';
+    vote: VoteType;
   }

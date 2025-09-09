@@ -4,7 +4,7 @@ import * as React from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod";
-import { Meeting, Member, MP } from "@/lib/types";
+import { Meeting } from "@/lib/types";
 import {
   Dialog,
   DialogContent,
@@ -19,14 +19,13 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input";
-import { Edit, Save, PlusCircle, Trash2 } from "lucide-react";
+import { Save, PlusCircle, Trash2 } from "lucide-react";
 import { members as allMembers, mps as allMps } from "@/lib/data";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
@@ -222,7 +221,7 @@ const MultiSelect = React.forwardRef<
           className="w-full justify-between"
           ref={ref}
         >
-          <span className="truncate">{selectedLabels}</span>
+          <span className="truncate">{selectedLabels || "Select..."}</span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>

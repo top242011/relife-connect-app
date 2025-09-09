@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Edit, FileText, Trash2, User } from "lucide-react"
+import { ArrowLeft, Edit, FileText, Trash2, User, VoteIcon } from "lucide-react"
 import Link from "next/link"
 import {
   AlertDialog,
@@ -33,6 +33,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { EditMeetingForm } from "./edit-meeting-form"
+import { RecordVotesForm } from "./record-votes-form"
 
 export function MeetingDetails({ meeting }: { meeting: Meeting }) {
     const getMemberName = (memberId: string) => {
@@ -53,7 +54,7 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                 </div>
                  <div className="flex gap-2">
                      <EditMeetingForm meeting={meeting}>
-                        <Button variant="outline"><Edit className="mr-2 h-4 w-4" /> Edit</Button>
+                        <Button variant="outline"><Edit className="mr-2 h-4 w-4" /> Edit Meeting</Button>
                     </EditMeetingForm>
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
@@ -130,8 +131,8 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                                     <div className="text-sm text-yellow-700 dark:text-yellow-300">Abstain</div>
                                 </div>
                                 <div className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700">
-                                    <div className="text-2xl font-bold">{allVotes.filter(v => v.motionId === motion.id && v.vote === 'Absent').length}</div>
-                                    <div className="text-sm text-gray-500 dark:text-gray-300">Absent</div>
+                                    <div className="text-2xl font-bold">{meeting.attendees.length - allVotes.filter(v => v.motionId === motion.id && ['Aye', 'Nay', 'Abstain'].includes(v.vote)).length}</div>
+                                    <div className="text-sm text-gray-500 dark:text-gray-300">Absent / Not Voted</div>
                                 </div>
                             </div>
                             
@@ -142,7 +143,6 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                                         <TableRow>
                                             <TableHead>Member</TableHead>
                                             <TableHead>Vote</TableHead>
-                                            <TableHead className="text-right">Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -162,14 +162,6 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                                                             <Badge variant="outline">Not Voted</Badge>
                                                         )}
                                                     </TableCell>
-                                                    <TableCell className="text-right">
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                            <Edit className="h-4 w-4" />
-                                                        </Button>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
-                                                    </TableCell>
                                                 </TableRow>
                                             )
                                         })}
@@ -177,7 +169,9 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                                 </Table>
                             </div>
                             <div className="flex justify-end mt-4">
-                                <Button>Record Votes</Button>
+                                <RecordVotesForm meeting={meeting} motion={motion}>
+                                    <Button><VoteIcon className="mr-2 h-4 w-4" /> Record / Edit Votes</Button>
+                                </RecordVotesForm>
                             </div>
                         </div>
                     ))}

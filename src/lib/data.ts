@@ -40,7 +40,7 @@ export const meetings: Meeting[] = [
     }
 ];
 
-export const votes: Vote[] = [
+export let votes: Vote[] = [
     // Votes for motion-1
     { id: 'vote-1', motionId: 'motion-1', memberId: 'mp-1', vote: 'Aye' },
     { id: 'vote-2', motionId: 'motion-1', memberId: 'mp-2', vote: 'Aye' },
