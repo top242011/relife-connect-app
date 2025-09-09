@@ -27,8 +27,8 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input";
-import { Save, PlusCircle, Trash2 } from "lucide-react";
-import { members as allMembers, mps as allMps, motionTopics } from "@/lib/data";
+import { Save, PlusCircle, Trash2, Users } from "lucide-react";
+import { members as allMembers, mps as allMps, motionTopics, locations } from "@/lib/data";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
@@ -36,6 +36,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Textarea } from "../ui/textarea";
 import { Checkbox } from "../ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Location } from "@/lib/types";
 
 const allPartyMembers = [...allMembers, ...allMps];
 
@@ -54,6 +55,9 @@ const formSchema = z.object({
   presidingOfficer: z.string().min(1, "Presiding officer is required"),
   attendees: z.array(z.string()).min(1, "At least one attendee is required"),
   motions: z.array(motionSchema).min(1, "At least one motion is required"),
+  location: z.enum(locations as [string, ...string[]], { required_error: "Location is required" }),
+  meetingType: z.enum(["การประชุมสภา", "การประชุมพรรค"], { required_error: "Meeting type is required" }),
+  meetingSession: z.enum(["การประชุมสามัญ", "การประชุมวิสามัญ"], { required_error: "Meeting session is required" }),
 }).refine(data => {
     for (const motion of data.motions) {
         if (motion.isPartySponsored && !motion.sponsorId) {
@@ -76,6 +80,9 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
     presidingOfficer: meeting.presidingOfficer,
     attendees: meeting.attendees,
     motions: meeting.motions,
+    location: meeting.location,
+    meetingType: meeting.meetingType,
+    meetingSession: meeting.meetingSession,
   };
 
   const form = useForm<MeetingFormValues>({
@@ -129,12 +136,26 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
                     )}
                     />
             </div>
+            <div className="grid grid-cols-3 gap-4">
+                <FormField control={form.control} name="location" render={({ field }) => (
+                    <FormItem><FormLabel>Location</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select location" /></SelectTrigger></FormControl><SelectContent>{locations.map(loc => (<SelectItem key={loc} value={loc}>{loc}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem>
+                )}/>
+                 <FormField control={form.control} name="meetingType" render={({ field }) => (
+                    <FormItem><FormLabel>Meeting Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger></FormControl><SelectContent><SelectItem value="การประชุมสภา">การประชุมสภา</SelectItem><SelectItem value="การประชุมพรรค">การประชุมพรรค</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                )}/>
+                 <FormField control={form.control} name="meetingSession" render={({ field }) => (
+                    <FormItem><FormLabel>Meeting Session</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select session" /></SelectTrigger></FormControl><SelectContent><SelectItem value="การประชุมสามัญ">การประชุมสามัญ</SelectItem><SelectItem value="การประชุมวิสามัญ">การประชุมวิสามัญ</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                )}/>
+            </div>
              <FormField
                 name="attendees"
                 control={form.control}
                 render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Attendees</FormLabel>
+                     <FormItem>
+                        <div className="flex justify-between items-center">
+                            <FormLabel>Attendees</FormLabel>
+                            <Button type="button" size="sm" variant="outline" onClick={() => field.onChange(allPartyMembers.map(m => m.id))}><Users className="mr-2 h-4 w-4" /> Add All Members</Button>
+                        </div>
                          <MultiSelect options={allPartyMembers.map(m => ({value: m.id, label: m.name}))} {...field} />
                          <FormMessage />
                     </FormItem>

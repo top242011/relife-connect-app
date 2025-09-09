@@ -1,12 +1,15 @@
 
-import type { Member, MP, PerformanceData, DemographicsData, Meeting, Vote, Role, Permission, SystemLog } from './types';
+
+import type { Member, MP, PerformanceData, DemographicsData, Meeting, Vote, Role, Permission, SystemLog, Location } from './types';
+
+export const locations: Location[] = ['ท่าพระจันทร์', 'รังสิต', 'ลำปาง'];
 
 export const members: Member[] = [
-  { id: 'mem-1', name: 'Alice Johnson', email: 'alice.j@example.com', age: 34, gender: 'Female', location: 'Capital City', education: 'M.A. Political Science', professionalBackground: 'Policy Advisor', committeeMemberships: ['Finance', 'Outreach'], activityLog: 'Active in 5 campaigns', volunteerWork: '120 hours', contact: 'alice.j@example.com' },
-  { id: 'mem-2', name: 'Bob Williams', email: 'bob.w@example.com', age: 45, gender: 'Male', location: 'Northwood', education: 'B.S. Economics', professionalBackground: 'Economist', committeeMemberships: ['Economic Affairs'], activityLog: 'Organized 3 town halls', volunteerWork: '80 hours', contact: 'bob.w@example.com' },
-  { id: 'mem-3', name: 'Charlie Brown', email: 'charlie.b@example.com', age: 28, gender: 'Male', location: 'Eastwood', education: 'J.D.', professionalBackground: 'Lawyer', committeeMemberships: ['Judiciary'], activityLog: 'Attended 20 meetings', volunteerWork: '50 hours', contact: 'charlie.b@example.com' },
-  { id: 'mem-4', name: 'Diana Prince', email: 'diana.p@example.com', age: 52, gender: 'Female', location: 'Westwood', education: 'Ph.D. History', professionalBackground: 'Professor', committeeMemberships: ['Education', 'Culture'], activityLog: 'Published 2 articles', volunteerWork: '200 hours', contact: 'diana.p@example.com' },
-  { id: 'mem-5', name: 'Ethan Hunt', email: 'ethan.h@example.com', age: 39, gender: 'Male', location: 'Southdale', education: 'MBA', professionalBackground: 'Consultant', committeeMemberships: ['Strategy'], activityLog: 'Led fundraising drive', volunteerWork: '150 hours', contact: 'ethan.h@example.com' },
+  { id: 'mem-1', name: 'Alice Johnson', email: 'alice.j@example.com', age: 34, gender: 'Female', location: 'ท่าพระจันทร์', education: 'M.A. Political Science', professionalBackground: 'Policy Advisor', committeeMemberships: ['Finance', 'Outreach'], activityLog: 'Active in 5 campaigns', volunteerWork: '120 hours', contact: 'alice.j@example.com' },
+  { id: 'mem-2', name: 'Bob Williams', email: 'bob.w@example.com', age: 45, gender: 'Male', location: 'รังสิต', education: 'B.S. Economics', professionalBackground: 'Economist', committeeMemberships: ['Economic Affairs'], activityLog: 'Organized 3 town halls', volunteerWork: '80 hours', contact: 'bob.w@example.com' },
+  { id: 'mem-3', name: 'Charlie Brown', email: 'charlie.b@example.com', age: 28, gender: 'Male', location: 'ลำปาง', education: 'J.D.', professionalBackground: 'Lawyer', committeeMemberships: ['Judiciary'], activityLog: 'Attended 20 meetings', volunteerWork: '50 hours', contact: 'charlie.b@example.com' },
+  { id: 'mem-4', name: 'Diana Prince', email: 'diana.p@example.com', age: 52, gender: 'Female', location: 'ท่าพระจันทร์', education: 'Ph.D. History', professionalBackground: 'Professor', committeeMemberships: ['Education', 'Culture'], activityLog: 'Published 2 articles', volunteerWork: '200 hours', contact: 'diana.p@example.com' },
+  { id: 'mem-5', name: 'Ethan Hunt', email: 'ethan.h@example.com', age: 39, gender: 'Male', location: 'รังสิต', education: 'MBA', professionalBackground: 'Consultant', committeeMemberships: ['Strategy'], activityLog: 'Led fundraising drive', volunteerWork: '150 hours', contact: 'ethan.h@example.com' },
 ];
 
 export const mps: MP[] = [
@@ -26,7 +29,10 @@ export const meetings: Meeting[] = [
             { id: 'motion-1', title: 'Approve allocation for infrastructure projects', description: 'To approve the proposed budget of $5M for the new bridge construction.', isPartySponsored: true, topic: 'Economy', sponsorId: 'mp-1'},
             { id: 'motion-2', title: 'Review healthcare subsidy proposal', description: 'Discuss and vote on the new public healthcare subsidy program.', isPartySponsored: true, topic: 'Social', sponsorId: 'mp-1'}
         ],
-        relatedDocuments: [{ name: 'Q3 Budget Proposal.pdf', url: '#'}]
+        relatedDocuments: [{ name: 'Q3 Budget Proposal.pdf', url: '#'}],
+        location: 'ท่าพระจันทร์',
+        meetingType: 'การประชุมสภา',
+        meetingSession: 'การประชุมสามัญ'
     },
     {
         id: 'meet-2',
@@ -38,7 +44,10 @@ export const meetings: Meeting[] = [
             { id: 'motion-3', title: 'Adopt Carbon Neutrality Goal by 2040', description: 'Commit the party to a policy of achieving carbon neutrality across the nation by the year 2040.', isPartySponsored: true, topic: 'Environment', sponsorId: 'mp-3'},
             { id: 'motion-4', title: 'Opposition motion on industrial regulations', description: 'Vote on an opposition party motion to relax industrial emission standards.', isPartySponsored: false, topic: 'Economy' }
         ],
-        relatedDocuments: []
+        relatedDocuments: [],
+        location: 'รังสิต',
+        meetingType: 'การประชุมพรรค',
+        meetingSession: 'การประชุมวิสามัญ'
     }
 ];
 
@@ -113,3 +122,4 @@ export const systemLogs: SystemLog[] = [
 
 export const motionTopics = ["Economy", "Social", "Security", "Foreign Affairs", "Education", "Environment"];
 export const committeeNames = ["Finance", "Outreach", "Judiciary", "Economic Affairs", "Education", "Culture", "Strategy"];
+

@@ -1,4 +1,5 @@
 
+
 export interface Member {
     id: string;
     name: string;
@@ -50,6 +51,11 @@ export interface Member {
     sponsorId?: string;
   }
   
+  export type MeetingType = 'การประชุมสภา' | 'การประชุมพรรค';
+  export type MeetingSession = 'การประชุมสามัญ' | 'การประชุมวิสามัญ';
+  export type Location = 'ท่าพระจันทร์' | 'รังสิต' | 'ลำปาง';
+
+
   export interface Meeting {
     id: string;
     title: string;
@@ -58,6 +64,9 @@ export interface Member {
     presidingOfficer: string; // Member or MP ID
     motions: Motion[];
     relatedDocuments?: { name: string; url: string }[];
+    location: Location;
+    meetingType: MeetingType;
+    meetingSession: MeetingSession;
   }
   
   export type VoteType = 'Aye' | 'Nay' | 'Abstain' | 'Absent';

@@ -1,8 +1,10 @@
+
 'use client';
 
 import * as React from 'react';
 import Link from 'next/link';
 import {
+  ArrowUpDown,
   ChevronDown,
   Eye,
 } from 'lucide-react';
@@ -42,8 +44,30 @@ import { Card, CardContent } from '../ui/card';
 type DataType = Member | MP;
 
 const getMemberColumns = (): ColumnDef<Member>[] => [
-    { accessorKey: 'name', header: 'Name' },
-    { accessorKey: 'age', header: 'Age' },
+    { 
+        accessorKey: 'name', 
+        header: ({ column }) => (
+            <Button
+              variant="ghost"
+              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            >
+              Name
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
+    },
+    { 
+        accessorKey: 'age', 
+        header: ({ column }) => (
+            <Button
+              variant="ghost"
+              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            >
+              Age
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
+    },
     { accessorKey: 'gender', header: 'Gender' },
     { accessorKey: 'location', header: 'Location' },
     { accessorKey: 'professionalBackground', header: 'Profession' },
@@ -73,7 +97,10 @@ const getMemberColumns = (): ColumnDef<Member>[] => [
 ];
 
 const getMPColumns = (): ColumnDef<MP>[] => [
-    { accessorKey: 'name', header: 'Name' },
+    { 
+        accessorKey: 'name', 
+        header: 'Name' 
+    },
     { accessorKey: 'location', header: 'Constituency' },
     { accessorKey: 'parliamentaryRoles', header: 'Role' },
     {
