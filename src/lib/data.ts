@@ -110,3 +110,6 @@ export const systemLogs: SystemLog[] = [
     { id: 'log-5', timestamp: '2024-08-01 12:00:00', user: 'System', action: 'Security Alert', details: 'Multiple failed login attempts for user "charlie.b@example.com"' },
     { id: 'log-6', timestamp: '2024-08-01 14:00:45', user: 'Alice Johnson', action: 'Edit Role', details: 'Updated permissions for role "Data Analyst"' }
 ];
+
+export const motionTopics = ["Economy", "Social", "Security", "Foreign Affairs", "Education", "Environment"];
+export const committeeNames = ["Finance", "Outreach", "Judiciary", "Economic Affairs", "Education", "Culture", "Strategy"];

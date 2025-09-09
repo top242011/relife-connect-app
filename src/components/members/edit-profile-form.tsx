@@ -1,3 +1,4 @@
+
 'use client'
 
 import * as React from "react";
@@ -29,18 +30,23 @@ import { Input } from "@/components/ui/input";
 import { Edit, Save } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
 import { Textarea } from "../ui/textarea";
+import { committeeNames } from "@/lib/data";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { cn } from "@/lib/utils";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../ui/command";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name is too short"),
   email: z.string().email("Invalid email address"),
-  contact: z.string().email("Invalid email address").optional(),
+  contact: z.string().optional(),
   location: z.string(),
   age: z.coerce.number().min(18, "Must be at least 18"),
   gender: z.enum(["Male", "Female", "Other"]),
   education: z.string(),
   professionalBackground: z.string(),
   roles: z.array(z.string()),
-  committeeMemberships: z.string().transform(val => val.split(',').map(s => s.trim())),
+  committeeMemberships: z.array(z.string()),
   activityLog: z.string().optional(),
   volunteerWork: z.string().optional(),
   // MP fields
@@ -75,7 +81,7 @@ export function EditProfileForm({ member }: { member: Member | MP }) {
         ...(isMP ? ['isMP'] : []),
         ...(member as Member).committeeMemberships?.includes('Executive') ? ['isExec'] : [],
     ],
-    committeeMemberships: (member as Member).committeeMemberships?.join(', '),
+    committeeMemberships: (member as Member).committeeMemberships,
     activityLog: (member as Member).activityLog,
     volunteerWork: (member as Member).volunteerWork,
     electoralHistory: (member as MP).electoralHistory,
@@ -195,9 +201,21 @@ export function EditProfileForm({ member }: { member: Member | MP }) {
             )}/>
 
              <h3 className="text-lg font-medium border-t pt-4">Party Information</h3>
-              <FormField control={form.control} name="committeeMemberships" render={({ field }) => (
-                <FormItem><FormLabel>Committee Memberships</FormLabel><FormControl><Input placeholder="Finance, Outreach, Executive" {...field} /></FormControl><FormDescription>Comma-separated list of committees.</FormDescription><FormMessage /></FormItem>
-            )}/>
+              <FormField 
+                control={form.control} 
+                name="committeeMemberships" 
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Committee Memberships</FormLabel>
+                        <MultiSelect 
+                            options={committeeNames.map(c => ({ value: c, label: c }))} 
+                            {...field}
+                        />
+                        <FormDescription>Select the committees this member belongs to.</FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                )}
+              />
              <FormField control={form.control} name="activityLog" render={({ field }) => (
                 <FormItem><FormLabel>Activity Log</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
@@ -232,3 +250,74 @@ export function EditProfileForm({ member }: { member: Member | MP }) {
     </Dialog>
   )
 }
+
+const MultiSelect = React.forwardRef<
+  HTMLButtonElement,
+  {
+    options: { value: string; label: string }[];
+    value?: string[];
+    onChange: (value: any) => void;
+  }
+>(({ options, value, onChange }, ref) => {
+  const [open, setOpen] = React.useState(false);
+
+  const handleSelect = (selectedValue: string) => {
+    const currentValue = value || [];
+    if (currentValue.includes(selectedValue)) {
+      onChange(currentValue.filter((v) => v !== selectedValue));
+    } else {
+      onChange([...currentValue, selectedValue]);
+    }
+  };
+  
+  const selectedLabels = options
+        .filter((option) => (value || []).includes(option.value))
+        .map((option) => option.label)
+        .join(", ");
+
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-full justify-between"
+          ref={ref}
+        >
+          <span className="truncate">{selectedLabels || "Select..."}</span>
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+        <Command>
+          <CommandInput placeholder="Search..." />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup>
+              {options.map((option) => (
+                <CommandItem
+                  key={option.value}
+                  value={option.label}
+                  onSelect={() => handleSelect(option.value)}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      (value || []).includes(option.value)
+                        ? "opacity-100"
+                        : "opacity-0"
+                    )}
+                  />
+                  {option.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+});
+MultiSelect.displayName = "MultiSelect";

@@ -1,3 +1,4 @@
+
 'use client'
 
 import * as React from "react";
@@ -27,13 +28,14 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input";
 import { Save, PlusCircle, Trash2 } from "lucide-react";
-import { members as allMembers, mps as allMps } from "@/lib/data";
+import { members as allMembers, mps as allMps, motionTopics } from "@/lib/data";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../ui/command";
 import { Textarea } from "../ui/textarea";
 import { Checkbox } from "../ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 const allPartyMembers = [...allMembers, ...allMps];
 
@@ -142,7 +144,9 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
              <div>
                 <h3 className="text-lg font-medium mb-2">Agenda / Motions</h3>
                 <div className="space-y-4">
-                {fields.map((motion, index) => (
+                {fields.map((motion, index) => {
+                    const availableTopics = motionTopics.includes(motion.topic) ? motionTopics : [motion.topic, ...motionTopics];
+                    return (
                     <div key={motion.id} className="rounded-md border p-4 space-y-4 relative">
                          <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 h-7 w-7" onClick={() => remove(index)}>
                             <Trash2 className="h-4 w-4" />
@@ -176,7 +180,18 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Topic</FormLabel>
-                                        <FormControl><Input placeholder="e.g. Economy, Social" {...field} /></FormControl>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select a topic" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {availableTopics.map(topic => (
+                                                    <SelectItem key={topic} value={topic}>{topic}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -216,7 +231,7 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
                             )}
                         />
                     </div>
-                ))}
+                )})}
                 </div>
                 {form.formState.errors.motions?.root && <FormMessage className="mt-2">{form.formState.errors.motions.root.message}</FormMessage>}
                 <Button type="button" variant="outline" size="sm" className="mt-4" onClick={() => append({id: `new-motion-${Date.now()}`, title: '', description: '', isPartySponsored: false, topic: ''})}>

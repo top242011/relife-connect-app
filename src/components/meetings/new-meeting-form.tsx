@@ -1,3 +1,4 @@
+
 'use client'
 
 import * as React from "react";
@@ -27,7 +28,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input";
 import { Save, PlusCircle, Trash2 } from "lucide-react";
-import { members as allMembers, mps as allMps } from "@/lib/data";
+import { members as allMembers, mps as allMps, motionTopics } from "@/lib/data";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
@@ -36,6 +37,7 @@ import { Textarea } from "../ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { sendMeetingNotification } from "@/services/email";
 import { Checkbox } from "../ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 const allPartyMembers = [...allMembers, ...allMps];
 
@@ -101,9 +103,11 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
     const attendees = allPartyMembers.filter(m => data.attendees.includes(m.id));
     const presidingOfficer = allPartyMembers.find(m => m.id === data.presidingOfficer);
 
-    attendees.forEach(attendee => {
-        sendMeetingNotification(attendee, newMeeting, presidingOfficer!);
-    });
+    if (presidingOfficer) {
+        attendees.forEach(attendee => {
+            sendMeetingNotification(attendee, newMeeting, presidingOfficer);
+        });
+    }
     
     toast({
         title: "Meeting Created Successfully!",
@@ -197,7 +201,18 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Topic</FormLabel>
-                                        <FormControl><Input placeholder="e.g. Economy, Social" {...field} /></FormControl>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select a topic" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {motionTopics.map(topic => (
+                                                    <SelectItem key={topic} value={topic}>{topic}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )}

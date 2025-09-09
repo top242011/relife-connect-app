@@ -7,9 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlusCircle, Trash2, Edit, Save, X } from 'lucide-react';
-
-const initialMotionTopics = ["Economy", "Social", "Security", "Foreign Affairs", "Education"];
-const initialCommitteeNames = ["Finance", "Outreach", "Judiciary", "Economic Affairs", "Education", "Culture", "Strategy"];
+import { motionTopics as initialMotionTopics, committeeNames as initialCommitteeNames } from '@/lib/data';
 
 export function GeneralSettings() {
     const [motionTopics, setMotionTopics] = useState(initialMotionTopics);
