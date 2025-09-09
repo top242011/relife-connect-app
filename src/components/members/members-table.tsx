@@ -3,9 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import {
-  ArrowUpDown,
   ChevronDown,
-  MoreHorizontal,
   Eye,
 } from 'lucide-react';
 import {
@@ -26,9 +24,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
@@ -62,16 +57,18 @@ const getMemberColumns = (): ColumnDef<Member>[] => [
     },
     {
         id: 'actions',
-        cell: ({ row }) => (
-            <div className="text-right">
-                <Button asChild variant="ghost" className="h-8 w-8 p-0">
-                    {/* Dummy link for non-MP members for now */}
-                    <Link href={`/members`}> 
-                        <Eye className="h-4 w-4" />
-                    </Link>
-                </Button>
-            </div>
-        )
+        cell: ({ row }) => {
+            const member = row.original;
+            return (
+                 <div className="text-right">
+                    <Button asChild variant="ghost" className="h-8 w-8 p-0">
+                        <Link href={`/members/${member.id}`}> 
+                            <Eye className="h-4 w-4" />
+                        </Link>
+                    </Button>
+                </div>
+            )
+        }
     }
 ];
 
