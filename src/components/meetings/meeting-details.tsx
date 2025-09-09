@@ -1,3 +1,4 @@
+
 'use client'
 
 import { mps, votes as allVotes, members as allMembers } from "@/lib/data"

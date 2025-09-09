@@ -1,4 +1,3 @@
-
 'use client'
 
 import * as React from "react";
@@ -41,7 +40,7 @@ const formSchema = z.object({
   name: z.string().min(2, "Name is too short"),
   email: z.string().email("Invalid email address"),
   contact: z.string().optional(),
-  location: z.enum(locations as [string, ...string[]], { required_error: "Location is required" }),
+  location: z.string().min(1, "Location is required"),
   age: z.coerce.number().min(18, "Must be at least 18"),
   gender: z.enum(["Male", "Female", "Other"]),
   education: z.string(),

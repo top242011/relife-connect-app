@@ -122,4 +122,3 @@ export const systemLogs: SystemLog[] = [
 
 export const motionTopics = ["Economy", "Social", "Security", "Foreign Affairs", "Education", "Environment"];
 export const committeeNames = ["Finance", "Outreach", "Judiciary", "Economic Affairs", "Education", "Culture", "Strategy"];
-

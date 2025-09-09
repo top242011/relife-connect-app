@@ -1,3 +1,4 @@
+
 import { DemographicsChart } from '@/components/dashboard/demographics-chart';
 import { MotionSuccessRateChart } from '@/components/dashboard/motion-success-rate-chart';
 import { PerformanceChart } from '@/components/dashboard/performance-chart';
