@@ -53,7 +53,7 @@ export interface Member {
   
   export type MeetingType = 'การประชุมสภา' | 'การประชุมพรรค';
   export type MeetingSession = 'การประชุมสามัญ' | 'การประชุมวิสามัญ';
-  export type Location = 'ท่าพระจันทร์' | 'รังสิต' | 'ลำปาง';
+  export type Location = 'ท่าพระจันทร์' | 'รังสิต' | 'ลำปาง' | 'ส่วนกลาง';
 
 
   export interface Meeting {

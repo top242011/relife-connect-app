@@ -2,7 +2,7 @@
 
 import type { Member, MP, PerformanceData, DemographicsData, Meeting, Vote, Role, Permission, SystemLog, Location } from './types';
 
-export const locations: Location[] = ['ท่าพระจันทร์', 'รังสิต', 'ลำปาง'];
+export const locations: Location[] = ['ท่าพระจันทร์', 'รังสิต', 'ลำปาง', 'ส่วนกลาง'];
 
 export const members: Member[] = [
   { id: 'mem-1', name: 'Alice Johnson', email: 'alice.j@example.com', age: 34, gender: 'Female', location: 'ท่าพระจันทร์', education: 'M.A. Political Science', professionalBackground: 'Policy Advisor', committeeMemberships: ['Finance', 'Outreach'], activityLog: 'Active in 5 campaigns', volunteerWork: '120 hours', contact: 'alice.j@example.com' },
