@@ -18,7 +18,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
-import { Bot, ChevronRight, Gavel, Landmark, LayoutDashboard, Users, FileText, CalendarPlus } from 'lucide-react';
+import { Bot, ChevronRight, Gavel, Landmark, LayoutDashboard, Users, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -26,19 +26,15 @@ const navItems = [
   { href: '/members', label: 'Members', icon: Users },
   { href: '/parliament', label: 'Parliament', icon: Landmark },
   { 
+    href: '/meetings/manage',
     label: 'Meetings', 
-    icon: Gavel,
-    subItems: [
-        { href: '/meetings/manage', label: 'Manage Meetings', icon: FileText },
-        { href: '/meetings', label: 'Scheduler & AI Tools', icon: CalendarPlus },
-    ]
+    icon: Gavel
   },
   { href: '/assistant', label: 'AI Assistant', icon: Bot },
 ];
 
 export function SidebarNav() {
   const pathname = usePathname();
-  const [openMeeting, setOpenMeeting] = React.useState(pathname.startsWith('/meetings'));
 
   return (
     <>
@@ -52,53 +48,19 @@ export function SidebarNav() {
       </SidebarHeader>
       <SidebarContent className="p-2">
         <SidebarMenu>
-          {navItems.map((item, index) => (
-            item.subItems ? (
-                <Collapsible key={item.label} open={openMeeting} onOpenChange={setOpenMeeting} className="w-full">
-                    <SidebarMenuItem>
-                        <CollapsibleTrigger asChild>
-                            <SidebarMenuButton
-                                variant="default"
-                                className="justify-between"
-                                isActive={pathname.startsWith('/meetings')}
-                            >
-                                <div className="flex items-center gap-2">
-                                    <item.icon/>
-                                    <span>{item.label}</span>
-                                </div>
-                                <ChevronRight className={cn("h-4 w-4 transition-transform", openMeeting && "rotate-90")} />
-                            </SidebarMenuButton>
-                        </CollapsibleTrigger>
-                    </SidebarMenuItem>
-                    <CollapsibleContent>
-                        <SidebarMenuSub>
-                            {item.subItems.map(subItem => (
-                                <SidebarMenuSubItem key={subItem.href}>
-                                    <SidebarMenuSubButton asChild isActive={pathname === subItem.href}>
-                                        <Link href={subItem.href}>
-                                            <subItem.icon />
-                                            <span>{subItem.label}</span>
-                                        </Link>
-                                    </SidebarMenuSubButton>
-                                </SidebarMenuSubItem>
-                            ))}
-                        </SidebarMenuSub>
-                    </CollapsibleContent>
-                </Collapsible>
-            ) : (
-                <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton
-                    asChild
-                    isActive={pathname === item.href}
-                    tooltip={item.label}
-                >
-                    <Link href={item.href}>
-                    <item.icon />
-                    <span>{item.label}</span>
-                    </Link>
-                </SidebarMenuButton>
-                </SidebarMenuItem>
-            )
+          {navItems.map((item) => (
+            <SidebarMenuItem key={item.href}>
+            <SidebarMenuButton
+                asChild
+                isActive={pathname === item.href || (item.href === '/meetings/manage' && pathname.startsWith('/meetings'))}
+                tooltip={item.label}
+            >
+                <Link href={item.href}>
+                <item.icon />
+                <span>{item.label}</span>
+                </Link>
+            </SidebarMenuButton>
+            </SidebarMenuItem>
           ))}
         </SidebarMenu>
       </SidebarContent>
