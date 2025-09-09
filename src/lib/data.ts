@@ -1,4 +1,5 @@
-import type { Member, MP, PerformanceData, DemographicsData, Meeting, Vote } from './types';
+
+import type { Member, MP, PerformanceData, DemographicsData, Meeting, Vote, Role, Permission, SystemLog } from './types';
 
 export const members: Member[] = [
   { id: 'mem-1', name: 'Alice Johnson', email: 'alice.j@example.com', age: 34, gender: 'Female', location: 'Capital City', education: 'M.A. Political Science', professionalBackground: 'Policy Advisor', committeeMemberships: ['Finance', 'Outreach'], activityLog: 'Active in 5 campaigns', volunteerWork: '120 hours', contact: 'alice.j@example.com' },
@@ -83,3 +84,29 @@ export const demographicsData: DemographicsData[] = [
     { region: 'Westwood', members: 85 },
     { region: 'Capital City', members: 210 },
 ]
+
+export const permissions: Permission[] = [
+    { id: 'perm-1', name: 'Create Party Member' },
+    { id: 'perm-2', name: 'Edit MP Profile' },
+    { id: 'perm-3', name: 'View Analytics Dashboard' },
+    { id: 'perm-4', name: 'Manage Meetings' },
+    { id: 'perm-5', name: 'Record Votes' },
+    { id: 'perm-6', name: 'Admin Access' }
+];
+
+export const roles: Role[] = [
+    { id: 'role-1', name: 'Admin', permissions: ['perm-1', 'perm-2', 'perm-3', 'perm-4', 'perm-5', 'perm-6'] },
+    { id: 'role-2', name: 'HR Manager', permissions: ['perm-1', 'perm-2'] },
+    { id: 'role-3', name: 'Meeting Secretary', permissions: ['perm-4', 'perm-5'] },
+    { id: 'role-4', name: 'Data Analyst', permissions: ['perm-3'] },
+    { id: 'role-5', name: 'Member', permissions: [] }
+];
+
+export const systemLogs: SystemLog[] = [
+    { id: 'log-1', timestamp: '2024-08-01 10:00:00', user: 'Alice Johnson', action: 'Login', details: 'Successful login from IP 192.168.1.1' },
+    { id: 'log-2', timestamp: '2024-08-01 10:05:23', user: 'Alice Johnson', action: 'Edit Meeting', details: 'Edited meeting "Q3 Budget Committee Session"' },
+    { id: 'log-3', timestamp: '2024-08-01 10:15:00', user: 'George Orwell', action: 'Record Vote', details: 'Recorded votes for motion "Approve allocation for infrastructure projects"' },
+    { id: 'log-4', timestamp: '2024-08-01 11:30:10', user: 'Fiona Gallagher', action: 'Create Meeting', details: 'Created new meeting "Emergency Press Briefing"' },
+    { id: 'log-5', timestamp: '2024-08-01 12:00:00', user: 'System', action: 'Security Alert', details: 'Multiple failed login attempts for user "charlie.b@example.com"' },
+    { id: 'log-6', timestamp: '2024-08-01 14:00:45', user: 'Alice Johnson', action: 'Edit Role', details: 'Updated permissions for role "Data Analyst"' }
+];

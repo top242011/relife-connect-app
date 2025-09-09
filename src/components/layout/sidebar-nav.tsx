@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -18,7 +19,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
-import { Bot, ChevronRight, Gavel, Landmark, LayoutDashboard, Users, FileText } from 'lucide-react';
+import { Bot, ChevronRight, Gavel, Landmark, LayoutDashboard, Users, FileText, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -31,6 +32,7 @@ const navItems = [
     icon: Gavel
   },
   { href: '/assistant', label: 'AI Assistant', icon: Bot },
+  { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
 export function SidebarNav() {
@@ -52,7 +54,7 @@ export function SidebarNav() {
             <SidebarMenuItem key={item.href}>
             <SidebarMenuButton
                 asChild
-                isActive={pathname === item.href || (item.href === '/meetings/manage' && pathname.startsWith('/meetings'))}
+                isActive={pathname.startsWith(item.href)}
                 tooltip={item.label}
             >
                 <Link href={item.href}>

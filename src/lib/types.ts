@@ -1,3 +1,4 @@
+
 export interface Member {
     id: string;
     name: string;
@@ -66,4 +67,23 @@ export interface Member {
     motionId: string;
     memberId: string; // Member or MP ID
     vote: VoteType;
+  }
+
+  export interface Permission {
+    id: string;
+    name: string;
+  }
+
+  export interface Role {
+    id: string;
+    name: string;
+    permissions: string[];
+  }
+
+  export interface SystemLog {
+      id: string;
+      timestamp: string;
+      user: string;
+      action: string;
+      details: string;
   }
