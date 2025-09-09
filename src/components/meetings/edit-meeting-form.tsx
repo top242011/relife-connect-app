@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod";
 import { Meeting, Member, MP } from "@/lib/types";
@@ -67,7 +67,10 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
     defaultValues,
   });
 
-  const { fields, append, remove } = (form.control as any)._fields.motions;
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "motions"
+  });
 
 
   const onSubmit = (data: MeetingFormValues) => {
@@ -125,7 +128,7 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
              <div>
                 <h3 className="text-lg font-medium mb-2">Agenda / Motions</h3>
                 <div className="space-y-4">
-                {fields.map((motion: Motion, index: number) => (
+                {fields.map((motion, index) => (
                     <div key={motion.id} className="rounded-md border p-4 space-y-2 relative">
                          <FormField
                             control={form.control}
