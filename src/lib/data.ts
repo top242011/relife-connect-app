@@ -1,4 +1,4 @@
-import type { Member, MP, PerformanceData, DemographicsData } from './types';
+import type { Member, MP, PerformanceData, DemographicsData, Meeting, Vote } from './types';
 
 export const members: Member[] = [
   { id: 'mem-1', name: 'Alice Johnson', age: 34, gender: 'Female', location: 'Capital City', education: 'M.A. Political Science', professionalBackground: 'Policy Advisor', committeeMemberships: ['Finance', 'Outreach'], activityLog: 'Active in 5 campaigns', volunteerWork: '120 hours', contact: 'alice.j@example.com' },
@@ -13,6 +13,52 @@ export const mps: MP[] = [
   { id: 'mp-2', name: 'George Orwell', age: 55, gender: 'Male', location: 'Northwood District', electoralHistory: 'Elected 2010, 2014, 2018, 2022', parliamentaryRoles: 'Committee Chair (Oversight)', votingRecord: '98% attendance', keyPolicyInterests: 'Government Transparency, Civil Liberties', education: 'B.A. Journalism', professionalBackground: 'Journalist' },
   { id: 'mp-3', name: 'Hannah Abbott', age: 41, gender: 'Female', location: 'Eastwood Borough', electoralHistory: 'Elected 2022', parliamentaryRoles: 'Backbencher', votingRecord: '92% attendance', keyPolicyInterests: 'Environmental Protection, Renewable Energy', education: 'M.S. Environmental Science', professionalBackground: 'Scientist' },
 ];
+
+export const meetings: Meeting[] = [
+    {
+        id: 'meet-1',
+        title: 'Q3 Budget Committee Session',
+        date: '2024-07-20',
+        attendees: ['mp-1', 'mp-2', 'mem-1', 'mem-2'],
+        presidingOfficer: 'mp-2',
+        motions: [
+            { id: 'motion-1', title: 'Approve allocation for infrastructure projects', description: 'To approve the proposed budget of $5M for the new bridge construction.'},
+            { id: 'motion-2', title: 'Review healthcare subsidy proposal', description: 'Discuss and vote on the new public healthcare subsidy program.'}
+        ],
+        relatedDocuments: [{ name: 'Q3 Budget Proposal.pdf', url: '#'}]
+    },
+    {
+        id: 'meet-2',
+        title: 'Party Policy Debate on Environment',
+        date: '2024-07-25',
+        attendees: ['mp-1', 'mp-2', 'mp-3', 'mem-1', 'mem-4'],
+        presidingOfficer: 'mp-1',
+        motions: [
+            { id: 'motion-3', title: 'Adopt Carbon Neutrality Goal by 2040', description: 'Commit the party to a policy of achieving carbon neutrality across the nation by the year 2040.'},
+        ],
+        relatedDocuments: []
+    }
+];
+
+export const votes: Vote[] = [
+    // Votes for motion-1
+    { id: 'vote-1', motionId: 'motion-1', memberId: 'mp-1', vote: 'Aye' },
+    { id: 'vote-2', motionId: 'motion-1', memberId: 'mp-2', vote: 'Aye' },
+    { id: 'vote-3', motionId: 'motion-1', memberId: 'mem-1', vote: 'Abstain' },
+    { id: 'vote-4', motionId: 'motion-1', memberId: 'mem-2', vote: 'Nay' },
+    // Votes for motion-2
+    { id: 'vote-5', motionId: 'motion-2', memberId: 'mp-1', vote: 'Aye' },
+    { id: 'vote-6', motionId: 'motion-2', memberId: 'mp-2', vote: 'Nay' },
+    { id: 'vote-7', motionId: 'motion-2', memberId: 'mem-1', vote: 'Aye' },
+    { id: 'vote-8', motionId: 'motion-2', memberId: 'mem-2', vote: 'Absent' },
+    // Votes for motion-3
+    { id: 'vote-9', motionId: 'motion-3', memberId: 'mp-1', vote: 'Aye' },
+    { id: 'vote-10', motionId: 'motion-3', memberId: 'mp-2', vote: 'Nay' },
+    { id: 'vote-11', motionId: 'motion-3', memberId: 'mp-3', vote: 'Aye' },
+    { id: 'vote-12', motionId: 'motion-3', memberId: 'mem-1', vote: 'Abstain' },
+    { id: 'vote-13', motionId: 'motion-3', memberId: 'mem-4', vote: 'Aye' },
+];
+
 
 export const performanceData: PerformanceData[] = [
     { month: 'Jan', engagement: 65, legislation: 2, attendance: 90 },

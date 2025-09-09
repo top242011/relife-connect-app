@@ -3,10 +3,10 @@
 import * as React from 'react';
 import Link from 'next/link';
 import {
-  ArrowUpDown,
   ChevronDown,
   MoreHorizontal,
-  Eye,
+  PlusCircle,
+  Eye
 } from 'lucide-react';
 import {
   ColumnDef,
@@ -41,72 +41,86 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '../ui/badge';
-import type { Member, MP } from '@/lib/types';
+import type { Meeting } from '@/lib/types';
 import { Card, CardContent } from '../ui/card';
+import { mps, members } from '@/lib/data';
 
-type DataType = Member | MP;
+const allPartyMembers = [...members, ...mps];
 
-const getMemberColumns = (): ColumnDef<Member>[] => [
-    { accessorKey: 'name', header: 'Name' },
-    { accessorKey: 'age', header: 'Age' },
-    { accessorKey: 'gender', header: 'Gender' },
-    { accessorKey: 'location', header: 'Location' },
-    { accessorKey: 'professionalBackground', header: 'Profession' },
-    {
-        accessorKey: 'committeeMemberships',
-        header: 'Committees',
-        cell: ({ row }) => {
-            const committees = row.getValue('committeeMemberships') as string[];
-            return <div className="flex flex-wrap gap-1">{committees.map(c => <Badge key={c} variant="secondary">{c}</Badge>)}</div>
-        },
+export const columns: ColumnDef<Meeting>[] = [
+  {
+    accessorKey: 'title',
+    header: 'Title',
+    cell: ({ row }) => <div className="font-medium">{row.getValue('title')}</div>
+  },
+  {
+    accessorKey: 'date',
+    header: 'Date',
+  },
+  {
+    accessorKey: 'presidingOfficer',
+    header: 'Presiding Officer',
+    cell: ({ row }) => {
+      const memberId = row.getValue('presidingOfficer') as string;
+      const member = allPartyMembers.find(m => m.id === memberId);
+      return member ? member.name : 'Unknown';
     },
-    {
-        id: 'actions',
-        cell: ({ row }) => (
-            <div className="text-right">
-                <Button asChild variant="ghost" className="h-8 w-8 p-0">
-                    {/* Dummy link for non-MP members for now */}
-                    <Link href={`/members`}> 
-                        <Eye className="h-4 w-4" />
-                    </Link>
+  },
+  {
+    accessorKey: 'attendees',
+    header: 'Attendees',
+    cell: ({ row }) => {
+      const attendees = row.getValue('attendees') as string[];
+      return <Badge variant="outline">{attendees.length} Members</Badge>;
+    },
+  },
+  {
+    accessorKey: 'motions',
+    header: 'Motions',
+    cell: ({ row }) => {
+        const motions = row.getValue('motions') as {id: string, title: string}[];
+        return <Badge variant="outline">{motions.length} Motions</Badge>;
+    },
+  },
+  {
+    id: 'actions',
+    enableHiding: false,
+    cell: ({ row }) => {
+      const meeting = row.original;
+
+      return (
+        <div className="text-right">
+             <Button asChild variant="ghost" className="h-8 w-8 p-0">
+                <Link href={`/meetings/manage/${meeting.id}`}>
+                    <Eye className="h-4 w-4" />
+                    <span className="sr-only">View meeting</span>
+                </Link>
+            </Button>
+            <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
                 </Button>
-            </div>
-        )
-    }
-];
-
-const getMPColumns = (): ColumnDef<MP>[] => [
-    { accessorKey: 'name', header: 'Name' },
-    { accessorKey: 'location', header: 'Constituency' },
-    { accessorKey: 'parliamentaryRoles', header: 'Role' },
-    {
-        accessorKey: 'keyPolicyInterests',
-        header: 'Policy Interests',
-        cell: ({ row }) => {
-            const interests = (row.getValue('keyPolicyInterests') as string).split(', ');
-            return <div className="flex flex-wrap gap-1">{interests.map(i => <Badge key={i} variant="secondary">{i}</Badge>)}</div>
-        }
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem onClick={() => navigator.clipboard.writeText(meeting.id)}>
+                Copy Meeting ID
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Edit Meeting</DropdownMenuItem>
+                <DropdownMenuItem className="text-red-600">Delete Meeting</DropdownMenuItem>
+            </DropdownMenuContent>
+            </DropdownMenu>
+        </div>
+      );
     },
-    { accessorKey: 'votingRecord', header: 'Voting Record' },
-    {
-        id: 'actions',
-        cell: ({ row }) => {
-            const mp = row.original;
-            return (
-                <div className="text-right">
-                    <Button asChild variant="ghost" className="h-8 w-8 p-0">
-                        <Link href={`/parliament/${mp.id}`}>
-                            <Eye className="h-4 w-4" />
-                        </Link>
-                    </Button>
-                </div>
-            )
-        }
-    }
+  },
 ];
 
-export function MembersTable({ data, type }: { data: DataType[], type: 'member' | 'mp' }) {
-    const columns = React.useMemo(() => (type === 'member' ? getMemberColumns() : getMPColumns()), [type]);
+
+export function MeetingsTable({ data }: { data: Meeting[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -137,13 +151,17 @@ export function MembersTable({ data, type }: { data: DataType[], type: 'member' 
         <div className="w-full">
             <div className="flex items-center py-4">
                 <Input
-                placeholder="Filter by name..."
-                value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+                placeholder="Filter meetings..."
+                value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
                 onChange={(event) =>
-                    table.getColumn('name')?.setFilterValue(event.target.value)
+                    table.getColumn('title')?.setFilterValue(event.target.value)
                 }
                 className="max-w-sm"
                 />
+                 <Button className="ml-4">
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    New Meeting
+                </Button>
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="ml-auto">
@@ -164,7 +182,7 @@ export function MembersTable({ data, type }: { data: DataType[], type: 'member' 
                             column.toggleVisibility(!!value)
                             }
                         >
-                            {column.id}
+                            {column.id === 'presidingOfficer' ? "Presiding Officer" : column.id}
                         </DropdownMenuCheckboxItem>
                         );
                     })}

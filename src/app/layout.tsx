@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { MainLayout } from '@/components/layout/main-layout';
 import { Toaster } from "@/components/ui/toaster"
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 export const metadata: Metadata = {
   title: 'PolityConnect',
@@ -21,7 +22,9 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <MainLayout>{children}</MainLayout>
+        <TooltipProvider>
+            <MainLayout>{children}</MainLayout>
+        </TooltipProvider>
         <Toaster />
       </body>
     </html>

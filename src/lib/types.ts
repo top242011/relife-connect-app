@@ -37,4 +37,26 @@ export interface Member {
     region: string;
     members: number;
   };
+
+  export interface Motion {
+    id: string;
+    title: string;
+    description: string;
+  }
   
+  export interface Meeting {
+    id: string;
+    title: string;
+    date: string; // YYYY-MM-DD
+    attendees: string[]; // array of Member or MP IDs
+    presidingOfficer: string; // Member or MP ID
+    motions: Motion[];
+    relatedDocuments?: { name: string; url: string }[];
+  }
+  
+  export interface Vote {
+    id: string;
+    motionId: string;
+    memberId: string; // Member or MP ID
+    vote: 'Aye' | 'Nay' | 'Abstain' | 'Absent';
+  }
