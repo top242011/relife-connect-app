@@ -89,18 +89,18 @@ export function EditProfileForm({ member }: { member: Member }) {
     name: member.name,
     email: member.email,
     contact: member.contact ?? undefined,
-    location: member.location,
-    age: member.age,
-    gender: member.gender,
-    education: member.education,
-    professionalBackground: member.professionalBackground,
+    location: member.location ?? '',
+    age: member.age ?? 18,
+    gender: member.gender ?? "Other",
+    education: member.education ?? '',
+    professionalBackground: member.professionalBackground ?? '',
     roles: member.roles || [],
-    committeeMemberships: (member as Member).committeeMemberships,
-    activityLog: (member as Member).activityLog ?? undefined,
-    volunteerWork: (member as Member).volunteerWork ?? undefined,
-    electoralHistory: (member as Member).electoralHistory ?? undefined,
-    parliamentaryRoles: (member as Member).parliamentaryRoles ?? undefined,
-    keyPolicyInterests: (member as Member).keyPolicyInterests ?? undefined,
+    committeeMemberships: member.committeeMemberships || [],
+    activityLog: member.activityLog ?? undefined,
+    volunteerWork: member.volunteerWork ?? undefined,
+    electoralHistory: member.electoralHistory ?? undefined,
+    parliamentaryRoles: member.parliamentaryRoles ?? undefined,
+    keyPolicyInterests: member.keyPolicyInterests ?? undefined,
   };
 
   const form = useForm<ProfileFormValues>({
@@ -223,7 +223,7 @@ export function EditProfileForm({ member }: { member: Member }) {
                 </FormItem>
             )}/>
              <FormField control={form.control} name="education" render={({ field }) => (
-                <FormItem><FormLabel>Education</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Education</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormMessage>
             )}/>
              <FormField control={form.control} name="professionalBackground" render={({ field }) => (
                 <FormItem><FormLabel>Professional Background</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
@@ -354,4 +354,5 @@ MultiSelect.displayName = "MultiSelect";
     
 
     
+
 
