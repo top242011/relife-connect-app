@@ -18,7 +18,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
-import { Bot, ChevronRight, Gavel, Landmark, LayoutDashboard, Users, FileText, Settings } from 'lucide-react';
+import { Bot, ChevronRight, Gavel, Landmark, LayoutDashboard, Users, FileText, Settings, AreaChart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/hooks/use-language';
 
@@ -34,6 +34,11 @@ export function SidebarNav() {
       href: '/meetings/manage',
       label: t('nav_meetings'), 
       icon: Gavel
+    },
+     { 
+      href: '/reports/demographics',
+      label: t('nav_reports'), 
+      icon: AreaChart 
     },
     { href: '/assistant', label: t('nav_ai_assistant'), icon: Bot },
     { href: '/settings', label: t('nav_settings'), icon: Settings },

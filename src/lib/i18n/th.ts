@@ -46,6 +46,9 @@ export const th: { [key: string]: string } = {
     'inactive': 'ไม่ใช้งาน',
     'former_member': 'อดีตสมาชิก',
     'contact': 'ข้อมูลติดต่อ',
+    'clear_filters': 'ล้างตัวกรอง',
+    'search': 'ค้นหา',
+    'total_results': 'ผลลัพธ์ทั้งหมด',
 
     // Gender
     'Male': 'ชาย',
@@ -64,6 +67,7 @@ export const th: { [key: string]: string } = {
     'nav_members': 'สมาชิก',
     'nav_parliament': 'สภานักศึกษา',
     'nav_meetings': 'การประชุม',
+    'nav_reports': 'รายงาน',
     'nav_ai_assistant': 'ผู้ช่วย AI',
     'nav_settings': 'ตั้งค่า',
 
@@ -334,6 +338,18 @@ export const th: { [key: string]: string } = {
     'system_logs_subtitle': 'บันทึกการดำเนินการหลักทั้งหมดที่เกิดขึ้นภายในระบบ',
     'search_logs_placeholder': 'ค้นหาบันทึกตามผู้ใช้หรือรายละเอียด...',
     'filter_by_action_placeholder': 'กรองตามการดำเนินการ',
+
+    // Demographics Report
+    'demographics_report_title': 'รายงานข้อมูลประชากรเชิงลึก',
+    'demographics_report_subtitle': 'กรองและวิเคราะห์ข้อมูลสมาชิกในมิติต่างๆ',
+    'filter_options_title': 'ตัวเลือกการกรอง',
+    'select_all': 'เลือกทั้งหมด',
+    'results_title': 'ผลการกรอง',
+    'summary_title': 'สรุป',
+    'charts_title': 'แผนภูมิ',
+    'gender_distribution_title': 'การกระจายตามเพศ',
+    'campus_distribution_title': 'การกระจายตามศูนย์การศึกษา',
+
 
     // Vote Types
     'Aye': 'เห็นชอบ',

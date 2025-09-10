@@ -46,6 +46,9 @@ export const en: { [key: string]: string } = {
     'inactive': 'Inactive',
     'former_member': 'Former Member',
     'contact': 'Contact',
+    'clear_filters': 'Clear Filters',
+    'search': 'Search',
+    'total_results': 'Total Results',
 
     // Gender
     'Male': 'Male',
@@ -64,6 +67,7 @@ export const en: { [key: string]: string } = {
     'nav_members': 'Members',
     'nav_parliament': 'Student Council',
     'nav_meetings': 'Meetings',
+    'nav_reports': 'Reports',
     'nav_ai_assistant': 'AI Assistant',
     'nav_settings': 'Settings',
 
@@ -334,6 +338,17 @@ export const en: { [key: string]: string } = {
     'system_logs_subtitle': 'A record of all major actions taken within the system.',
     'search_logs_placeholder': 'Search logs by user or details...',
     'filter_by_action_placeholder': 'Filter by action',
+
+    // Demographics Report
+    'demographics_report_title': 'Demographics Deep Dive',
+    'demographics_report_subtitle': 'Filter and analyze member data across various dimensions.',
+    'filter_options_title': 'Filter Options',
+    'select_all': 'Select All',
+    'results_title': 'Filter Results',
+    'summary_title': 'Summary',
+    'charts_title': 'Charts',
+    'gender_distribution_title': 'Gender Distribution',
+    'campus_distribution_title': 'Campus Distribution',
 
     // Vote Types
     'Aye': 'Aye',
