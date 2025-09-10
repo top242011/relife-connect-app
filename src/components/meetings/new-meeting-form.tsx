@@ -106,8 +106,12 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
   const location = form.watch('location');
 
   const availableAttendees = React.useMemo(() => {
-    if (meetingType === 'การประชุมสภา' && location) {
-        return allPartyMembers.filter(m => m.roles.includes('MP') && m.location === location);
+    if (meetingType === 'การประชุมสภา') {
+        const mps = allPartyMembers.filter(m => m.roles.includes('MP'));
+        if (location && location !== 'ส่วนกลาง') {
+            return mps.filter(m => m.location === location);
+        }
+        return mps; // For 'ส่วนกลาง' or if location is not set yet
     }
     if (meetingType === 'การประชุมกรรมาธิการ' && committeeName) {
       return allPartyMembers.filter(m => m.committeeMemberships.includes(committeeName));
