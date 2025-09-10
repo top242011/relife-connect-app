@@ -95,7 +95,75 @@ export type Database = {
           },
         ]
       }
-      member_committees: {
+      members: {
+        Row: {
+          activity_log: string | null
+          contact: string | null
+          council_roles: string | null
+          education: string | null
+          election_history: string | null
+          email: string
+          faculty: string | null
+          gender: Database["public"]["Enums"]["gender_enum"] | null
+          id: string
+          location: string | null
+          name: string
+          policy_interests: string | null
+          roles: string[] | null
+          status: Database["public"]["Enums"]["status_enum"] | null
+          volunteer_work: string | null
+          voting_record: string | null
+          year: number | null
+        }
+        Insert: {
+          activity_log?: string | null
+          contact?: string | null
+          council_roles?: string | null
+          education?: string | null
+          election_history?: string | null
+          email: string
+          faculty?: string | null
+          gender?: Database["public"]["Enums"]["gender_enum"] | null
+          id: string
+          location?: string | null
+          name: string
+          policy_interests?: string | null
+          roles?: string[] | null
+          status?: Database["public"]["Enums"]["status_enum"] | null
+          volunteer_work?: string | null
+          voting_record?: string | null
+          year?: number | null
+        }
+        Update: {
+          activity_log?: string | null
+          contact?: string | null
+          council_roles?: string | null
+          education?: string | null
+          election_history?: string | null
+          email?: string
+          faculty?: string | null
+          gender?: Database["public"]["Enums"]["gender_enum"] | null
+          id?: string
+          location?: string | null
+          name?: string
+          policy_interests?: string | null
+          roles?: string[] | null
+          status?: Database["public"]["Enums"]["status_enum"] | null
+          volunteer_work?: string | null
+          voting_record?: string | null
+          year?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "members_location_fkey"
+            columns: ["location"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["name"]
+          },
+        ]
+      }
+      members_committees: {
         Row: {
           committee_id: number
           member_id: string
@@ -110,86 +178,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "member_committees_committee_id_fkey"
+            foreignKeyName: "members_committees_committee_id_fkey"
             columns: ["committee_id"]
             isOneToOne: false
             referencedRelation: "committees"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "member_committees_member_id_fkey"
+            foreignKeyName: "members_committees_member_id_fkey"
             columns: ["member_id"]
             isOneToOne: false
             referencedRelation: "members"
             referencedColumns: ["id"]
-          },
-        ]
-      }
-      members: {
-        Row: {
-          activity_log: string | null
-          age: number | null
-          contact: string | null
-          education: string | null
-          electoral_history: string | null
-          email: string
-          gender: Database["public"]["Enums"]["gender_enum"] | null
-          id: string
-          key_policy_interests: string | null
-          location: string | null
-          name: string
-          parliamentary_roles: string | null
-          professional_background: string | null
-          roles: string[] | null
-          status: Database["public"]["Enums"]["status_enum"] | null
-          volunteer_work: string | null
-          voting_record: string | null
-        }
-        Insert: {
-          activity_log?: string | null
-          age?: number | null
-          contact?: string | null
-          education?: string | null
-          electoral_history?: string | null
-          email: string
-          gender?: Database["public"]["Enums"]["gender_enum"] | null
-          id: string
-          key_policy_interests?: string | null
-          location?: string | null
-          name: string
-          parliamentary_roles?: string | null
-          professional_background?: string | null
-          roles?: string[] | null
-          status?: Database["public"]["Enums"]["status_enum"] | null
-          volunteer_work?: string | null
-          voting_record?: string | null
-        }
-        Update: {
-          activity_log?: string | null
-          age?: number | null
-          contact?: string | null
-          education?: string | null
-          electoral_history?: string | null
-          email?: string
-          gender?: Database["public"]["Enums"]["gender_enum"] | null
-          id?: string
-          key_policy_interests?: string | null
-          location?: string | null
-          name?: string
-          parliamentary_roles?: string | null
-          professional_background?: string | null
-          roles?: string[] | null
-          status?: Database["public"]["Enums"]["status_enum"] | null
-          volunteer_work?: string | null
-          voting_record?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "members_location_fkey"
-            columns: ["location"]
-            isOneToOne: false
-            referencedRelation: "locations"
-            referencedColumns: ["name"]
           },
         ]
       }
@@ -212,38 +212,38 @@ export type Database = {
         Row: {
           description: string | null
           id: string
-          is_party_sponsored: boolean | null
+          is_party_proposed: boolean | null
           meeting_id: string | null
-          sponsor_id: string | null
+          proposer_id: string | null
           title: string
           topic: string | null
-          total_parliament_abstain: number | null
-          total_parliament_aye: number | null
-          total_parliament_nay: number | null
+          total_council_abstain: number | null
+          total_council_aye: number | null
+          total_council_nay: number | null
         }
         Insert: {
           description?: string | null
           id: string
-          is_party_sponsored?: boolean | null
+          is_party_proposed?: boolean | null
           meeting_id?: string | null
-          sponsor_id?: string | null
+          proposer_id?: string | null
           title: string
           topic?: string | null
-          total_parliament_abstain?: number | null
-          total_parliament_aye?: number | null
-          total_parliament_nay?: number | null
+          total_council_abstain?: number | null
+          total_council_aye?: number | null
+          total_council_nay?: number | null
         }
         Update: {
           description?: string | null
           id?: string
-          is_party_sponsored?: boolean | null
+          is_party_proposed?: boolean | null
           meeting_id?: string | null
-          sponsor_id?: string | null
+          proposer_id?: string | null
           title?: string
           topic?: string | null
-          total_parliament_abstain?: number | null
-          total_parliament_aye?: number | null
-          total_parliament_nay?: number | null
+          total_council_abstain?: number | null
+          total_council_aye?: number | null
+          total_council_nay?: number | null
         }
         Relationships: [
           {
@@ -254,8 +254,8 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "motions_sponsor_id_fkey"
-            columns: ["sponsor_id"]
+            foreignKeyName: "motions_proposer_id_fkey"
+            columns: ["proposer_id"]
             isOneToOne: false
             referencedRelation: "members"
             referencedColumns: ["id"]
@@ -348,19 +348,19 @@ export type Database = {
       }
       votes: {
         Row: {
-          id: string
+          id: number
           member_id: string | null
           motion_id: string | null
           vote: Database["public"]["Enums"]["vote_type_enum"] | null
         }
         Insert: {
-          id: string
+          id?: number
           member_id?: string | null
           motion_id?: string | null
           vote?: Database["public"]["Enums"]["vote_type_enum"] | null
         }
         Update: {
-          id?: string
+          id?: number
           member_id?: string | null
           motion_id?: string | null
           vote?: Database["public"]["Enums"]["vote_type_enum"] | null

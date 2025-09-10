@@ -1,4 +1,5 @@
 
+
 import { supabase } from "./client";
 import type { Member, Meeting, Vote, Motion, SystemLog, Role, Permission } from '../types';
 import { Tables, TablesInsert, TablesUpdate } from "./database.types";
@@ -62,14 +63,14 @@ const fromSupabaseMotion = (motion: any): Motion => {
 
 // Member Queries
 export async function getAllMembers(): Promise<(Member)[]> {
-    const { data, error } = await supabase.from('members').select('*, member_committees(committees(name))');
+    const { data, error } = await supabase.from('members').select('*, members_committees(committees(name))');
     if (error) {
         console.error('Error fetching members:', error);
         throw error;
     };
 
     const members = data.map(m => {
-        const committee_memberships = (m.member_committees || []).map((mc: any) => mc.committees.name);
+        const committee_memberships = (m.members_committees || []).map((mc: any) => mc.committees.name);
         return { ...m, committee_memberships };
     });
 
@@ -77,14 +78,14 @@ export async function getAllMembers(): Promise<(Member)[]> {
 }
 
 export async function getMemberById(id: string): Promise<Member | null> {
-     const { data, error } = await supabase.from('members').select('*, member_committees(committees(name))').eq('id', id).single();
+     const { data, error } = await supabase.from('members').select('*, members_committees(committees(name))').eq('id', id).single();
     if (error) {
         console.error('Error fetching member by ID:', error);
         return null;
     }
     if (!data) return null;
 
-    const committee_memberships = (data.member_committees || []).map((mc: any) => mc.committees.name);
+    const committee_memberships = (data.members_committees || []).map((mc: any) => mc.committees.name);
     return fromSupabaseMember({ ...data, committee_memberships });
 }
 
@@ -123,7 +124,7 @@ export async function createMember(memberData: Partial<Member>) {
                 member_id: newMemberId,
                 committee_id: c.id
             }));
-            const { error: committeeError } = await supabase.from('member_committees').insert(newMemberCommittees);
+            const { error: committeeError } = await supabase.from('members_committees').insert(newMemberCommittees);
             if (committeeError) {
                  console.error('Error adding committee memberships:', committeeError);
                  throw committeeError;
@@ -154,7 +155,7 @@ export async function updateMember(id: string, memberData: Partial<Member>) {
     if (memberError) throw memberError;
 
     // Handle committee memberships update
-    await supabase.from('member_committees').delete().eq('member_id', id);
+    await supabase.from('members_committees').delete().eq('member_id', id);
     if (memberData.committeeMemberships && memberData.committeeMemberships.length > 0) {
         const { data: committees } = await supabase.from('committees').select('id, name').in('name', memberData.committeeMemberships);
         if (committees) {
@@ -162,7 +163,7 @@ export async function updateMember(id: string, memberData: Partial<Member>) {
                 member_id: id,
                 committee_id: c.id
             }));
-            const { error: committeeError } = await supabase.from('member_committees').insert(newMemberCommittees);
+            const { error: committeeError } = await supabase.from('members_committees').insert(newMemberCommittees);
             if (committeeError) throw committeeError;
         }
     }
