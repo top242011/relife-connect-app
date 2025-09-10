@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CheckCircle2, MinusCircle, UserX, XCircle, AlertTriangle } from "lucide-react";
+import { ArrowLeft, CheckCircle2, MinusCircle, UserX, XCircle, AlertTriangle, Edit } from "lucide-react";
+import { EditProfileForm } from "@/components/members/edit-profile-form";
 
 export default function MPProfilePage({ params }: { params: { id: string } }) {
     const mp = mps.find(m => m.id === params.id);
@@ -42,20 +43,25 @@ export default function MPProfilePage({ params }: { params: { id: string } }) {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center space-x-4">
-                <Avatar className="h-24 w-24">
-                    <AvatarImage src={`https://i.pravatar.cc/150?u=${mp.id}`} alt={mp.name} />
-                    <AvatarFallback>{mp.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div>
-                    <h1 className="text-3xl font-bold">{mp.name}</h1>
-                    <p className="text-muted-foreground">{mp.parliamentaryRoles} for {mp.location}</p>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                        {mp.keyPolicyInterests.split(', ').map(interest => (
-                            <Badge key={interest} variant="secondary">{interest}</Badge>
-                        ))}
+            <div className="flex justify-between items-start">
+                <div className="flex items-center space-x-4">
+                    <Avatar className="h-24 w-24">
+                        <AvatarImage src={`https://i.pravatar.cc/150?u=${mp.id}`} alt={mp.name} />
+                        <AvatarFallback>{mp.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                        <h1 className="text-3xl font-bold">{mp.name}</h1>
+                        <p className="text-muted-foreground">{mp.parliamentaryRoles} for {mp.location}</p>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                            {mp.keyPolicyInterests.split(', ').map(interest => (
+                                <Badge key={interest} variant="secondary">{interest}</Badge>
+                            ))}
+                        </div>
                     </div>
                 </div>
+                 <EditProfileForm member={mp}>
+                    <Button variant="outline"><Edit className="mr-2 h-4 w-4" /> Edit Profile</Button>
+                </EditProfileForm>
             </div>
 
             {absences > ABSENCE_THRESHOLD && (
