@@ -1,5 +1,3 @@
-
-
 'use client'
 
 import * as React from "react";
@@ -108,16 +106,17 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
 
   const meetingType = form.watch('meetingType');
   const committeeName = form.watch('committeeName');
+  const location = form.watch('location');
 
   const availableAttendees = React.useMemo(() => {
-    if (meetingType === 'การประชุมสภา') {
-      return allPartyMembers.filter(m => m.roles.includes('MP'));
+    if (meetingType === 'การประชุมสภา' && location) {
+        return allPartyMembers.filter(m => m.roles.includes('MP') && m.location === location);
     }
     if (meetingType === 'การประชุมกรรมาธิการ' && committeeName) {
       return allPartyMembers.filter(m => m.committeeMemberships.includes(committeeName));
     }
     return allPartyMembers;
-  }, [meetingType, committeeName]);
+  }, [meetingType, committeeName, location]);
 
 
   const onSubmit = (data: MeetingFormValues) => {
@@ -434,7 +433,8 @@ const Combobox = ({
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
         <Command
           filter={(value, search) => {
-            if (options.some(o => o.value.toLowerCase() === value.toLowerCase())) return 1;
+            const option = options.find(o => o.value.toLowerCase() === value.toLowerCase());
+            if (option) return 1;
             if (value.toLowerCase().includes(search.toLowerCase())) return 1;
             return 0;
           }}
@@ -443,7 +443,8 @@ const Combobox = ({
             placeholder={placeholder}
             onValueChange={(search) => {
                if (!open) setOpen(true);
-               onChange(search);
+               const matchingOption = options.find(o => o.label.toLowerCase() === search.toLowerCase());
+               onChange(matchingOption ? matchingOption.value : search);
             }}
             value={value}
            />
@@ -459,7 +460,8 @@ const Combobox = ({
                   key={option.value}
                   value={option.value}
                   onSelect={(currentValue) => {
-                    onChange(currentValue === value ? "" : currentValue)
+                    const optionValue = options.find(o => o.value.toLowerCase() === currentValue.toLowerCase())?.value;
+                    onChange(optionValue && optionValue === value ? "" : optionValue || currentValue);
                     setOpen(false)
                   }}
                 >
@@ -479,7 +481,3 @@ const Combobox = ({
     </Popover>
   );
 };
-
-    
-
-    
