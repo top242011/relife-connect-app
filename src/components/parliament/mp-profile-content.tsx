@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Member, Vote, Meeting } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
@@ -72,7 +72,7 @@ export function MPProfileContent({ mp }: { mp: Member }) {
                     </CardHeader>
                     <CardContent>
                         <p>{t('attendance_warning_subtitle')}</p>
-                        <p className="text-xl font-bold">{t('absences')}: {absences}/{ABSENCE_THRESHOLD}</p>
+                        <p className="text-xl font-bold">{t('absences')}: {absences}</p>
                     </CardContent>
                 </Card>
             )}
@@ -190,3 +190,5 @@ export function MPProfileContent({ mp }: { mp: Member }) {
         </div>
     );
 }
+
+    

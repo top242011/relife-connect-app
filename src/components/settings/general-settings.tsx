@@ -89,9 +89,9 @@ export function GeneralSettings() {
                 await addCommitteeName(newCommittee);
                 await fetchCommittees();
                 setNewCommittee("");
-                toast({ title: "Committee Added", description: `"${newCommittee}" has been added.` });
+                toast({ title: "Commission Added", description: `"${newCommittee}" has been added.` });
             } catch (error) {
-                 toast({ title: "Error", description: "Failed to add committee.", variant: "destructive" });
+                 toast({ title: "Error", description: "Failed to add commission.", variant: "destructive" });
             }
         }
     };
@@ -100,9 +100,9 @@ export function GeneralSettings() {
          try {
             await deleteCommitteeName(committee);
             await fetchCommittees();
-            toast({ title: "Committee Deleted", description: `"${committee}" has been deleted.` });
+            toast({ title: "Commission Deleted", description: `"${committee}" has been deleted.` });
         } catch (error) {
-            toast({ title: "Error", description: "Failed to delete committee.", variant: "destructive" });
+            toast({ title: "Error", description: "Failed to delete commission.", variant: "destructive" });
         }
     };
     
@@ -118,9 +118,9 @@ export function GeneralSettings() {
                 await fetchCommittees();
                 setEditingCommittee(null);
                 setEditingCommitteeValue("");
-                toast({ title: "Committee Updated", description: `Committee has been updated to "${editingCommitteeValue}".` });
+                toast({ title: "Commission Updated", description: `Commission has been updated to "${editingCommitteeValue}".` });
             } catch (error) {
-                toast({ title: "Error", description: "Failed to update committee.", variant: "destructive" });
+                toast({ title: "Error", description: "Failed to update commission.", variant: "destructive" });
             }
         }
     };
@@ -227,3 +227,5 @@ export function GeneralSettings() {
         </div>
     );
 }
+
+    

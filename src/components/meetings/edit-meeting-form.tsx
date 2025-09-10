@@ -38,6 +38,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Location } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/hooks/use-language";
 
 const motionSchema = z.object({
     id: z.string(),
@@ -85,6 +86,7 @@ type MeetingFormValues = z.infer<typeof formSchema>;
 export function EditMeetingForm({ meeting, children }: { meeting: Meeting, children: React.ReactNode }) {
     const { toast } = useToast();
     const router = useRouter();
+    const { t } = useLanguage();
     const [open, setOpen] = React.useState(false);
     const [allMembers, setAllMembers] = React.useState<Member[]>([]);
     const [motionTopics, setMotionTopics] = React.useState<string[]>([]);
@@ -222,10 +224,10 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
                     <FormItem><FormLabel>Location</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select location" /></SelectTrigger></FormControl><SelectContent>{locations.map(loc => (<SelectItem key={loc} value={loc}>{loc}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem>
                 )}/>
                  <FormField control={form.control} name="meetingType" render={({ field }) => (
-                    <FormItem><FormLabel>Meeting Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger></FormControl><SelectContent><SelectItem value="การประชุมสภา">การประชุมสภา</SelectItem><SelectItem value="การประชุมพรรค">การประชุมพรรค</SelectItem><SelectItem value="การประชุมกรรมาธิการ">การประชุมกรรมาธิการ</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                    <FormItem><FormLabel>Meeting Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger></FormControl><SelectContent><SelectItem value="การประชุมสภา">{t('meeting_type_parliament')}</SelectItem><SelectItem value="การประชุมพรรค">{t('meeting_type_party')}</SelectItem><SelectItem value="การประชุมกรรมาธิการ">{t('meeting_type_committee')}</SelectItem></SelectContent></Select><FormMessage /></FormItem>
                 )}/>
                  <FormField control={form.control} name="meetingSession" render={({ field }) => (
-                    <FormItem><FormLabel>Meeting Session</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select session" /></SelectTrigger></FormControl><SelectContent><SelectItem value="การประชุมสามัญ">การประชุมสามัญ</SelectItem><SelectItem value="การประชุมวิสามัญ">การประชุมวิสามัญ</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                    <FormItem><FormLabel>Meeting Session</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select session" /></SelectTrigger></FormControl><SelectContent><SelectItem value="การประชุมสามัญ">{t('session_ordinary')}</SelectItem><SelectItem value="การประชุมวิสามัญ">{t('session_extraordinary')}</SelectItem></SelectContent></Select><FormMessage /></FormItem>
                 )}/>
             </div>
             {meetingType === 'การประชุมกรรมาธิการ' && (
@@ -531,3 +533,5 @@ const Combobox = ({
     </Popover>
   );
 };
+
+    

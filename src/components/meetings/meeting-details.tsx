@@ -278,3 +278,5 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
         </div>
     )
 }
+
+    

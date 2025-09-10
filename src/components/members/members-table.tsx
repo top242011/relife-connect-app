@@ -38,12 +38,12 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '../ui/badge';
-import type { Member, MP } from '@/lib/types';
+import type { Member } from '@/lib/types';
 import { Card, CardContent } from '../ui/card';
 import { useLanguage } from '@/hooks/use-language';
 import { NewMemberForm } from './new-member-form';
 
-type DataType = Member | MP;
+type DataType = Member;
 
 const getMemberColumns = (t: (key: string) => string): ColumnDef<Member>[] => [
     { 
@@ -148,7 +148,7 @@ const getMemberColumns = (t: (key: string) => string): ColumnDef<Member>[] => [
     }
 ];
 
-const getMPColumns = (t: (key: string) => string): ColumnDef<MP>[] => [
+const getMPColumns = (t: (key: string) => string): ColumnDef<Member>[] => [
     { 
         accessorKey: 'name', 
         header: t('name')
@@ -159,7 +159,8 @@ const getMPColumns = (t: (key: string) => string): ColumnDef<MP>[] => [
         accessorKey: 'keyPolicyInterests',
         header: t('policy_interests'),
         cell: ({ row }) => {
-            const interests = (row.getValue('keyPolicyInterests') as string).split(', ');
+            const interests = (row.getValue('keyPolicyInterests') as string)?.split(', ');
+            if (!interests) return null;
             return <div className="flex flex-wrap gap-1">{interests.map(i => <Badge key={i} variant="secondary">{t(i as any)}</Badge>)}</div>
         }
     },
@@ -183,7 +184,7 @@ const getMPColumns = (t: (key: string) => string): ColumnDef<MP>[] => [
 
 export function MembersTable({ data, type }: { data: DataType[], type: 'member' | 'mp' }) {
     const { t } = useLanguage();
-    const columns = React.useMemo(() => (type === 'member' ? getMemberColumns(t) : getMPColumns(t)), [type, t]);
+    const columns = React.useMemo(() => (type === 'member' ? getMemberColumns(t) : getMPColumns(t)), [type, t]) as ColumnDef<DataType>[];
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -337,3 +338,5 @@ export function MembersTable({ data, type }: { data: DataType[], type: 'member' 
     </Card>
   );
 }
+
+    
