@@ -1,7 +1,7 @@
 
 'use client'
 
-import { mps, votes as allVotes, members as allMembers } from "@/lib/data"
+import { mps, votes as allVotes, members as allMembers, meetings } from "@/lib/data"
 import { Meeting, Vote, Motion } from "@/lib/types"
 import {
     Card,
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Edit, FileText, Trash2, User, VoteIcon, CheckCircle2, XCircle, MinusCircle, UserX } from "lucide-react"
+import { ArrowLeft, Edit, FileText, Trash2, User, VoteIcon, CheckCircle2, XCircle, MinusCircle, UserX, Landmark } from "lucide-react"
 import Link from "next/link"
 import {
   AlertDialog,
@@ -90,7 +90,7 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                     </div>
                      <div>
                         <h3 className="font-semibold mb-2">Presiding Officer</h3>
-                        <Badge variant="outline">{getMemberName(meeting.presidingOfficer)}</Badge>
+                        <Badge variant="outline">{meeting.presidingOfficer}</Badge>
                     </div>
                      {meeting.relatedDocuments && meeting.relatedDocuments.length > 0 && (
                         <div className="col-span-full">
@@ -113,7 +113,16 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                     <CardDescription>Motions discussed and their voting outcomes.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    {meeting.motions.map((motion, index) => (
+                    {meeting.motions.map((motion, index) => {
+                        const partyAye = allVotes.filter(v => v.motionId === motion.id && v.vote === 'Aye').length;
+                        const partyNay = allVotes.filter(v => v.motionId === motion.id && v.vote === 'Nay').length;
+                        const partyAbstain = allVotes.filter(v => v.motionId === motion.id && v.vote === 'Abstain').length;
+                        const partyAbsent = meeting.attendees.length - (partyAye + partyNay + partyAbstain);
+                        
+                        const otherAye = (motion.totalParliamentAye ?? 0) - partyAye;
+                        const otherNay = (motion.totalParliamentNay ?? 0) - partyNay;
+                        
+                        return (
                         <div key={motion.id} className="border rounded-lg p-4">
                              <div className="flex justify-between items-start mb-2">
                                 <div>
@@ -130,27 +139,63 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 text-center">
                                 <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/50 flex flex-col items-center justify-center">
                                     <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-400 mb-1" />
-                                    <div className="text-2xl font-bold">{allVotes.filter(v => v.motionId === motion.id && v.vote === 'Aye').length}</div>
-                                    <div className="text-sm text-green-700 dark:text-green-300">Aye</div>
+                                    <div className="text-2xl font-bold">{partyAye}</div>
+                                    <div className="text-sm text-green-700 dark:text-green-300">Party Aye</div>
                                 </div>
                                 <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/50 flex flex-col items-center justify-center">
                                      <XCircle className="h-6 w-6 text-red-600 dark:text-red-400 mb-1" />
-                                    <div className="text-2xl font-bold">{allVotes.filter(v => v.motionId === motion.id && v.vote === 'Nay').length}</div>
-                                    <div className="text-sm text-red-700 dark:text-red-300">Nay</div>
+                                    <div className="text-2xl font-bold">{partyNay}</div>
+                                    <div className="text-sm text-red-700 dark:text-red-300">Party Nay</div>
                                 </div>
                                 <div className="p-2 rounded-lg bg-yellow-100 dark:bg-yellow-900/50 flex flex-col items-center justify-center">
                                     <MinusCircle className="h-6 w-6 text-yellow-600 dark:text-yellow-400 mb-1" />
-                                    <div className="text-2xl font-bold">{allVotes.filter(v => v.motionId === motion.id && v.vote === 'Abstain').length}</div>
+                                    <div className="text-2xl font-bold">{partyAbstain}</div>
                                     <div className="text-sm text-yellow-700 dark:text-yellow-300">Abstain</div>
                                 </div>
                                 <div className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700/50 flex flex-col items-center justify-center">
                                     <UserX className="h-6 w-6 text-gray-500 dark:text-gray-400 mb-1" />
-                                    <div className="text-2xl font-bold">{meeting.attendees.length - allVotes.filter(v => v.motionId === motion.id && ['Aye', 'Nay', 'Abstain'].includes(v.vote)).length}</div>
-                                    <div className="text-sm text-gray-500 dark:text-gray-300">Not Voted</div>
+                                    <div className="text-2xl font-bold">{partyAbsent}</div>
+                                    <div className="text-sm text-gray-500 dark:text-gray-300">Absent / Not Voted</div>
                                 </div>
                             </div>
                             
-                            <h4 className="font-semibold mb-2">Individual Votes</h4>
+                            {meeting.meetingType === 'การประชุมสภา' && (motion.totalParliamentAye !== undefined && motion.totalParliamentNay !== undefined) && (
+                                <Card className="mb-4">
+                                    <CardHeader className="pb-4">
+                                        <CardTitle className="text-lg flex items-center"><Landmark className="mr-2 h-5 w-5" />Parliamentary Vote Outcome</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead></TableHead>
+                                                    <TableHead className="text-center">Aye</TableHead>
+                                                    <TableHead className="text-center">Nay</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                <TableRow>
+                                                    <TableCell className="font-medium">Our Party</TableCell>
+                                                    <TableCell className="text-center font-semibold text-green-600">{partyAye}</TableCell>
+                                                    <TableCell className="text-center font-semibold text-red-600">{partyNay}</TableCell>
+                                                </TableRow>
+                                                 <TableRow>
+                                                    <TableCell className="font-medium">Other Parties</TableCell>
+                                                    <TableCell className="text-center font-semibold">{otherAye}</TableCell>
+                                                    <TableCell className="text-center font-semibold">{otherNay}</TableCell>
+                                                </TableRow>
+                                                <TableRow className="bg-muted/50">
+                                                    <TableCell className="font-bold">Total Parliament</TableCell>
+                                                    <TableCell className="text-center font-bold">{motion.totalParliamentAye}</TableCell>
+                                                    <TableCell className="text-center font-bold">{motion.totalParliamentNay}</TableCell>
+                                                </TableRow>
+                                            </TableBody>
+                                        </Table>
+                                    </CardContent>
+                                </Card>
+                            )}
+
+                            <h4 className="font-semibold mb-2">Party Individual Votes</h4>
                             <div className="max-h-60 overflow-y-auto border rounded-md">
                                 <Table>
                                     <TableHeader className="sticky top-0 bg-muted/50">
@@ -189,7 +234,7 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                                 </RecordVotesForm>
                             </div>
                         </div>
-                    ))}
+                    )})}
                 </CardContent>
             </Card>
 

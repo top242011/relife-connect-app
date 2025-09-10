@@ -49,6 +49,8 @@
     isPartySponsored: boolean;
     topic: string;
     sponsorId?: string;
+    totalParliamentAye?: number;
+    totalParliamentNay?: number;
   }
   
   export type MeetingType = 'การประชุมสภา' | 'การประชุมพรรค';

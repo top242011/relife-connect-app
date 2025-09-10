@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -5,7 +6,7 @@ import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Meeting, Motion, Vote, VoteType } from '@/lib/types';
-import { members as allMembers, mps as allMps, votes as allVotesData } from '@/lib/data';
+import { members as allMembers, mps as allMps, votes as allVotesData, meetings } from '@/lib/data';
 import {
   Dialog,
   DialogContent,
@@ -53,8 +54,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Save, AlertTriangle, Wand2, RefreshCw } from 'lucide-react';
+import { Save, AlertTriangle, Wand2, RefreshCw, Landmark } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Input } from '../ui/input';
 
 const voteSchema = z.object({
   memberId: z.string(),
@@ -63,6 +65,8 @@ const voteSchema = z.object({
 
 const formSchema = z.object({
   votes: z.array(voteSchema),
+  totalParliamentAye: z.coerce.number().optional(),
+  totalParliamentNay: z.coerce.number().optional(),
 });
 
 type VoteFormValues = z.infer<typeof formSchema>;
@@ -90,6 +94,8 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
         vote: existingVote ? existingVote.vote : 'Absent',
       };
     }),
+    totalParliamentAye: motion.totalParliamentAye,
+    totalParliamentNay: motion.totalParliamentNay,
   };
 
   const form = useForm<VoteFormValues>({
@@ -103,6 +109,7 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
   });
 
   const onSubmit = (data: VoteFormValues) => {
+    // Update individual party votes
     data.votes.forEach((voteData) => {
       const existingVoteIndex = allVotesData.findIndex(
         (v) => v.motionId === motion.id && v.memberId === voteData.memberId
@@ -119,6 +126,17 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
         });
       }
     });
+
+    // Update total parliamentary votes for the motion
+    const meetingToUpdate = meetings.find(m => m.id === meeting.id);
+    if (meetingToUpdate) {
+        const motionToUpdate = meetingToUpdate.motions.find(m => m.id === motion.id);
+        if (motionToUpdate) {
+            motionToUpdate.totalParliamentAye = data.totalParliamentAye;
+            motionToUpdate.totalParliamentNay = data.totalParliamentNay;
+        }
+    }
+
 
     toast({
         title: "Votes Saved",
@@ -160,8 +178,8 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 flex-1 flex flex-col min-h-0">
              <Card>
                 <CardHeader className='pb-2'>
-                    <CardTitle className="text-lg flex items-center"><Wand2 className="mr-2" />Bulk Edit</CardTitle>
-                    <CardDescription>Quickly set the vote for all attendees.</CardDescription>
+                    <CardTitle className="text-lg flex items-center"><Wand2 className="mr-2" />Bulk Edit Party Votes</CardTitle>
+                    <CardDescription>Quickly set the vote for all party attendees.</CardDescription>
                 </CardHeader>
                 <CardContent className="flex items-center gap-2">
                      <Select value={bulkVote} onValueChange={(value) => setBulkVote(value as VoteType | '')}>
@@ -194,6 +212,43 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
                     </AlertDialog>
                 </CardContent>
             </Card>
+
+            {meeting.meetingType === 'การประชุมสภา' && (
+                <Card>
+                     <CardHeader className='pb-2'>
+                        <CardTitle className="text-lg flex items-center"><Landmark className="mr-2" />Parliamentary Vote Totals</CardTitle>
+                        <CardDescription>Enter the final vote counts from the entire parliament.</CardDescription>
+                    </CardHeader>
+                    <CardContent className='grid grid-cols-2 gap-4'>
+                        <FormField
+                            control={form.control}
+                            name="totalParliamentAye"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Total Parliament 'Aye' Votes</FormLabel>
+                                <FormControl>
+                                    <Input type="number" placeholder="e.g., 150" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                         <FormField
+                            control={form.control}
+                            name="totalParliamentNay"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Total Parliament 'Nay' Votes</FormLabel>
+                                <FormControl>
+                                    <Input type="number" placeholder="e.g., 100" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </CardContent>
+                </Card>
+            )}
 
             <div className="flex-1 overflow-y-auto border rounded-md">
               <Table>
