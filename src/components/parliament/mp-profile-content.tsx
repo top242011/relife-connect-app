@@ -48,7 +48,6 @@ export function MPProfileContent({ mp }: { mp: Member }) {
             <div className="flex justify-between items-start">
                 <div className="flex items-center space-x-4">
                     <Avatar className="h-24 w-24">
-                        <AvatarImage src={`https://i.pravatar.cc/150?u=${mp.id}`} alt={mp.name} />
                         <AvatarFallback>{mp.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>

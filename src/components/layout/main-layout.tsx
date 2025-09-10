@@ -37,7 +37,6 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
                 className="overflow-hidden rounded-full"
               >
                 <Avatar>
-                  <AvatarImage src="https://picsum.photos/32/32" alt="User" data-ai-hint="person face" />
                   <AvatarFallback>U</AvatarFallback>
                 </Avatar>
               </Button>

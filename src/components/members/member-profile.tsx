@@ -49,7 +49,6 @@ export function MemberProfile({ member }: { member: Member }) {
             <div className="flex justify-between items-start">
                 <div className="flex items-center space-x-4">
                     <Avatar className="h-24 w-24">
-                        <AvatarImage src={`https://i.pravatar.cc/150?u=${member.id}`} alt={member.name} />
                         <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>

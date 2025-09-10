@@ -39,7 +39,6 @@ export function UsersTable({ users, roles }: { users: User[], roles: Role[] }) {
                             <TableCell>
                                 <div className="flex items-center gap-2">
                                     <Avatar className="h-8 w-8">
-                                        <AvatarImage src={`https://i.pravatar.cc/150?u=${user.id}`} alt={user.name} />
                                         <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                     <div className="font-medium">{user.name}</div>
