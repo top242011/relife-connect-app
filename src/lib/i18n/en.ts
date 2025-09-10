@@ -55,6 +55,7 @@ export const en: { [key: string]: string } = {
     'รังสิต': 'Rangsit',
     'ลำปาง': 'Lampang',
     'ส่วนกลาง': 'Central',
+    'พัทยา': 'Pattaya',
 
     // Navigation
     'nav_dashboard': 'Dashboard',
@@ -185,7 +186,8 @@ export const en: { [key: string]: string } = {
     // Meetings Page
     'meetings_manage_title': 'Manage Meetings',
     'meetings_manage_subtitle': 'Create, view, edit, and delete meeting records.',
-    'presiding_officer': 'Presiding Officer',
+    'presidingOfficer': 'Presiding Officer',
+    'attendees': 'Attendees',
     'view_meeting': 'View meeting',
     'open_menu': 'Open menu',
     'copy_meeting_id': 'Copy Meeting ID',

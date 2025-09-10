@@ -33,7 +33,7 @@ export function MPProfileContent({ mp }: { mp: Member }) {
     const mpVotes = votes.filter(vote => vote.memberId === mp.id);
     const sponsoredMotions = meetings.flatMap(m => m.motions).filter(motion => motion.sponsorId === mp.id);
     const absences = mpVotes.filter(v => v.vote === 'Absent').length;
-    const ABSENCE_THRESHOLD = 1;
+    const ABSENCE_THRESHOLD = 3;
 
     const getVoteResult = (motionId: string) => {
         const ayes = votes.filter(v => v.motionId === motionId && v.vote === 'Aye').length;

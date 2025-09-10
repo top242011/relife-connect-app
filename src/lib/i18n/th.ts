@@ -55,6 +55,7 @@ export const th: { [key: string]: string } = {
     'รังสิต': 'รังสิต',
     'ลำปาง': 'ลำปาง',
     'ส่วนกลาง': 'ส่วนกลาง',
+    'พัทยา': 'พัทยา',
 
     // Navigation
     'nav_dashboard': 'แดชบอร์ด',
@@ -184,7 +185,8 @@ export const th: { [key: string]: string } = {
     // Meetings Page
     'meetings_manage_title': 'จัดการการประชุม',
     'meetings_manage_subtitle': 'สร้าง ดู แก้ไข และลบบันทึกการประชุม',
-    'presiding_officer': 'ประธานในที่ประชุม',
+    'presidingOfficer': 'ประธานในที่ประชุม',
+    'attendees': 'ผู้เข้าร่วม',
     'view_meeting': 'ดูการประชุม',
     'open_menu': 'เปิดเมนู',
     'copy_meeting_id': 'คัดลอก ID การประชุม',
