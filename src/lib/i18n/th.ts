@@ -100,7 +100,7 @@ export const th: { [key: string]: string } = {
     'top_issues_by_motion_title': 'ประเด็นยอดนิยมตามญัตติ',
     'top_issues_by_motion_subtitle': 'การกระจายของญัตติตามหัวข้อต่าง ๆ',
     'top_sponsoring_members_title': 'สมาชิกสภาที่โดดเด่น',
-    'top_sponsoring_members_subtitle': 'ส.ส. ที่เสนอญัตติในนามพรรคมากที่สุด',
+    'top_sponsoring_members_subtitle': 'สมาชิกสภาที่เสนอญัตติในนามพรรคมากที่สุด',
     'sponsored_motions': 'ญัตติที่เสนอ',
     'no_sponsored_motions_found': 'ไม่พบญัตติที่เสนอ',
     'absences_leaves_per_meeting_title': 'การขาดและการลาต่อการประชุม',
@@ -122,7 +122,6 @@ export const th: { [key: string]: string } = {
     'member_not_found_title': 'ไม่พบสมาชิก',
     'member_not_found_subtitle': 'ไม่สามารถค้นหาสมาชิกที่ร้องขอได้',
     'back_to_members_list': 'กลับไปที่รายชื่อสมาชิก',
-    'member_of_parliament': 'สมาชิกสภานักศึกษา',
     'executive_committee': 'คณะกรรมการบริหาร',
     'attendance_warning_title': 'คำเตือนการเข้าร่วม',
     'attendance_warning_subtitle': 'สมาชิกนี้มีจำนวนการขาดเกินเกณฑ์ที่กำหนด',
@@ -177,6 +176,8 @@ export const th: { [key: string]: string } = {
     'mp_not_found_title': 'ไม่พบสมาชิกสภานักศึกษา',
     'mp_not_found_subtitle': 'ไม่สามารถค้นหาสมาชิกสภาที่ร้องขอได้',
     'back_to_parliament_list': 'กลับไปที่รายชื่อสมาชิกสภา',
+    'sponsored_motions_title': 'หัวข้อญัตติที่เสนอ',
+    'sponsored_motions_subtitle': 'รายการญัตติทั้งหมดที่สมาชิกสภานักศึกษาคนนี้เป็นผู้เสนอ',
     'passed': 'ผ่าน',
     'failed': 'ไม่ผ่าน',
     'tied': 'เสมอ',
@@ -360,7 +361,7 @@ export const th: { [key: string]: string } = {
     'Meeting Secretary': 'เลขานุการการประชุม',
     'Data Analyst': 'นักวิเคราะห์ข้อมูล',
     'Party Member': 'สมาชิกพรรค',
-    'Member of Parliament (MP)': 'สมาชิกสภานักศึกษา',
+    'member_of_parliament': 'สมาชิกสภานักศึกษา',
     'Executive Committee Member': 'กรรมการบริหารพรรค',
 
 
@@ -419,6 +420,7 @@ export const th: { [key: string]: string } = {
     'M.S. Environmental Science': 'วิทยาศาสตรมหาบัณฑิต (วิทยาศาสตร์สิ่งแวดล้อม)',
     'MPH': 'สาธารณสุขศาสตรมหาบัณฑิต',
     'B.A. Journalism': 'ศิลปศาสตรบัณฑิต (วารสารศาสตร์)',
+    'background': 'ประวัติ',
 
     // Months
     'jan': 'ม.ค.',
@@ -428,5 +430,3 @@ export const th: { [key: string]: string } = {
     'may': 'พ.ค.',
     'jun': 'มิ.ย.',
 };
-
-    

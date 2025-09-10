@@ -122,7 +122,6 @@ export const en: { [key: string]: string } = {
     'member_not_found_title': 'Member not found',
     'member_not_found_subtitle': 'The requested member could not be located.',
     'back_to_members_list': 'Back to Members List',
-    'member_of_parliament': 'Student Council Member',
     'executive_committee': 'Executive Committee',
     'attendance_warning_title': 'Attendance Warning',
     'attendance_warning_subtitle': 'This member has exceeded the absence threshold.',
@@ -177,6 +176,8 @@ export const en: { [key: string]: string } = {
     'mp_not_found_title': 'Student Council Member not found',
     'mp_not_found_subtitle': 'The requested council member could not be located.',
     'back_to_parliament_list': 'Back to Council Member List',
+    'sponsored_motions_title': 'Proposed Motions',
+    'sponsored_motions_subtitle': 'A list of motions this council member has proposed.',
     'passed': 'Passed',
     'failed': 'Failed',
     'tied': 'Tied',
@@ -360,7 +361,7 @@ export const en: { [key: string]: string } = {
     'Meeting Secretary': 'Meeting Secretary',
     'Data Analyst': 'Data Analyst',
     'Party Member': 'Party Member',
-    'Member of Parliament (MP)': 'Student Council Member',
+    'member_of_parliament': 'Student Council Member',
     'Executive Committee Member': 'Executive Committee Member',
 
     // Log Actions
@@ -418,6 +419,7 @@ export const en: { [key: string]: string } = {
     'M.S. Environmental Science': 'M.S. Environmental Science',
     'MPH': 'MPH',
     'B.A. Journalism': 'B.A. Journalism',
+    'background': 'Background',
 
     // Months
     'jan': 'Jan',
@@ -427,5 +429,3 @@ export const en: { [key: string]: string } = {
     'may': 'May',
     'jun': 'Jun',
 };
-
-    
