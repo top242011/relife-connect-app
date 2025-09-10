@@ -6,21 +6,29 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlusCircle, Trash2, Edit, Save, X } from 'lucide-react';
-import { getMotionTopics, getCommitteeNames } from '@/lib/supabase/queries';
+import { getMotionTopics, getCommitteeNames, addMotionTopic, deleteMotionTopic, updateMotionTopic, addCommitteeName, deleteCommitteeName, updateCommitteeName } from '@/lib/supabase/queries';
 import { useLanguage } from '@/hooks/use-language';
+import { useToast } from '@/hooks/use-toast';
 
 export function GeneralSettings() {
     const { t } = useLanguage();
+    const { toast } = useToast();
     const [motionTopics, setMotionTopics] = useState<string[]>([]);
     const [committeeNames, setCommitteeNames] = useState<string[]>([]);
 
+    const fetchTopics = async () => {
+        const topics = await getMotionTopics();
+        setMotionTopics(topics);
+    };
+
+    const fetchCommittees = async () => {
+        const committees = await getCommitteeNames();
+        setCommitteeNames(committees);
+    };
+
     useEffect(() => {
-        const fetchData = async () => {
-            const [topics, committees] = await Promise.all([getMotionTopics(), getCommitteeNames()]);
-            setMotionTopics(topics);
-            setCommitteeNames(committees);
-        };
-        fetchData();
+        fetchTopics();
+        fetchCommittees();
     }, []);
 
     const [newTopic, setNewTopic] = useState("");
@@ -32,15 +40,27 @@ export function GeneralSettings() {
     const [editingCommittee, setEditingCommittee] = useState<string | null>(null);
     const [editingCommitteeValue, setEditingCommitteeValue] = useState("");
 
-    const handleAddTopic = () => {
+    const handleAddTopic = async () => {
         if (newTopic && !motionTopics.includes(newTopic)) {
-            setMotionTopics([...motionTopics, newTopic]);
-            setNewTopic("");
+            try {
+                await addMotionTopic(newTopic);
+                await fetchTopics(); // Re-fetch to confirm
+                setNewTopic("");
+                toast({ title: "Topic Added", description: `"${newTopic}" has been added.` });
+            } catch (error) {
+                toast({ title: "Error", description: "Failed to add topic.", variant: "destructive" });
+            }
         }
     };
 
-    const handleDeleteTopic = (topic: string) => {
-        setMotionTopics(motionTopics.filter(t => t !== topic));
+    const handleDeleteTopic = async (topic: string) => {
+        try {
+            await deleteMotionTopic(topic);
+            await fetchTopics();
+            toast({ title: "Topic Deleted", description: `"${topic}" has been deleted.` });
+        } catch (error) {
+            toast({ title: "Error", description: "Failed to delete topic.", variant: "destructive" });
+        }
     };
 
     const handleEditTopic = (topic: string) => {
@@ -48,24 +68,42 @@ export function GeneralSettings() {
         setEditingTopicValue(topic);
     };
 
-    const handleSaveTopic = () => {
+    const handleSaveTopic = async () => {
         if (editingTopic && editingTopicValue) {
-            setMotionTopics(motionTopics.map(t => t === editingTopic ? editingTopicValue : t));
-            setEditingTopic(null);
-            setEditingTopicValue("");
+            try {
+                await updateMotionTopic(editingTopic, editingTopicValue);
+                await fetchTopics();
+                setEditingTopic(null);
+                setEditingTopicValue("");
+                toast({ title: "Topic Updated", description: `Topic has been updated to "${editingTopicValue}".` });
+            } catch (error) {
+                toast({ title: "Error", description: "Failed to update topic.", variant: "destructive" });
+            }
         }
     };
 
 
-    const handleAddCommittee = () => {
+    const handleAddCommittee = async () => {
         if (newCommittee && !committeeNames.includes(newCommittee)) {
-            setCommitteeNames([...committeeNames, newCommittee]);
-            setNewCommittee("");
+            try {
+                await addCommitteeName(newCommittee);
+                await fetchCommittees();
+                setNewCommittee("");
+                toast({ title: "Committee Added", description: `"${newCommittee}" has been added.` });
+            } catch (error) {
+                 toast({ title: "Error", description: "Failed to add committee.", variant: "destructive" });
+            }
         }
     };
 
-    const handleDeleteCommittee = (committee: string) => {
-        setCommitteeNames(committeeNames.filter(c => c !== committee));
+    const handleDeleteCommittee = async (committee: string) => {
+         try {
+            await deleteCommitteeName(committee);
+            await fetchCommittees();
+            toast({ title: "Committee Deleted", description: `"${committee}" has been deleted.` });
+        } catch (error) {
+            toast({ title: "Error", description: "Failed to delete committee.", variant: "destructive" });
+        }
     };
     
     const handleEditCommittee = (committee: string) => {
@@ -73,11 +111,17 @@ export function GeneralSettings() {
         setEditingCommitteeValue(committee);
     };
 
-    const handleSaveCommittee = () => {
+    const handleSaveCommittee = async () => {
         if (editingCommittee && editingCommitteeValue) {
-            setCommitteeNames(committeeNames.map(c => c === editingCommittee ? editingCommitteeValue : c));
-            setEditingCommittee(null);
-            setEditingCommitteeValue("");
+            try {
+                await updateCommitteeName(editingCommittee, editingCommitteeValue);
+                await fetchCommittees();
+                setEditingCommittee(null);
+                setEditingCommitteeValue("");
+                toast({ title: "Committee Updated", description: `Committee has been updated to "${editingCommitteeValue}".` });
+            } catch (error) {
+                toast({ title: "Error", description: "Failed to update committee.", variant: "destructive" });
+            }
         }
     };
 

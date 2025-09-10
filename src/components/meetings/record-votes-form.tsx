@@ -5,7 +5,7 @@ import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Meeting, Motion, Vote, VoteType, Member } from '@/lib/types';
-import { getAllMembers, getAllVotes } from '@/lib/supabase/queries';
+import { getAllMembers, getAllVotes, updateVotes } from '@/lib/supabase/queries';
 import {
   Dialog,
   DialogContent,
@@ -57,6 +57,7 @@ import { Save, AlertTriangle, Wand2, RefreshCw, Landmark } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '../ui/input';
 import { useLanguage } from '@/hooks/use-language';
+import { useRouter } from 'next/navigation';
 
 const voteSchema = z.object({
   memberId: z.string(),
@@ -76,6 +77,7 @@ type VoteFormValues = z.infer<typeof formSchema>;
 export function RecordVotesForm({ meeting, motion, children }: { meeting: Meeting; motion: Motion, children: React.ReactNode }) {
     const { toast } = useToast();
     const { t } = useLanguage();
+    const router = useRouter();
     const [dialogOpen, setDialogOpen] = React.useState(false);
     const [bulkVote, setBulkVote] = React.useState<VoteType | ''>('');
     const [allMembers, setAllMembers] = React.useState<Member[]>([]);
@@ -95,7 +97,7 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
         fetchData();
     }, [dialogOpen]);
 
-  const defaultValues: VoteFormValues = {
+  const defaultValues: VoteFormValues = React.useMemo(() => ({
     votes: meeting.attendees.map((attendeeId) => {
       const existingVote = allVotesData.find(
         (v) => v.motionId === motion.id && v.memberId === attendeeId
@@ -108,7 +110,7 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
     totalParliamentAye: motion.totalParliamentAye,
     totalParliamentNay: motion.totalParliamentNay,
     totalParliamentAbstain: motion.totalParliamentAbstain,
-  };
+  }), [meeting.attendees, allVotesData, motion]);
 
   const form = useForm<VoteFormValues>({
     resolver: zodResolver(formSchema),
@@ -122,17 +124,30 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
 
   React.useEffect(() => {
     form.reset(defaultValues);
-  }, [allVotesData, form, meeting, motion]);
+  }, [allVotesData, form, defaultValues]);
 
-  const onSubmit = (data: VoteFormValues) => {
-    // In a real app, this would be a DB transaction
-    console.log("Saving vote data:", data);
+  const onSubmit = async (data: VoteFormValues) => {
+    try {
+      await updateVotes(motion.id, data.votes, {
+          total_parliament_aye: data.totalParliamentAye,
+          total_parliament_nay: data.totalParliamentNay,
+          total_parliament_abstain: data.totalParliamentAbstain,
+      });
 
-    toast({
-        title: t('toast_votes_saved_title'),
-        description: t('toast_votes_saved_desc', { motionTitle: motion.title }),
-    });
-    setDialogOpen(false);
+      toast({
+          title: t('toast_votes_saved_title'),
+          description: t('toast_votes_saved_desc', { motionTitle: motion.title }),
+      });
+      setDialogOpen(false);
+      router.refresh(); // Refresh the meeting details page to show new votes
+    } catch (error) {
+       toast({
+            title: "Update Failed",
+            description: "An error occurred while saving the votes.",
+            variant: "destructive",
+        });
+        console.error("Failed to update votes:", error);
+    }
   };
   
   const handleBulkVote = () => {
@@ -218,7 +233,7 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
                                 <FormItem>
                                 <FormLabel>{t('total_aye_votes')}</FormLabel>
                                 <FormControl>
-                                    <Input type="number" placeholder="e.g., 150" {...field} />
+                                    <Input type="number" placeholder="e.g., 150" {...field} value={field.value ?? ''} />
                                 </FormControl>
                                 <FormMessage />
                                 </FormItem>
@@ -231,7 +246,7 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
                                 <FormItem>
                                 <FormLabel>{t('total_nay_votes')}</FormLabel>
                                 <FormControl>
-                                    <Input type="number" placeholder="e.g., 100" {...field} />
+                                    <Input type="number" placeholder="e.g., 100" {...field} value={field.value ?? ''} />
                                 </FormControl>
                                 <FormMessage />
                                 </FormItem>
@@ -244,7 +259,7 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
                                 <FormItem>
                                 <FormLabel>{t('total_abstain_votes')}</FormLabel>
                                 <FormControl>
-                                    <Input type="number" placeholder="e.g., 10" {...field} />
+                                    <Input type="number" placeholder="e.g., 10" {...field} value={field.value ?? ''} />
                                 </FormControl>
                                 <FormMessage />
                                 </FormItem>

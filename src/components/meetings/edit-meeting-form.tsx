@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input";
 import { Save, PlusCircle, Trash2, Users } from "lucide-react";
-import { getAllMembers, getCommitteeNames, getMotionTopics, getLocations } from "@/lib/supabase/queries";
+import { getAllMembers, getCommitteeNames, getMotionTopics, getLocations, updateMeeting } from "@/lib/supabase/queries";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
@@ -36,6 +36,8 @@ import { Textarea } from "../ui/textarea";
 import { Checkbox } from "../ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Location } from "@/lib/types";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 const motionSchema = z.object({
     id: z.string(),
@@ -81,12 +83,16 @@ const formSchema = z.object({
 type MeetingFormValues = z.infer<typeof formSchema>;
 
 export function EditMeetingForm({ meeting, children }: { meeting: Meeting, children: React.ReactNode }) {
+    const { toast } = useToast();
+    const router = useRouter();
+    const [open, setOpen] = React.useState(false);
     const [allMembers, setAllMembers] = React.useState<Member[]>([]);
     const [motionTopics, setMotionTopics] = React.useState<string[]>([]);
     const [committeeNames, setCommitteeNames] = React.useState<string[]>([]);
     const [locations, setLocations] = React.useState<string[]>([]);
 
     React.useEffect(() => {
+        if (!open) return;
         const fetchData = async () => {
             const [membersData, topicsData, committeesData, locationsData] = await Promise.all([
                 getAllMembers(),
@@ -100,7 +106,7 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
             setLocations(locationsData);
         };
         fetchData();
-    }, []);
+    }, [open]);
 
   const defaultValues: Partial<MeetingFormValues> = {
     title: meeting.title,
@@ -119,6 +125,12 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
     resolver: zodResolver(formSchema),
     defaultValues,
   });
+  
+  React.useEffect(() => {
+    if (open) {
+        form.reset(defaultValues);
+    }
+  }, [open, meeting, form]);
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -144,14 +156,27 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
   }, [meetingType, committeeName, location, allMembers]);
 
 
-  const onSubmit = (data: MeetingFormValues) => {
-    // In a real app, you would send this data to your backend
-    console.log("Form submitted with data:", data);
-    // You could show a toast message here
+  const onSubmit = async (data: MeetingFormValues) => {
+    try {
+        await updateMeeting(meeting.id, data);
+        toast({
+            title: "Meeting Updated",
+            description: "The meeting details have been successfully saved.",
+        });
+        setOpen(false);
+        router.refresh();
+    } catch (error) {
+        toast({
+            title: "Update Failed",
+            description: "An error occurred while saving the meeting.",
+            variant: "destructive",
+        });
+        console.error("Failed to update meeting:", error);
+    }
   };
   
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
@@ -180,7 +205,7 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
                             <FormLabel>Presiding Officer</FormLabel>
                              <Combobox
                                 options={allMembers.map(m => ({ value: m.name, label: m.name }))}
-                                value={field.value}
+                                value={field.value || ""}
                                 onChange={field.onChange}
                                 placeholder="Select or type officer..."
                             />
@@ -295,7 +320,7 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col">
                                         <FormLabel>Sponsoring Member</FormLabel>
-                                        <MultiSelect a-type="single" options={allMembers.filter(m => m.roles.includes('isMP')).map(m => ({value: m.id, label: m.name}))} {...field} />
+                                        <MultiSelect a-type="single" options={allMembers.filter(m => m.roles?.includes('isMP')).map(m => ({value: m.id, label: m.name}))} {...field} />
                                         <FormMessage />
                                     </FormItem>
                                 )}

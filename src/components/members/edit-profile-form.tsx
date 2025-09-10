@@ -30,12 +30,14 @@ import { Input } from "@/components/ui/input";
 import { Edit, Save } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
 import { Textarea } from "../ui/textarea";
-import { getCommitteeNames, getLocations } from "@/lib/supabase/queries";
+import { getCommitteeNames, getLocations, updateMember } from "@/lib/supabase/queries";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../ui/command";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name is too short"),
@@ -66,7 +68,8 @@ const roles = [
 ]
 
 export function EditProfileForm({ member }: { member: Member }) {
-  const isMP = member.roles?.includes('isMP');
+  const router = useRouter();
+  const { toast } = useToast();
   const [open, setOpen] = React.useState(false);
   const [committeeOptions, setCommitteeOptions] = React.useState<string[]>([]);
   const [locationOptions, setLocationOptions] = React.useState<string[]>([]);
@@ -88,7 +91,7 @@ export function EditProfileForm({ member }: { member: Member }) {
   const defaultValues: Partial<ProfileFormValues> = {
     name: member.name,
     email: member.email,
-    contact: member.contact ?? undefined,
+    contact: member.contact ?? '',
     location: member.location ?? '',
     age: member.age ?? 18,
     gender: member.gender ?? "Other",
@@ -96,11 +99,11 @@ export function EditProfileForm({ member }: { member: Member }) {
     professionalBackground: member.professionalBackground ?? '',
     roles: member.roles || [],
     committeeMemberships: member.committeeMemberships || [],
-    activityLog: member.activityLog ?? undefined,
-    volunteerWork: member.volunteerWork ?? undefined,
-    electoralHistory: member.electoralHistory ?? undefined,
-    parliamentaryRoles: member.parliamentaryRoles ?? undefined,
-    keyPolicyInterests: member.keyPolicyInterests ?? undefined,
+    activityLog: member.activityLog ?? '',
+    volunteerWork: member.volunteerWork ?? '',
+    electoralHistory: member.electoralHistory ?? '',
+    parliamentaryRoles: member.parliamentaryRoles ?? '',
+    keyPolicyInterests: member.keyPolicyInterests ?? '',
   };
 
   const form = useForm<ProfileFormValues>({
@@ -108,11 +111,29 @@ export function EditProfileForm({ member }: { member: Member }) {
     defaultValues,
   });
 
-  const onSubmit = (data: ProfileFormValues) => {
-    // In a real app, you would send this data to your backend
-    console.log("Updating member data:", data);
-    // You could show a toast message here
-    setOpen(false);
+  // Keep form in sync with member prop
+  React.useEffect(() => {
+    form.reset(defaultValues);
+  }, [member, form]);
+
+
+  const onSubmit = async (data: ProfileFormValues) => {
+    try {
+        await updateMember(member.id, data);
+        toast({
+            title: "Profile Updated",
+            description: `${data.name}'s profile has been successfully saved.`,
+        });
+        setOpen(false);
+        router.refresh();
+    } catch (error) {
+        toast({
+            title: "Update Failed",
+            description: "An error occurred while saving the profile.",
+            variant: "destructive",
+        });
+        console.error("Failed to update member:", error);
+    }
   };
   
   const watchedRoles = form.watch("roles", []);
@@ -350,10 +371,3 @@ const MultiSelect = React.forwardRef<
   );
 });
 MultiSelect.displayName = "MultiSelect";
-
-    
-
-    
-
-
-
