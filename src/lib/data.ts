@@ -15,7 +15,7 @@ export const allPartyMembers: (Member | MP)[] = [
   { id: 'mp-3', name: 'Hannah Abbott', email: 'hannah.a@example.com', age: 41, gender: 'Female', location: 'ลำปาง', electoralHistory: 'Elected 2022', parliamentaryRoles: 'Backbencher', votingRecord: '92% attendance', keyPolicyInterests: 'Environmental Protection, Renewable Energy', education: 'M.S. Environmental Science', professionalBackground: 'Scientist', roles: ['MP'], committeeMemberships: [], activityLog: '', volunteerWork: '', contact: 'hannah.a@example.com', status: 'Active' },
 ];
 
-export const members: Member[] = allPartyMembers.filter(m => !m.roles.includes('MP')) as Member[];
+export const members: (Member | MP)[] = allPartyMembers;
 export const mps: MP[] = allPartyMembers.filter(m => m.roles.includes('MP')) as MP[];
 
 
