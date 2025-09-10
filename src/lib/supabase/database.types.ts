@@ -24,42 +24,28 @@ export type Database = {
         }
         Relationships: []
       }
-      meeting_attendees: {
+      locations: {
         Row: {
-          meeting_id: string
-          member_id: string
+          id: number
+          name: string
         }
         Insert: {
-          meeting_id: string
-          member_id: string
+          id?: number
+          name: string
         }
         Update: {
-          meeting_id?: string
-          member_id?: string
+          id?: number
+          name?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "meeting_attendees_meeting_id_fkey"
-            columns: ["meeting_id"]
-            isOneToOne: false
-            referencedRelation: "meetings"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "meeting_attendees_member_id_fkey"
-            columns: ["member_id"]
-            isOneToOne: false
-            referencedRelation: "members"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       meetings: {
         Row: {
+          attendees: string[] | null
           committee_name: string | null
           date: string
           id: string
-          location: Database["public"]["Enums"]["location_enum"] | null
+          location: string | null
           meeting_number: string | null
           meeting_session:
             | Database["public"]["Enums"]["meeting_session_enum"]
@@ -70,10 +56,11 @@ export type Database = {
           title: string
         }
         Insert: {
+          attendees?: string[] | null
           committee_name?: string | null
           date: string
           id: string
-          location?: Database["public"]["Enums"]["location_enum"] | null
+          location?: string | null
           meeting_number?: string | null
           meeting_session?:
             | Database["public"]["Enums"]["meeting_session_enum"]
@@ -84,10 +71,11 @@ export type Database = {
           title: string
         }
         Update: {
+          attendees?: string[] | null
           committee_name?: string | null
           date?: string
           id?: string
-          location?: Database["public"]["Enums"]["location_enum"] | null
+          location?: string | null
           meeting_number?: string | null
           meeting_session?:
             | Database["public"]["Enums"]["meeting_session_enum"]
@@ -97,7 +85,15 @@ export type Database = {
           related_documents?: Json | null
           title?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "meetings_location_fkey"
+            columns: ["location"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["name"]
+          },
+        ]
       }
       member_committees: {
         Row: {
@@ -140,7 +136,7 @@ export type Database = {
           gender: Database["public"]["Enums"]["gender_enum"] | null
           id: string
           key_policy_interests: string | null
-          location: Database["public"]["Enums"]["location_enum"] | null
+          location: string | null
           name: string
           parliamentary_roles: string | null
           professional_background: string | null
@@ -159,7 +155,7 @@ export type Database = {
           gender?: Database["public"]["Enums"]["gender_enum"] | null
           id: string
           key_policy_interests?: string | null
-          location?: Database["public"]["Enums"]["location_enum"] | null
+          location?: string | null
           name: string
           parliamentary_roles?: string | null
           professional_background?: string | null
@@ -178,7 +174,7 @@ export type Database = {
           gender?: Database["public"]["Enums"]["gender_enum"] | null
           id?: string
           key_policy_interests?: string | null
-          location?: Database["public"]["Enums"]["location_enum"] | null
+          location?: string | null
           name?: string
           parliamentary_roles?: string | null
           professional_background?: string | null
@@ -187,7 +183,15 @@ export type Database = {
           volunteer_work?: string | null
           voting_record?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "members_location_fkey"
+            columns: ["location"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["name"]
+          },
+        ]
       }
       motion_topics: {
         Row: {
@@ -258,6 +262,90 @@ export type Database = {
           },
         ]
       }
+      permissions: {
+        Row: {
+          id: string
+          name: string
+        }
+        Insert: {
+          id: string
+          name: string
+        }
+        Update: {
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      role_permissions: {
+        Row: {
+          permission_id: string
+          role_id: string
+        }
+        Insert: {
+          permission_id: string
+          role_id: string
+        }
+        Update: {
+          permission_id?: string
+          role_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_permissions_permission_id_fkey"
+            columns: ["permission_id"]
+            isOneToOne: false
+            referencedRelation: "permissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "role_permissions_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      roles: {
+        Row: {
+          id: string
+          name: string
+        }
+        Insert: {
+          id: string
+          name: string
+        }
+        Update: {
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      system_logs: {
+        Row: {
+          action: string
+          details: string | null
+          id: string
+          timestamp: string
+          user: string
+        }
+        Insert: {
+          action: string
+          details?: string | null
+          id: string
+          timestamp: string
+          user: string
+        }
+        Update: {
+          action?: string
+          details?: string | null
+          id?: string
+          timestamp?: string
+          user?: string
+        }
+        Relationships: []
+      }
       votes: {
         Row: {
           id: string
@@ -303,7 +391,6 @@ export type Database = {
     }
     Enums: {
       gender_enum: "Male" | "Female" | "Other"
-      location_enum: "ท่าพระจันทร์" | "รังสิต" | "ลำปาง" | "ส่วนกลาง"
       meeting_session_enum: "การประชุมสามัญ" | "การประชุมวิสามัญ"
       meeting_type_enum: "การประชุมสภา" | "การประชุมพรรค" | "การประชุมกรรมาธิการ"
       status_enum: "Active" | "Inactive" | "Former Member"

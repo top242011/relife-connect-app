@@ -1,10 +1,11 @@
+
 'use client'
 
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod";
-import { Member, MP } from "@/lib/types";
+import { Member } from "@/lib/types";
 import {
   Dialog,
   DialogContent,
@@ -29,7 +30,7 @@ import { Input } from "@/components/ui/input";
 import { Edit, Save } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
 import { Textarea } from "../ui/textarea";
-import { committeeNames, locations } from "@/lib/data";
+import { getCommitteeNames, getLocations } from "@/lib/supabase/queries";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
@@ -64,8 +65,25 @@ const roles = [
   { id: 'isExec', label: 'Executive Committee Member' },
 ]
 
-export function EditProfileForm({ member }: { member: Member | MP }) {
-  const isMP = 'electoralHistory' in member;
+export function EditProfileForm({ member }: { member: Member }) {
+  const isMP = member.roles?.includes('isMP');
+  const [open, setOpen] = React.useState(false);
+  const [committeeOptions, setCommitteeOptions] = React.useState<string[]>([]);
+  const [locationOptions, setLocationOptions] = React.useState<string[]>([]);
+
+  React.useEffect(() => {
+    if (open) {
+      const fetchData = async () => {
+        const [committees, locations] = await Promise.all([
+          getCommitteeNames(),
+          getLocations()
+        ]);
+        setCommitteeOptions(committees);
+        setLocationOptions(locations);
+      };
+      fetchData();
+    }
+  }, [open]);
 
   const defaultValues: Partial<ProfileFormValues> = {
     name: member.name,
@@ -76,17 +94,13 @@ export function EditProfileForm({ member }: { member: Member | MP }) {
     gender: member.gender,
     education: member.education,
     professionalBackground: member.professionalBackground,
-    roles: [
-        'isPartyMember',
-        ...(isMP ? ['isMP'] : []),
-        ...(member as Member).committeeMemberships?.includes('Executive') ? ['isExec'] : [],
-    ],
+    roles: member.roles || [],
     committeeMemberships: (member as Member).committeeMemberships,
     activityLog: (member as Member).activityLog,
     volunteerWork: (member as Member).volunteerWork,
-    electoralHistory: (member as MP).electoralHistory,
-    parliamentaryRoles: (member as MP).parliamentaryRoles,
-    keyPolicyInterests: (member as MP).keyPolicyInterests,
+    electoralHistory: (member as Member).electoralHistory,
+    parliamentaryRoles: (member as Member).parliamentaryRoles,
+    keyPolicyInterests: (member as Member).keyPolicyInterests,
   };
 
   const form = useForm<ProfileFormValues>({
@@ -96,8 +110,9 @@ export function EditProfileForm({ member }: { member: Member | MP }) {
 
   const onSubmit = (data: ProfileFormValues) => {
     // In a real app, you would send this data to your backend
-    console.log(data);
+    console.log("Updating member data:", data);
     // You could show a toast message here
+    setOpen(false);
   };
   
   const watchedRoles = form.watch("roles", []);
@@ -110,7 +125,7 @@ export function EditProfileForm({ member }: { member: Member | MP }) {
   }, [isMpSelected, watchedRoles, form]);
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline"><Edit className="mr-2 h-4 w-4" /> Edit Profile</Button>
       </DialogTrigger>
@@ -199,7 +214,7 @@ export function EditProfileForm({ member }: { member: Member | MP }) {
                         </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                        {locations.map(loc => (
+                        {locationOptions.map(loc => (
                             <SelectItem key={loc} value={loc}>{loc}</SelectItem>
                         ))}
                     </SelectContent>
@@ -222,7 +237,7 @@ export function EditProfileForm({ member }: { member: Member | MP }) {
                     <FormItem>
                         <FormLabel>Committee Memberships</FormLabel>
                         <MultiSelect 
-                            options={committeeNames.map(c => ({ value: c, label: c }))} 
+                            options={committeeOptions.map(c => ({ value: c, label: c }))} 
                             {...field}
                         />
                         <FormDescription>Select the committees this member belongs to.</FormDescription>
@@ -335,3 +350,5 @@ const MultiSelect = React.forwardRef<
   );
 });
 MultiSelect.displayName = "MultiSelect";
+
+    

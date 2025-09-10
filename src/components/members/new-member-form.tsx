@@ -1,10 +1,10 @@
+
 'use client'
 
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod";
-import { allPartyMembers } from "@/lib/data";
 import {
   Dialog,
   DialogContent,
@@ -29,7 +29,7 @@ import { Input } from "@/components/ui/input";
 import { Save } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
 import { Textarea } from "../ui/textarea";
-import { committeeNames, locations } from "@/lib/data";
+import { getCommitteeNames, getLocations, createMember } from "@/lib/supabase/queries";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
@@ -70,6 +70,22 @@ export function NewMemberForm({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
   const { t } = useLanguage();
   const [open, setOpen] = React.useState(false);
+  const [committeeOptions, setCommitteeOptions] = React.useState<string[]>([]);
+  const [locationOptions, setLocationOptions] = React.useState<string[]>([]);
+
+  React.useEffect(() => {
+    if (open) {
+      const fetchData = async () => {
+        const [committees, locations] = await Promise.all([
+          getCommitteeNames(),
+          getLocations()
+        ]);
+        setCommitteeOptions(committees);
+        setLocationOptions(locations);
+      };
+      fetchData();
+    }
+  }, [open]);
 
   const defaultValues: Partial<ProfileFormValues> = {
     name: "",
@@ -94,22 +110,24 @@ export function NewMemberForm({ children }: { children: React.ReactNode }) {
     defaultValues,
   });
 
-  const onSubmit = (data: ProfileFormValues) => {
-    const newMemberId = `mem-${Date.now()}`;
-    const newMember = {
-        id: newMemberId,
-        ...data,
-        status: 'Active',
-    };
-    allPartyMembers.unshift(newMember as any);
-    
-    toast({
-        title: t('toast_member_created_title'),
-        description: t('toast_member_created_desc', { name: data.name }),
-    });
-
-    form.reset();
-    setOpen(false);
+  const onSubmit = async (data: ProfileFormValues) => {
+    try {
+        await createMember(data);
+        toast({
+            title: t('toast_member_created_title'),
+            description: t('toast_member_created_desc', { name: data.name }),
+        });
+        form.reset();
+        setOpen(false);
+        // You might want to trigger a refresh of the members list here
+    } catch (error) {
+        toast({
+            title: "Creation Failed",
+            description: "An error occurred while creating the member.",
+            variant: "destructive",
+        });
+        console.error("Failed to create member:", error);
+    }
   };
   
   const watchedRoles = form.watch("roles", []);
@@ -220,7 +238,7 @@ export function NewMemberForm({ children }: { children: React.ReactNode }) {
                         </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                        {locations.map(loc => (
+                        {locationOptions.map(loc => (
                             <SelectItem key={loc} value={loc}>{t(loc as any)}</SelectItem>
                         ))}
                     </SelectContent>
@@ -243,7 +261,7 @@ export function NewMemberForm({ children }: { children: React.ReactNode }) {
                     <FormItem>
                         <FormLabel>{t('committee_memberships')}</FormLabel>
                         <MultiSelect 
-                            options={committeeNames.map(c => ({ value: c, label: t(c as any) }))} 
+                            options={committeeOptions.map(c => ({ value: c, label: t(c as any) }))} 
                             {...field}
                         />
                         <FormDescription>{t('committee_memberships_desc')}</FormDescription>
@@ -357,3 +375,6 @@ const MultiSelect = React.forwardRef<
   );
 });
 MultiSelect.displayName = "MultiSelect";
+
+
+    

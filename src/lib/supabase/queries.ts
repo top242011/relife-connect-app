@@ -1,13 +1,29 @@
+
 import { supabase } from "./client";
-import type { Member, Meeting, Vote, Motion } from '../types';
-import { Tables } from "./database.types";
+import type { Member, Meeting, Vote, Motion, SystemLog, Role, Permission } from '../types';
+import { Tables, TablesInsert } from "./database.types";
 
 // Helper to convert Supabase member to app Member type
 const fromSupabaseMember = (member: Tables<'members'> | any): Member => {
     return {
-        ...member,
+        id: member.id,
+        name: member.name,
+        email: member.email,
+        age: member.age,
+        gender: member.gender,
+        location: member.location,
+        education: member.education,
+        professionalBackground: member.professional_background,
+        committeeMemberships: member.committee_memberships || [],
+        activityLog: member.activity_log,
+        volunteerWork: member.volunteer_work,
+        contact: member.contact,
         roles: member.roles || [],
-        committeeMemberships: member.committeeMemberships || [],
+        status: member.status,
+        electoralHistory: member.electoral_history,
+        parliamentaryRoles: member.parliamentary_roles,
+        votingRecord: member.voting_record,
+        keyPolicyInterests: member.key_policy_interests,
     } as Member;
 }
 
@@ -24,7 +40,7 @@ const fromSupabaseMeeting = (meeting: any): Meeting => {
       meetingNumber: meeting.meeting_number,
       committeeName: meeting.committee_name,
       relatedDocuments: meeting.related_documents || [],
-      attendees: meeting.meeting_attendees.map((a: any) => a.member_id),
+      attendees: meeting.attendees || [],
       motions: meeting.motions.map(fromSupabaseMotion),
     };
 };
@@ -46,19 +62,76 @@ const fromSupabaseMotion = (motion: any): Motion => {
 
 // Member Queries
 export async function getAllMembers(): Promise<(Member)[]> {
-    const { data, error } = await supabase.from('members').select('*');
-    if (error) throw error;
-    return data.map(fromSupabaseMember);
+    const { data, error } = await supabase.from('members').select('*, member_committees(committees(name))');
+    if (error) {
+        console.error('Error fetching members:', error);
+        throw error;
+    };
+
+    const members = data.map(m => {
+        const committee_memberships = (m.member_committees || []).map((mc: any) => mc.committees.name);
+        return { ...m, committee_memberships };
+    });
+
+    return members.map(fromSupabaseMember);
 }
 
 export async function getMemberById(id: string): Promise<Member | null> {
-    const { data, error } = await supabase.from('members').select('*').eq('id', id).single();
+     const { data, error } = await supabase.from('members').select('*, member_committees(committees(name))').eq('id', id).single();
     if (error) {
         console.error('Error fetching member by ID:', error);
         return null;
     }
-    return data ? fromSupabaseMember(data) : null;
+    if (!data) return null;
+
+    const committee_memberships = (data.member_committees || []).map((mc: any) => mc.committees.name);
+    return fromSupabaseMember({ ...data, committee_memberships });
 }
+
+export async function createMember(memberData: Partial<Member>) {
+    const newMemberId = `mem-${Date.now()}`;
+    const newMember: TablesInsert<'members'> = {
+        id: newMemberId,
+        name: memberData.name!,
+        email: memberData.email!,
+        age: memberData.age,
+        gender: memberData.gender,
+        location: memberData.location,
+        education: memberData.education,
+        professional_background: memberData.professionalBackground,
+        activity_log: memberData.activityLog,
+        volunteer_work: memberData.volunteerWork,
+        contact: memberData.contact,
+        roles: memberData.roles,
+        status: 'Active',
+        electoral_history: memberData.electoralHistory,
+        parliamentary_roles: memberData.parliamentaryRoles,
+        voting_record: memberData.votingRecord,
+        key_policy_interests: memberData.keyPolicyInterests,
+    };
+    
+    const { error: memberError } = await supabase.from('members').insert(newMember);
+    if (memberError) {
+        console.error('Error creating member:', memberError);
+        throw memberError;
+    }
+
+    if (memberData.committeeMemberships && memberData.committeeMemberships.length > 0) {
+        const { data: committees } = await supabase.from('committees').select('id, name').in('name', memberData.committeeMemberships);
+        if (committees) {
+            const newMemberCommittees = committees.map(c => ({
+                member_id: newMemberId,
+                committee_id: c.id
+            }));
+            const { error: committeeError } = await supabase.from('member_committees').insert(newMemberCommittees);
+            if (committeeError) {
+                 console.error('Error adding committee memberships:', committeeError);
+                 throw committeeError;
+            }
+        }
+    }
+}
+
 
 // Meeting Queries
 export async function getAllMeetings(): Promise<Meeting[]> {
@@ -66,11 +139,13 @@ export async function getAllMeetings(): Promise<Meeting[]> {
         .from('meetings')
         .select(`
             *,
-            meeting_attendees(member_id),
             motions(*)
         `);
 
-    if (error) throw error;
+    if (error) {
+        console.error('Error fetching meetings:', error);
+        throw error;
+    }
     return data.map(fromSupabaseMeeting);
 }
 
@@ -79,7 +154,6 @@ export async function getMeetingById(id: string): Promise<Meeting | null> {
         .from('meetings')
         .select(`
             *,
-            meeting_attendees(member_id),
             motions(*)
         `)
         .eq('id', id)
@@ -96,7 +170,10 @@ export async function getMeetingById(id: string): Promise<Meeting | null> {
 // Vote Queries
 export async function getAllVotes(): Promise<Vote[]> {
     const { data, error } = await supabase.from('votes').select('*');
-    if (error) throw error;
+    if (error) {
+        console.error('Error fetching votes:', error);
+        throw error;
+    }
     return data as Vote[];
 }
 
@@ -116,47 +193,62 @@ export async function getVotesByMemberId(memberId: string): Promise<Vote[]> {
 // Generic Data Queries
 export async function getMotionTopics(): Promise<string[]> {
     const { data, error } = await supabase.from('motion_topics').select('name');
-    if (error) throw error;
+    if (error) {
+        console.error('Error fetching motion topics:', error);
+        throw error;
+    }
     return data.map(t => t.name);
 }
 
 export async function getCommitteeNames(): Promise<string[]> {
     const { data, error } = await supabase.from('committees').select('name');
-    if (error) throw error;
+    if (error) {
+        console.error('Error fetching committee names:', error);
+        throw error;
+    }
     return data.map(c => c.name);
 }
 
-export async function getSystemLogs() {
-    // This would query a 'system_logs' table if it existed.
-    // For now, returning a static example.
-    return [
-        { id: 'log-1', timestamp: '2024-08-01 10:00:00', user: 'Alice Johnson', action: 'Login', details: 'Successful login from IP 192.168.1.1' },
-        { id: 'log-2', timestamp: '2024-08-01 10:05:23', user: 'Alice Johnson', action: 'Edit Meeting', details: 'Edited meeting "Q3 Budget Committee Session"' },
-        { id: 'log-3', timestamp: '2024-08-01 10:15:00', user: 'George Orwell', action: 'Record Vote', details: 'Recorded votes for motion "Approve allocation for infrastructure projects"' },
-        { id: 'log-4', timestamp: '2024-08-01 11:30:10', user: 'Fiona Gallagher', action: 'Create Meeting', details: 'Created new meeting "Emergency Press Briefing"' },
-        { id: 'log-5', timestamp: '2024-08-01 12:00:00', user: 'System', action: 'Security Alert', details: 'Multiple failed login attempts for user "charlie.b@example.com"' },
-        { id: 'log-6', timestamp: '2024-08-01 14:00:45', user: 'Alice Johnson', action: 'Edit Role', details: 'Updated permissions for role "Data Analyst"' }
-    ];
+export async function getLocations(): Promise<string[]> {
+    const { data, error } = await supabase.from('locations').select('name');
+     if (error) {
+        console.error('Error fetching locations:', error);
+        throw error;
+    }
+    return data.map(l => l.name);
 }
 
-export async function getRolesAndPermissions() {
-    // This is static for now as it's less frequently changed.
-    // Could be moved to Supabase if needed.
-    const permissions = [
-        { id: 'perm-1', name: 'Create Party Member' },
-        { id: 'perm-2', name: 'Edit MP Profile' },
-        { id: 'perm-3', name: 'View Analytics Dashboard' },
-        { id: 'perm-4', name: 'Manage Meetings' },
-        { id: 'perm-5', name: 'Record Votes' },
-        { id: 'perm-6', name: 'Admin Access' }
-    ];
 
-    const roles = [
-        { id: 'role-1', name: 'Admin', permissions: ['perm-1', 'perm-2', 'perm-3', 'perm-4', 'perm-5', 'perm-6'] },
-        { id: 'role-2', name: 'HR Manager', permissions: ['perm-1', 'perm-2'] },
-        { id: 'role-3', name: 'Meeting Secretary', permissions: ['perm-4', 'perm-5'] },
-        { id: 'role-4', name: 'Data Analyst', permissions: ['perm-3'] },
-        { id: 'role-5', name: 'Member', permissions: [] }
-    ];
-    return { permissions, roles };
+export async function getSystemLogs(): Promise<SystemLog[]> {
+    const { data, error } = await supabase.from('system_logs').select('*').order('timestamp', { ascending: false });
+    if (error) {
+        console.error('Error fetching system logs:', error);
+        throw error;
+    }
+    return data;
 }
+
+export async function getRolesAndPermissions(): Promise<{ roles: Role[], permissions: Permission[] }> {
+    const { data: rolesData, error: rolesError } = await supabase.from('roles').select('*, role_permissions(permissions(id, name))');
+    if (rolesError) {
+        console.error('Error fetching roles:', rolesError);
+        throw rolesError;
+    }
+    
+    const { data: permissionsData, error: permissionsError } = await supabase.from('permissions').select('*');
+    if (permissionsError) {
+        console.error('Error fetching permissions:', permissionsError);
+        throw permissionsError;
+    }
+
+    const roles: Role[] = rolesData.map((r: any) => ({
+        id: r.id,
+        name: r.name,
+        permissions: r.role_permissions.map((p: any) => p.permissions.id),
+    }));
+
+    return { roles, permissions: permissionsData };
+}
+
+
+    
