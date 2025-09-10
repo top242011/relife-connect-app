@@ -37,6 +37,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/hooks/use-language";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name is too short"),
@@ -67,6 +68,7 @@ const roles = [
 ]
 
 export function NewMemberForm({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const { toast } = useToast();
   const { t } = useLanguage();
   const [open, setOpen] = React.useState(false);
@@ -119,7 +121,7 @@ export function NewMemberForm({ children }: { children: React.ReactNode }) {
         });
         form.reset();
         setOpen(false);
-        // You might want to trigger a refresh of the members list here
+        router.refresh();
     } catch (error) {
         toast({
             title: "Creation Failed",
@@ -380,3 +382,4 @@ MultiSelect.displayName = "MultiSelect";
     
 
     
+
