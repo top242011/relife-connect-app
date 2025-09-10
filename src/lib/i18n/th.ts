@@ -122,6 +122,7 @@ export const th: { [key: string]: string } = {
     'member_not_found_title': 'ไม่พบสมาชิก',
     'member_not_found_subtitle': 'ไม่สามารถค้นหาสมาชิกที่ร้องขอได้',
     'back_to_members_list': 'กลับไปที่รายชื่อสมาชิก',
+    'member_of_parliament': 'สมาชิกรัฐสภา',
     'executive_committee': 'คณะกรรมการบริหาร',
     'attendance_warning_title': 'คำเตือนการเข้าร่วม',
     'attendance_warning_subtitle': 'สมาชิกนี้มีจำนวนการขาดเกินเกณฑ์ที่กำหนด',
@@ -187,7 +188,7 @@ export const th: { [key: string]: string } = {
     // Meetings Page
     'meetings_manage_title': 'จัดการการประชุม',
     'meetings_manage_subtitle': 'สร้าง ดู แก้ไข และลบบันทึกการประชุม',
-    'presidingOfficer': 'ประธานในที่ประชุม',
+    'presiding_officer': 'ประธานในที่ประชุม',
     'attendees': 'ผู้เข้าร่วม',
     'view_meeting': 'ดูการประชุม',
     'open_menu': 'เปิดเมนู',

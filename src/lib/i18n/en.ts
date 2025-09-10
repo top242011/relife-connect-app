@@ -122,6 +122,7 @@ export const en: { [key: string]: string } = {
     'member_not_found_title': 'Member not found',
     'member_not_found_subtitle': 'The requested member could not be located.',
     'back_to_members_list': 'Back to Members List',
+    'member_of_parliament': 'Member of Parliament',
     'executive_committee': 'Executive Committee',
     'attendance_warning_title': 'Attendance Warning',
     'attendance_warning_subtitle': 'This member has exceeded the absence threshold.',
@@ -188,7 +189,7 @@ export const en: { [key: string]: string } = {
     // Meetings Page
     'meetings_manage_title': 'Manage Meetings',
     'meetings_manage_subtitle': 'Create, view, edit, and delete meeting records.',
-    'presidingOfficer': 'Presiding Officer',
+    'presiding_officer': 'Presiding Officer',
     'attendees': 'Attendees',
     'view_meeting': 'View meeting',
     'open_menu': 'Open menu',
