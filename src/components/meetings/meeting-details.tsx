@@ -1,3 +1,4 @@
+
 'use client'
 
 import { Meeting, Vote } from "@/lib/types"
@@ -133,7 +134,7 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                         const partyNay = allVotes.filter(v => v.motionId === motion.id && v.vote === 'Nay').length;
                         const partyAbstain = allVotes.filter(v => v.motionId === motion.id && v.vote === 'Abstain').length;
                         const partyLeave = allVotes.filter(v => v.motionId === motion.id && v.vote === 'Leave').length;
-                        const partyAbsent = meeting.attendees.length - (partyAye + partyNay + partyAbstain + partyLeave);
+                        const partyAbsent = allVotes.filter(v => v.motionId === motion.id && v.vote === 'Absent').length;
                         
                         const otherAye = (motion.totalParliamentAye ?? 0) - partyAye;
                         const otherNay = (motion.totalParliamentNay ?? 0) - partyNay;
