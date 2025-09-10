@@ -191,6 +191,7 @@ export const th: { [key: string]: string } = {
     'edit_meeting': 'แก้ไขการประชุม',
     'delete_meeting': 'ลบการประชุม',
     'filter_meetings_placeholder': 'กรองการประชุม...',
+    'new_meeting_button': 'การประชุมใหม่',
     'table_footer_selected_rows': 'เลือก {{selected}} จาก {{total}} แถว',
     'meeting_number_short': 'ครั้งที่',
     'meeting_held_on': 'ประชุมเมื่อ',
