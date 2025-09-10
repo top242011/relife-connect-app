@@ -3,7 +3,7 @@ import { getAllMembers } from "@/lib/supabase/queries";
 
 export default async function MembersPage() {
     const members = await getAllMembers();
-    const partyMembers = members.filter(m => m.roles.includes('isPartyMember') && !m.roles.includes('isMP'));
+    const partyMembers = members.filter(m => m.roles.includes('isPartyMember'));
     return (
         <div className="space-y-6">
             <div>
