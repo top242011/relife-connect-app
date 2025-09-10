@@ -104,13 +104,17 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
   });
 
   const meetingType = form.watch('meetingType');
+  const committeeName = form.watch('committeeName');
 
   const availableAttendees = React.useMemo(() => {
     if (meetingType === 'การประชุมสภา') {
-        return allPartyMembers.filter(m => m.roles.includes('MP'));
+      return allPartyMembers.filter(m => m.roles.includes('MP'));
+    }
+    if (meetingType === 'การประชุมกรรมาธิการ' && committeeName) {
+      return allPartyMembers.filter(m => m.committeeMemberships.includes(committeeName));
     }
     return allPartyMembers;
-  }, [meetingType]);
+  }, [meetingType, committeeName]);
 
 
   const onSubmit = (data: MeetingFormValues) => {
@@ -452,6 +456,7 @@ const Combobox = ({
           <CommandInput
             placeholder={placeholder}
             onValueChange={(search) => {
+               if (!open) setOpen(true);
                onChange(search);
             }}
             value={value}
@@ -488,3 +493,5 @@ const Combobox = ({
     </Popover>
   );
 };
+
+    
