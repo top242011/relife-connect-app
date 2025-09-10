@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import * as React from 'react';
@@ -49,98 +47,100 @@ import { Card, CardContent } from '../ui/card';
 import { allPartyMembers } from '@/lib/data';
 import { EditMeetingForm } from './edit-meeting-form';
 import { NewMeetingForm } from './new-meeting-form';
-
-export const columns: ColumnDef<Meeting>[] = [
-  {
-    accessorKey: 'title',
-    header: 'Title',
-    cell: ({ row }) => {
-        const meeting = row.original;
-        const displayTitle = (meeting as any).displayTitle || meeting.title;
-        return (
-          <div>
-            <div className="font-medium">{displayTitle}</div>
-            {meeting.meetingType === 'การประชุมกรรมาธิการ' && (
-              <Badge variant="outline" className='mt-1'>{meeting.committeeName}</Badge>
-            )}
-          </div>
-        )
-    }
-  },
-  {
-    accessorKey: 'date',
-    header: 'Date',
-  },
-  {
-    accessorKey: 'presidingOfficer',
-    header: 'Presiding Officer',
-    cell: ({ row }) => {
-      const officerName = row.getValue('presidingOfficer') as string;
-      return officerName;
-    },
-  },
-  {
-    accessorKey: 'attendees',
-    header: 'Attendees',
-    cell: ({ row }) => {
-      const attendees = row.getValue('attendees') as string[];
-      return <Badge variant="outline">{attendees.length} Members</Badge>;
-    },
-  },
-  {
-    accessorKey: 'motions',
-    header: 'Motions',
-    cell: ({ row }) => {
-        const motions = row.getValue('motions') as {id: string, title: string}[];
-        return <Badge variant="outline">{motions.length} Motions</Badge>;
-    },
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      const meeting = row.original;
-
-      return (
-        <div className="text-right">
-             <Button asChild variant="ghost" className="h-8 w-8 p-0">
-                <Link href={`/meetings/manage/${meeting.id}`}>
-                    <Eye className="h-4 w-4" />
-                    <span className="sr-only">View meeting</span>
-                </Link>
-            </Button>
-            <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => navigator.clipboard.writeText(meeting.id)}>
-                Copy Meeting ID
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                 <EditMeetingForm meeting={meeting}>
-                    <button className="w-full">
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                            <Edit className="mr-2 h-4 w-4" />
-                            Edit Meeting
-                        </DropdownMenuItem>
-                    </button>
-                </EditMeetingForm>
-                <DropdownMenuItem className="text-red-600">Delete Meeting</DropdownMenuItem>
-            </DropdownMenuContent>
-            </DropdownMenu>
-        </div>
-      );
-    },
-  },
-];
-
+import { useLanguage } from '@/hooks/use-language';
 
 export function MeetingsTable({ data }: { data: Meeting[] }) {
+  const { t } = useLanguage();
+
+  const columns: ColumnDef<Meeting>[] = [
+    {
+      accessorKey: 'title',
+      header: t('title'),
+      cell: ({ row }) => {
+          const meeting = row.original;
+          const displayTitle = (meeting as any).displayTitle || meeting.title;
+          return (
+            <div>
+              <div className="font-medium">{displayTitle}</div>
+              {meeting.meetingType === 'การประชุมกรรมาธิการ' && (
+                <Badge variant="outline" className='mt-1'>{meeting.committeeName}</Badge>
+              )}
+            </div>
+          )
+      }
+    },
+    {
+      accessorKey: 'date',
+      header: t('date'),
+    },
+    {
+      accessorKey: 'presidingOfficer',
+      header: t('presiding_officer'),
+      cell: ({ row }) => {
+        const officerName = row.getValue('presidingOfficer') as string;
+        return officerName;
+      },
+    },
+    {
+      accessorKey: 'attendees',
+      header: t('attendees'),
+      cell: ({ row }) => {
+        const attendees = row.getValue('attendees') as string[];
+        return <Badge variant="outline">{attendees.length} {t('members')}</Badge>;
+      },
+    },
+    {
+      accessorKey: 'motions',
+      header: t('motions'),
+      cell: ({ row }) => {
+          const motions = row.getValue('motions') as {id: string, title: string}[];
+          return <Badge variant="outline">{motions.length} {t('motions')}</Badge>;
+      },
+    },
+    {
+      id: 'actions',
+      enableHiding: false,
+      cell: ({ row }) => {
+        const meeting = row.original;
+  
+        return (
+          <div className="text-right">
+               <Button asChild variant="ghost" className="h-8 w-8 p-0">
+                  <Link href={`/meetings/manage/${meeting.id}`}>
+                      <Eye className="h-4 w-4" />
+                      <span className="sr-only">{t('view_meeting')}</span>
+                  </Link>
+              </Button>
+              <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">{t('open_menu')}</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>{t('actions')}</DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => navigator.clipboard.writeText(meeting.id)}>
+                    {t('copy_meeting_id')}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                   <EditMeetingForm meeting={meeting}>
+                      <button className="w-full">
+                          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                              <Edit className="mr-2 h-4 w-4" />
+                              {t('edit_meeting')}
+                          </DropdownMenuItem>
+                      </button>
+                  </EditMeetingForm>
+                  <DropdownMenuItem className="text-red-600">{t('delete_meeting')}</DropdownMenuItem>
+              </DropdownMenuContent>
+              </DropdownMenu>
+          </div>
+        );
+      },
+    },
+  ];
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -152,13 +152,13 @@ export function MeetingsTable({ data }: { data: Meeting[] }) {
 
     return sortedData.map(meeting => {
       let displayTitle = meeting.meetingNumber 
-        ? `${meeting.title} (ครั้งที่ ${meeting.meetingNumber})`
+        ? `${meeting.title} (${t('meeting_number_short')} ${meeting.meetingNumber})`
         : meeting.title;
 
       if (!meeting.meetingNumber) {
         const key = `${meeting.meetingType}-${meeting.meetingSession}`;
         counts[key] = (counts[key] || 0) + 1;
-        displayTitle = `${meeting.meetingType} ${meeting.meetingSession} ครั้งที่ ${counts[key]}`;
+        displayTitle = `${t(meeting.meetingType as any)} ${t(meeting.meetingSession as any)} ${t('meeting_number_short')} ${counts[key]}`;
       }
 
       return {
@@ -166,7 +166,7 @@ export function MeetingsTable({ data }: { data: Meeting[] }) {
         displayTitle,
       };
     }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, [data]);
+  }, [data, t]);
 
   const table = useReactTable({
     data: processedData,
@@ -193,7 +193,7 @@ export function MeetingsTable({ data }: { data: Meeting[] }) {
         <div className="w-full">
             <div className="flex items-center py-4">
                 <Input
-                placeholder="Filter meetings..."
+                placeholder={t('filter_meetings_placeholder')}
                 value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
                 onChange={(event) =>
                     table.getColumn('title')?.setFilterValue(event.target.value)
@@ -203,13 +203,13 @@ export function MeetingsTable({ data }: { data: Meeting[] }) {
                  <NewMeetingForm>
                     <Button className="ml-4">
                         <PlusCircle className="mr-2 h-4 w-4" />
-                        New Meeting
+                        {t('new_meeting_button')}
                     </Button>
                  </NewMeetingForm>
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="ml-auto">
-                    Columns <ChevronDown className="ml-2 h-4 w-4" />
+                    {t('columns')} <ChevronDown className="ml-2 h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
@@ -226,7 +226,7 @@ export function MeetingsTable({ data }: { data: Meeting[] }) {
                             column.toggleVisibility(!!value)
                             }
                         >
-                            {column.id === 'presidingOfficer' ? "Presiding Officer" : column.id}
+                            {t(column.id as any)}
                         </DropdownMenuCheckboxItem>
                         );
                     })}
@@ -276,7 +276,7 @@ export function MeetingsTable({ data }: { data: Meeting[] }) {
                         colSpan={columns.length}
                         className="h-24 text-center"
                         >
-                        No results.
+                        {t('no_results')}
                         </TableCell>
                     </TableRow>
                     )}
@@ -285,8 +285,10 @@ export function MeetingsTable({ data }: { data: Meeting[] }) {
             </div>
             <div className="flex items-center justify-end space-x-2 py-4">
                 <div className="flex-1 text-sm text-muted-foreground">
-                {table.getFilteredSelectedRowModel().rows.length} of{' '}
-                {table.getFilteredRowModel().rows.length} row(s) selected.
+                {t('table_footer_selected_rows', { 
+                    selected: table.getFilteredSelectedRowModel().rows.length,
+                    total: table.getFilteredRowModel().rows.length 
+                })}
                 </div>
                 <div className="space-x-2">
                 <Button
@@ -295,7 +297,7 @@ export function MeetingsTable({ data }: { data: Meeting[] }) {
                     onClick={() => table.previousPage()}
                     disabled={!table.getCanPreviousPage()}
                 >
-                    Previous
+                    {t('previous')}
                 </Button>
                 <Button
                     variant="outline"
@@ -303,7 +305,7 @@ export function MeetingsTable({ data }: { data: Meeting[] }) {
                     onClick={() => table.nextPage()}
                     disabled={!table.getCanNextPage()}
                 >
-                    Next
+                    {t('next')}
                 </Button>
                 </div>
             </div>

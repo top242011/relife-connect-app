@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -21,22 +20,24 @@ import {
 } from '@/components/ui/sidebar';
 import { Bot, ChevronRight, Gavel, Landmark, LayoutDashboard, Users, FileText, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-const navItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/members', label: 'Members', icon: Users },
-  { href: '/parliament', label: 'Parliament', icon: Landmark },
-  { 
-    href: '/meetings/manage',
-    label: 'Meetings', 
-    icon: Gavel
-  },
-  { href: '/assistant', label: 'AI Assistant', icon: Bot },
-  { href: '/settings', label: 'Settings', icon: Settings },
-];
+import { useLanguage } from '@/hooks/use-language';
 
 export function SidebarNav() {
   const pathname = usePathname();
+  const { t } = useLanguage();
+
+  const navItems = [
+    { href: '/dashboard', label: t('nav_dashboard'), icon: LayoutDashboard },
+    { href: '/members', label: t('nav_members'), icon: Users },
+    { href: '/parliament', label: t('nav_parliament'), icon: Landmark },
+    { 
+      href: '/meetings/manage',
+      label: t('nav_meetings'), 
+      icon: Gavel
+    },
+    { href: '/assistant', label: t('nav_ai_assistant'), icon: Bot },
+    { href: '/settings', label: t('nav_settings'), icon: Settings },
+  ];
 
   return (
     <>

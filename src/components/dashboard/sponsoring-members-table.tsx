@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -16,10 +15,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { useLanguage } from '@/hooks/use-language';
 import { meetings, mps } from '@/lib/data';
 import Link from 'next/link';
 
 export function SponsoringMembersTable() {
+    const { t } = useLanguage();
     const getSponsoredMotionsCount = (mpId: string) => {
         return meetings.flatMap(m => m.motions).filter(motion => motion.sponsorId === mpId).length;
     };
@@ -36,15 +37,15 @@ export function SponsoringMembersTable() {
     return (
         <Card className="lg:col-span-1">
             <CardHeader>
-                <CardTitle>Top Sponsoring Members</CardTitle>
-                <CardDescription>MPs who have sponsored the most party motions.</CardDescription>
+                <CardTitle>{t('top_sponsoring_members_title')}</CardTitle>
+                <CardDescription>{t('top_sponsoring_members_subtitle')}</CardDescription>
             </CardHeader>
             <CardContent>
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Member</TableHead>
-                            <TableHead className="text-right">Sponsored Motions</TableHead>
+                            <TableHead>{t('member')}</TableHead>
+                            <TableHead className="text-right">{t('sponsored_motions')}</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -61,7 +62,7 @@ export function SponsoringMembersTable() {
                          {memberData.length === 0 && (
                             <TableRow>
                                 <TableCell colSpan={2} className="h-24 text-center">
-                                    No sponsored motions found.
+                                    {t('no_sponsored_motions_found')}
                                 </TableCell>
                             </TableRow>
                         )}

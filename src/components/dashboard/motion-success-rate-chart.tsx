@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -14,8 +13,10 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { meetings, votes } from '@/lib/data';
+import { useLanguage } from '@/hooks/use-language';
 
 export function MotionSuccessRateChart() {
+    const { t } = useLanguage();
     const processData = () => {
         const partySponsored = { total: 0, passed: 0 };
         const nonPartySponsored = { total: 0, passed: 0 };
@@ -37,8 +38,8 @@ export function MotionSuccessRateChart() {
         });
         
         return [
-            { name: 'Party Sponsored', passed: partySponsored.total > 0 ? (partySponsored.passed / partySponsored.total) * 100 : 0 },
-            { name: 'Not Party Sponsored', passed: nonPartySponsored.total > 0 ? (nonPartySponsored.passed / nonPartySponsored.total) * 100 : 0 },
+            { name: t('party_sponsored'), passed: partySponsored.total > 0 ? (partySponsored.passed / partySponsored.total) * 100 : 0 },
+            { name: t('not_party_sponsored'), passed: nonPartySponsored.total > 0 ? (nonPartySponsored.passed / nonPartySponsored.total) * 100 : 0 },
         ];
     };
 
@@ -46,7 +47,7 @@ export function MotionSuccessRateChart() {
 
   const chartConfig = {
     passed: {
-      label: 'Passed (%)',
+      label: t('passed_rate'),
       color: 'hsl(var(--primary))',
     },
   };
@@ -54,8 +55,8 @@ export function MotionSuccessRateChart() {
   return (
     <Card className="lg:col-span-1">
       <CardHeader>
-        <CardTitle>Motion Success Rate</CardTitle>
-        <CardDescription>Success rate of party vs. non-party sponsored motions</CardDescription>
+        <CardTitle>{t('motion_success_rate_title')}</CardTitle>
+        <CardDescription>{t('motion_success_rate_subtitle')}</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="min-h-[200px] w-full">

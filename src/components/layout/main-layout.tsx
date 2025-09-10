@@ -7,8 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import { useLanguage } from '@/hooks/use-language';
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
+  const { language, setLanguage, t } = useLanguage();
   return (
     <SidebarProvider>
       <Sidebar>
@@ -19,6 +21,14 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
           <SidebarTrigger className="md:hidden" />
           <div className="relative ml-auto flex-1 md:grow-0">
           </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setLanguage(language === 'en' ? 'th' : 'en')}
+            className="w-16"
+          >
+            {language.toUpperCase()}
+          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -33,12 +43,12 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel>{t('my_account')}</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Support</DropdownMenuItem>
+              <DropdownMenuItem>{t('settings')}</DropdownMenuItem>
+              <DropdownMenuItem>{t('support')}</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              <DropdownMenuItem>{t('logout')}</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </header>

@@ -1,4 +1,4 @@
-
+'use client';
 
 import { DemographicsChart } from '@/components/dashboard/demographics-chart';
 import { MotionSuccessRateChart } from '@/components/dashboard/motion-success-rate-chart';
@@ -8,14 +8,16 @@ import { StatsCards } from '@/components/dashboard/stats-cards';
 import { TopIssuesChart } from '@/components/dashboard/top-issues-chart';
 import { AttendanceReport } from '@/components/dashboard/attendance-report';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useLanguage } from '@/hooks/use-language';
 
 export default function DashboardPage() {
+  const { t } = useLanguage();
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{t('dashboard_title')}</h1>
         <p className="text-muted-foreground">
-          An overview of your party's key metrics and activities.
+          {t('dashboard_subtitle')}
         </p>
       </div>
 
@@ -27,9 +29,9 @@ export default function DashboardPage() {
       </div>
 
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Parliamentary Analytics</h2>
+        <h2 className="text-2xl font-bold tracking-tight">{t('parliamentary_analytics_title')}</h2>
         <p className="text-muted-foreground">
-            In-depth analysis of legislative activities and member contributions.
+            {t('parliamentary_analytics_subtitle')}
         </p>
       </div>
       
@@ -40,9 +42,9 @@ export default function DashboardPage() {
       </div>
 
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Attendance Analytics</h2>
+        <h2 className="text-2xl font-bold tracking-tight">{t('attendance_analytics_title')}</h2>
         <p className="text-muted-foreground">
-            Analysis of member attendance, absences, and leaves.
+            {t('attendance_analytics_subtitle')}
         </p>
       </div>
       <AttendanceReport />

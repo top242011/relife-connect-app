@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -57,6 +56,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Save, AlertTriangle, Wand2, RefreshCw, Landmark } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '../ui/input';
+import { useLanguage } from '@/hooks/use-language';
 
 const voteSchema = z.object({
   memberId: z.string(),
@@ -81,6 +81,7 @@ const getMemberName = (memberId: string) => {
 
 export function RecordVotesForm({ meeting, motion, children }: { meeting: Meeting; motion: Motion, children: React.ReactNode }) {
     const { toast } = useToast();
+    const { t } = useLanguage();
     const [dialogOpen, setDialogOpen] = React.useState(false);
     const [bulkVote, setBulkVote] = React.useState<VoteType | ''>('');
 
@@ -129,7 +130,6 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
       }
     });
 
-    // Update total parliamentary votes for the motion
     const meetingToUpdate = meetings.find(m => m.id === meeting.id);
     if (meetingToUpdate) {
         const motionToUpdate = meetingToUpdate.motions.find(m => m.id === motion.id);
@@ -142,8 +142,8 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
 
 
     toast({
-        title: "Votes Saved",
-        description: `Voting records for "${motion.title}" have been updated.`,
+        title: t('toast_votes_saved_title'),
+        description: t('toast_votes_saved_desc', { motionTitle: motion.title }),
     });
     setDialogOpen(false);
   };
@@ -154,16 +154,16 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
         update(index, { ...field, vote: bulkVote });
     });
     toast({
-        title: "Bulk Vote Applied",
-        description: `All votes have been set to "${bulkVote}". You can make individual changes before saving.`,
+        title: t('toast_bulk_vote_title'),
+        description: t('toast_bulk_vote_desc', { vote: t(bulkVote as any) }),
     });
   }
 
   const handleReset = () => {
     form.reset(defaultValues);
     toast({
-        title: "Form Reset",
-        description: `Voting records have been reset to their last saved state.`,
+        title: t('toast_form_reset_title'),
+        description: t('toast_form_reset_desc'),
     })
   }
 
@@ -172,45 +172,45 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-3xl max-h-[90vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle>Record Votes: {motion.title}</DialogTitle>
+          <DialogTitle>{t('record_votes_title')}: {motion.title}</DialogTitle>
           <DialogDescription>
-            Record or update the vote for each attendee for this motion.
+            {t('record_votes_subtitle')}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 flex-1 flex flex-col min-h-0">
              <Card>
                 <CardHeader className='pb-2'>
-                    <CardTitle className="text-lg flex items-center"><Wand2 className="mr-2" />Bulk Edit Party Votes</CardTitle>
-                    <CardDescription>Quickly set the vote for all party attendees.</CardDescription>
+                    <CardTitle className="text-lg flex items-center"><Wand2 className="mr-2" />{t('bulk_edit_party_votes_title')}</CardTitle>
+                    <CardDescription>{t('bulk_edit_party_votes_subtitle')}</CardDescription>
                 </CardHeader>
                 <CardContent className="flex items-center gap-2">
                      <Select value={bulkVote} onValueChange={(value) => setBulkVote(value as VoteType | '')}>
                         <SelectTrigger>
-                            <SelectValue placeholder="Select a vote outcome..." />
+                            <SelectValue placeholder={t('select_vote_outcome')} />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="Aye">Aye</SelectItem>
-                            <SelectItem value="Nay">Nay</SelectItem>
-                            <SelectItem value="Abstain">Abstain</SelectItem>
-                            <SelectItem value="Absent">Absent</SelectItem>
-                            <SelectItem value="Leave">Leave</SelectItem>
+                            <SelectItem value="Aye">{t('aye')}</SelectItem>
+                            <SelectItem value="Nay">{t('nay')}</SelectItem>
+                            <SelectItem value="Abstain">{t('abstain')}</SelectItem>
+                            <SelectItem value="Absent">{t('absent')}</SelectItem>
+                            <SelectItem value="Leave">{t('on_leave')}</SelectItem>
                         </SelectContent>
                     </Select>
                      <AlertDialog>
                         <AlertDialogTrigger asChild>
-                           <Button type="button" variant="secondary" disabled={!bulkVote}>Apply to All</Button>
+                           <Button type="button" variant="secondary" disabled={!bulkVote}>{t('apply_to_all')}</Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                             <AlertDialogHeader>
-                                <AlertDialogTitle className='flex items-center'><AlertTriangle className="mr-2 h-5 w-5 text-destructive" />Confirm Bulk Update</AlertDialogTitle>
+                                <AlertDialogTitle className='flex items-center'><AlertTriangle className="mr-2 h-5 w-5 text-destructive" />{t('confirm_bulk_update_title')}</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                    Are you sure you want to set the vote for all {fields.length} attendees to "{bulkVote}"? This will overwrite any existing individual votes on this form.
+                                    {t('confirm_bulk_update_desc', { count: fields.length, vote: t(bulkVote as any) })}
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={handleBulkVote}>Confirm & Apply</AlertDialogAction>
+                                <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                                <AlertDialogAction onClick={handleBulkVote}>{t('confirm_apply')}</AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>
                     </AlertDialog>
@@ -220,8 +220,8 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
             {meeting.meetingType === 'การประชุมสภา' && (
                 <Card>
                      <CardHeader className='pb-2'>
-                        <CardTitle className="text-lg flex items-center"><Landmark className="mr-2" />Parliamentary Vote Totals</CardTitle>
-                        <CardDescription>Enter the final vote counts from the entire parliament.</CardDescription>
+                        <CardTitle className="text-lg flex items-center"><Landmark className="mr-2" />{t('parliamentary_vote_totals_title')}</CardTitle>
+                        <CardDescription>{t('parliamentary_vote_totals_subtitle')}</CardDescription>
                     </CardHeader>
                     <CardContent className='grid grid-cols-3 gap-4'>
                         <FormField
@@ -229,7 +229,7 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
                             name="totalParliamentAye"
                             render={({ field }) => (
                                 <FormItem>
-                                <FormLabel>Total 'Aye' Votes</FormLabel>
+                                <FormLabel>{t('total_aye_votes')}</FormLabel>
                                 <FormControl>
                                     <Input type="number" placeholder="e.g., 150" {...field} />
                                 </FormControl>
@@ -242,7 +242,7 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
                             name="totalParliamentNay"
                             render={({ field }) => (
                                 <FormItem>
-                                <FormLabel>Total 'Nay' Votes</FormLabel>
+                                <FormLabel>{t('total_nay_votes')}</FormLabel>
                                 <FormControl>
                                     <Input type="number" placeholder="e.g., 100" {...field} />
                                 </FormControl>
@@ -255,7 +255,7 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
                             name="totalParliamentAbstain"
                             render={({ field }) => (
                                 <FormItem>
-                                <FormLabel>Total 'Abstain' Votes</FormLabel>
+                                <FormLabel>{t('total_abstain_votes')}</FormLabel>
                                 <FormControl>
                                     <Input type="number" placeholder="e.g., 10" {...field} />
                                 </FormControl>
@@ -271,8 +271,8 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
               <Table>
                 <TableHeader className="sticky top-0 bg-muted/50">
                   <TableRow>
-                    <TableHead>Attendee</TableHead>
-                    <TableHead className="w-[150px]">Vote</TableHead>
+                    <TableHead>{t('attendee')}</TableHead>
+                    <TableHead className="w-[150px]">{t('vote')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -288,14 +288,14 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
                               <FormControl>
                                  <Select onValueChange={field.onChange} value={field.value}>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select vote" />
+                                        <SelectValue placeholder={t('select_vote')} />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="Aye">Aye</SelectItem>
-                                        <SelectItem value="Nay">Nay</SelectItem>
-                                        <SelectItem value="Abstain">Abstain</SelectItem>
-                                        <SelectItem value="Absent">Absent</SelectItem>
-                                        <SelectItem value="Leave">Leave</SelectItem>
+                                        <SelectItem value="Aye">{t('aye')}</SelectItem>
+                                        <SelectItem value="Nay">{t('nay')}</SelectItem>
+                                        <SelectItem value="Abstain">{t('abstain')}</SelectItem>
+                                        <SelectItem value="Absent">{t('absent')}</SelectItem>
+                                        <SelectItem value="Leave">{t('on_leave')}</SelectItem>
                                     </SelectContent>
                                 </Select>
                               </FormControl>
@@ -310,12 +310,12 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
               </Table>
             </div>
             <DialogFooter>
-              <Button type="button" variant="ghost" onClick={handleReset}><RefreshCw className="mr-2 h-4 w-4" /> Reset</Button>
+              <Button type="button" variant="ghost" onClick={handleReset}><RefreshCw className="mr-2 h-4 w-4" /> {t('reset')}</Button>
               <DialogClose asChild>
-                <Button type="button" variant="secondary">Cancel</Button>
+                <Button type="button" variant="secondary">{t('cancel')}</Button>
               </DialogClose>
               <Button type="submit">
-                <Save className="mr-2 h-4 w-4" /> Save Votes
+                <Save className="mr-2 h-4 w-4" /> {t('save_votes')}
               </Button>
             </DialogFooter>
           </form>

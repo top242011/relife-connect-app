@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -40,10 +39,11 @@ import {
 import { Badge } from '../ui/badge';
 import type { Member, MP } from '@/lib/types';
 import { Card, CardContent } from '../ui/card';
+import { useLanguage } from '@/hooks/use-language';
 
 type DataType = Member | MP;
 
-const getMemberColumns = (): ColumnDef<Member>[] => [
+const getMemberColumns = (t: (key: string) => string): ColumnDef<Member>[] => [
     { 
         accessorKey: 'name', 
         header: ({ column }) => (
@@ -51,7 +51,7 @@ const getMemberColumns = (): ColumnDef<Member>[] => [
               variant="ghost"
               onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
-              Name
+              {t('name')}
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
         ),
@@ -63,7 +63,7 @@ const getMemberColumns = (): ColumnDef<Member>[] => [
               variant="ghost"
               onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
-              Age
+              {t('age')}
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
         ),
@@ -75,10 +75,11 @@ const getMemberColumns = (): ColumnDef<Member>[] => [
               variant="ghost"
               onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
-              Gender
+              {t('gender')}
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
         ),
+        cell: ({ row }) => t(row.getValue('gender') as any)
     },
     { 
         accessorKey: 'location', 
@@ -87,10 +88,11 @@ const getMemberColumns = (): ColumnDef<Member>[] => [
               variant="ghost"
               onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
-              Location
+              {t('location')}
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
         ),
+         cell: ({ row }) => t(row.getValue('location') as any)
     },
     { 
         accessorKey: 'professionalBackground', 
@@ -99,10 +101,11 @@ const getMemberColumns = (): ColumnDef<Member>[] => [
               variant="ghost"
               onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
-              Profession
+              {t('profession')}
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
         ),
+         cell: ({ row }) => t(row.getValue('professionalBackground') as any)
     },
     {
         accessorKey: 'committeeMemberships',
@@ -111,14 +114,14 @@ const getMemberColumns = (): ColumnDef<Member>[] => [
               variant="ghost"
               onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
-              Committees
+              {t('committees')}
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
         ),
         cell: ({ row }) => {
             const committees = row.getValue('committeeMemberships') as string[];
             if (!committees || committees.length === 0) return null;
-            return <div className="flex flex-wrap gap-1">{committees.map(c => <Badge key={c} variant="secondary">{c}</Badge>)}</div>
+            return <div className="flex flex-wrap gap-1">{committees.map(c => <Badge key={c} variant="secondary">{t(c as any)}</Badge>)}</div>
         },
         sortingFn: (rowA, rowB, columnId) => {
             const a = (rowA.getValue(columnId) as string[]).join(', ');
@@ -143,22 +146,22 @@ const getMemberColumns = (): ColumnDef<Member>[] => [
     }
 ];
 
-const getMPColumns = (): ColumnDef<MP>[] => [
+const getMPColumns = (t: (key: string) => string): ColumnDef<MP>[] => [
     { 
         accessorKey: 'name', 
-        header: 'Name' 
+        header: t('name')
     },
-    { accessorKey: 'location', header: 'Constituency' },
-    { accessorKey: 'parliamentaryRoles', header: 'Role' },
+    { accessorKey: 'location', header: t('constituency'), cell: ({ row }) => t(row.getValue('location') as any) },
+    { accessorKey: 'parliamentaryRoles', header: t('role'), cell: ({ row }) => t(row.getValue('parliamentaryRoles') as any) },
     {
         accessorKey: 'keyPolicyInterests',
-        header: 'Policy Interests',
+        header: t('policy_interests'),
         cell: ({ row }) => {
             const interests = (row.getValue('keyPolicyInterests') as string).split(', ');
-            return <div className="flex flex-wrap gap-1">{interests.map(i => <Badge key={i} variant="secondary">{i}</Badge>)}</div>
+            return <div className="flex flex-wrap gap-1">{interests.map(i => <Badge key={i} variant="secondary">{t(i as any)}</Badge>)}</div>
         }
     },
-    { accessorKey: 'votingRecord', header: 'Voting Record' },
+    { accessorKey: 'votingRecord', header: t('voting_record'), cell: ({ row }) => t(row.getValue('votingRecord') as any) },
     {
         id: 'actions',
         cell: ({ row }) => {
@@ -177,7 +180,8 @@ const getMPColumns = (): ColumnDef<MP>[] => [
 ];
 
 export function MembersTable({ data, type }: { data: DataType[], type: 'member' | 'mp' }) {
-    const columns = React.useMemo(() => (type === 'member' ? getMemberColumns() : getMPColumns()), [type]);
+    const { t } = useLanguage();
+    const columns = React.useMemo(() => (type === 'member' ? getMemberColumns(t) : getMPColumns(t)), [type, t]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -208,7 +212,7 @@ export function MembersTable({ data, type }: { data: DataType[], type: 'member' 
         <div className="w-full">
             <div className="flex items-center py-4">
                 <Input
-                placeholder="Filter by name..."
+                placeholder={t('filter_by_name_placeholder')}
                 value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
                 onChange={(event) =>
                     table.getColumn('name')?.setFilterValue(event.target.value)
@@ -218,7 +222,7 @@ export function MembersTable({ data, type }: { data: DataType[], type: 'member' 
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="ml-auto">
-                    Columns <ChevronDown className="ml-2 h-4 w-4" />
+                    {t('columns')} <ChevronDown className="ml-2 h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
@@ -235,7 +239,7 @@ export function MembersTable({ data, type }: { data: DataType[], type: 'member' 
                             column.toggleVisibility(!!value)
                             }
                         >
-                            {column.id === 'professionalBackground' ? 'Profession' : column.id === 'committeeMemberships' ? 'Committees' : column.id}
+                            {t(column.id as any)}
                         </DropdownMenuCheckboxItem>
                         );
                     })}
@@ -285,7 +289,7 @@ export function MembersTable({ data, type }: { data: DataType[], type: 'member' 
                         colSpan={columns.length}
                         className="h-24 text-center"
                         >
-                        No results.
+                        {t('no_results')}
                         </TableCell>
                     </TableRow>
                     )}
@@ -294,8 +298,10 @@ export function MembersTable({ data, type }: { data: DataType[], type: 'member' 
             </div>
             <div className="flex items-center justify-end space-x-2 py-4">
                 <div className="flex-1 text-sm text-muted-foreground">
-                {table.getFilteredSelectedRowModel().rows.length} of{' '}
-                {table.getFilteredRowModel().rows.length} row(s) selected.
+                {t('table_footer_selected_rows', { 
+                    selected: table.getFilteredSelectedRowModel().rows.length,
+                    total: table.getFilteredRowModel().rows.length 
+                })}
                 </div>
                 <div className="space-x-2">
                 <Button
@@ -304,7 +310,7 @@ export function MembersTable({ data, type }: { data: DataType[], type: 'member' 
                     onClick={() => table.previousPage()}
                     disabled={!table.getCanPreviousPage()}
                 >
-                    Previous
+                    {t('previous')}
                 </Button>
                 <Button
                     variant="outline"
@@ -312,7 +318,7 @@ export function MembersTable({ data, type }: { data: DataType[], type: 'member' 
                     onClick={() => table.nextPage()}
                     disabled={!table.getCanNextPage()}
                 >
-                    Next
+                    {t('next')}
                 </Button>
                 </div>
             </div>

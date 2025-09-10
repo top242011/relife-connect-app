@@ -14,8 +14,10 @@ import {
 } from '@/components/ui/chart';
 import { members } from '@/lib/data';
 import { Location } from '@/lib/types';
+import { useLanguage } from '@/hooks/use-language';
 
 export function DemographicsChart() {
+  const { t } = useLanguage();
   const demographicsData = members.reduce((acc, member) => {
     const region = member.location;
     const regionData = acc.find(d => d.region === region);
@@ -30,7 +32,7 @@ export function DemographicsChart() {
 
   const chartConfig = {
     members: {
-      label: 'Members',
+      label: t('members'),
       color: 'hsl(var(--primary))',
     },
   };
@@ -38,8 +40,8 @@ export function DemographicsChart() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Member Demographics</CardTitle>
-        <CardDescription>Distribution of party members by region</CardDescription>
+        <CardTitle>{t('demographics_title')}</CardTitle>
+        <CardDescription>{t('demographics_subtitle')}</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
@@ -48,7 +50,7 @@ export function DemographicsChart() {
             margin={{ top: 5, right: 20, left: -10, bottom: 5 }}
           >
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="region" tickLine={false} axisLine={false} tickMargin={8} />
+            <XAxis dataKey="region" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => t(value as any)} />
             <YAxis />
             <Tooltip
               cursor={false}

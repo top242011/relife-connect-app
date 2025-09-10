@@ -1,4 +1,4 @@
-
+'use client';
 
 import { Member, MP, Vote } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,9 +10,11 @@ import { EditProfileForm } from "./edit-profile-form";
 import Link from "next/link";
 import { allPartyMembers, votes, meetings } from "@/lib/data";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import { useLanguage } from "@/hooks/use-language";
 
 
 export function MemberProfile({ member }: { member: Member | MP }) {
+    const { t } = useLanguage();
     const isMP = 'electoralHistory' in member;
 
     const fullMemberInfo = allPartyMembers.find(m => m.id === member.id);
@@ -38,12 +40,12 @@ export function MemberProfile({ member }: { member: Member | MP }) {
                     <div>
                         <h1 className="text-3xl font-bold">{member.name}</h1>
                         <p className="text-muted-foreground">
-                            {isMP ? (member as MP).parliamentaryRoles : member.professionalBackground}
+                            {isMP ? t((member as MP).parliamentaryRoles as any) : t(member.professionalBackground as any)}
                         </p>
                         <div className="flex flex-wrap gap-2 mt-2">
-                             <Badge variant={status === 'Active' ? 'default' : 'secondary'}>{status}</Badge>
-                             {member.roles.includes('MP') && <Badge variant="secondary">Member of Parliament</Badge>}
-                             {member.roles.includes('Executive') && <Badge variant="destructive">Executive Committee</Badge>}
+                             <Badge variant={status === 'Active' ? 'default' : 'secondary'}>{t(status as any)}</Badge>
+                             {member.roles.includes('MP') && <Badge variant="secondary">{t('member_of_parliament')}</Badge>}
+                             {member.roles.includes('Executive') && <Badge variant="destructive">{t('executive_committee')}</Badge>}
                         </div>
                     </div>
                 </div>
@@ -53,56 +55,56 @@ export function MemberProfile({ member }: { member: Member | MP }) {
             {isMP && absences.length > ABSENCE_THRESHOLD && (
                  <Card className="border-destructive">
                     <CardHeader>
-                        <CardTitle className="text-destructive flex items-center"><AlertTriangle className="mr-2"/>Attendance Warning</CardTitle>
+                        <CardTitle className="text-destructive flex items-center"><AlertTriangle className="mr-2"/>{t('attendance_warning_title')}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p>This member has exceeded the absence threshold.</p>
-                        <p className="text-2xl font-bold">Absences: {absences.length}/{ABSENCE_THRESHOLD}</p>
+                        <p>{t('attendance_warning_subtitle')}</p>
+                        <p className="text-2xl font-bold">{t('absences')}: {absences.length}/{ABSENCE_THRESHOLD}</p>
                     </CardContent>
                 </Card>
             )}
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Contact Information</CardTitle>
+                    <CardTitle>{t('contact_information')}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><span className="font-semibold">Email:</span> {member.email || 'N/A'}</div>
-                    <div><span className="font-semibold">Location:</span> {member.location}</div>
+                    <div><span className="font-semibold">{t('email')}:</span> {member.email || 'N/A'}</div>
+                    <div><span className="font-semibold">{t('location')}:</span> {t(member.location as any)}</div>
                 </CardContent>
             </Card>
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Profile Details</CardTitle>
+                    <CardTitle>{t('profile_details_title')}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-2 gap-4">
-                    <div><span className="font-semibold">Age:</span> {member.age}</div>
-                    <div><span className="font-semibold">Gender:</span> {member.gender}</div>
-                    <div><span className="font-semibold">Education:</span> {member.education}</div>
-                    <div><span className="font-semibold">Professional Background:</span> {member.professionalBackground}</div>
+                    <div><span className="font-semibold">{t('age')}:</span> {member.age}</div>
+                    <div><span className="font-semibold">{t('gender')}:</span> {t(member.gender as any)}</div>
+                    <div><span className="font-semibold">{t('education')}:</span> {t(member.education as any)}</div>
+                    <div><span className="font-semibold">{t('professional_background')}:</span> {t(member.professionalBackground as any)}</div>
                 </CardContent>
             </Card>
             
             {!isMP && (
                  <Card>
                     <CardHeader>
-                        <CardTitle>Party Involvement</CardTitle>
+                        <CardTitle>{t('party_involvement_title')}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                          <div>
-                            <h3 className="font-semibold mb-2">Committee Memberships</h3>
+                            <h3 className="font-semibold mb-2">{t('committee_memberships')}</h3>
                             <div className="flex flex-wrap gap-2">
-                                {(member as Member).committeeMemberships.map(c => <Badge key={c} variant="outline">{c}</Badge>)}
+                                {(member as Member).committeeMemberships.map(c => <Badge key={c} variant="outline">{t(c as any)}</Badge>)}
                             </div>
                         </div>
                          <div>
-                            <h3 className="font-semibold">Activity Log</h3>
-                            <p className="text-muted-foreground">{(member as Member).activityLog}</p>
+                            <h3 className="font-semibold">{t('activity_log')}</h3>
+                            <p className="text-muted-foreground">{t((member as Member).activityLog as any)}</p>
                         </div>
                          <div>
-                            <h3 className="font-semibold">Volunteer Work</h3>
-                            <p className="text-muted-foreground">{(member as Member).volunteerWork}</p>
+                            <h3 className="font-semibold">{t('volunteer_work')}</h3>
+                            <p className="text-muted-foreground">{t((member as Member).volunteerWork as any, {hours: (member as Member).volunteerWork.match(/\\d+/)?.[0] })}</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -112,17 +114,17 @@ export function MemberProfile({ member }: { member: Member | MP }) {
                 <>
                 <Card>
                     <CardHeader>
-                        <CardTitle>Parliamentary Information</CardTitle>
+                        <CardTitle>{t('parliamentary_information_title')}</CardTitle>
                     </CardHeader>
                     <CardContent className="grid grid-cols-2 gap-4">
-                        <div><span className="font-semibold">Constituency:</span> {member.location}</div>
-                        <div><span className="font-semibold">Electoral History:</span> {(member as MP).electoralHistory}</div>
-                        <div><span className="font-semibold">Parliamentary Roles:</span> {(member as MP).parliamentaryRoles}</div>
+                        <div><span className="font-semibold">{t('constituency')}:</span> {t(member.location as any)}</div>
+                        <div><span className="font-semibold">{t('electoral_history')}:</span> {t((member as MP).electoralHistory as any)}</div>
+                        <div><span className="font-semibold">{t('parliamentary_roles')}:</span> {t((member as MP).parliamentaryRoles as any)}</div>
                         <div>
-                            <h3 className="font-semibold mb-2">Key Policy Interests</h3>
+                            <h3 className="font-semibold mb-2">{t('key_policy_interests')}</h3>
                              <div className="flex flex-wrap gap-2">
                                 {(member as MP).keyPolicyInterests.split(', ').map(interest => (
-                                    <Badge key={interest} variant="secondary">{interest}</Badge>
+                                    <Badge key={interest} variant="secondary">{t(interest as any)}</Badge>
                                 ))}
                             </div>
                         </div>
@@ -132,11 +134,11 @@ export function MemberProfile({ member }: { member: Member | MP }) {
             )}
             <Card>
                 <CardHeader>
-                    <CardTitle>Attendance Record</CardTitle>
+                    <CardTitle>{t('attendance_record_title')}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <h3 className="font-semibold mb-2">Meetings on Leave ({leaves.length})</h3>
+                        <h3 className="font-semibold mb-2">{t('meetings_on_leave')} ({leaves.length})</h3>
                         <div className="max-h-48 overflow-y-auto border rounded-md">
                             <Table>
                                 <TableBody>
@@ -149,13 +151,13 @@ export function MemberProfile({ member }: { member: Member | MP }) {
                                                     <div className="text-sm text-muted-foreground">{meeting?.date}</div>
                                                 </TableCell>
                                                 <TableCell className="text-right">
-                                                    <Button variant="outline" size="sm"><FileUp className="mr-2 h-3 w-3"/> Upload Doc</Button>
+                                                    <Button variant="outline" size="sm"><FileUp className="mr-2 h-3 w-3"/> {t('upload_doc')}</Button>
                                                 </TableCell>
                                             </TableRow>
                                         )
                                     }) : (
                                          <TableRow>
-                                            <TableCell className="h-24 text-center">No leaves recorded.</TableCell>
+                                            <TableCell className="h-24 text-center">{t('no_leaves_recorded')}</TableCell>
                                         </TableRow>
                                     )}
                                 </TableBody>
@@ -163,7 +165,7 @@ export function MemberProfile({ member }: { member: Member | MP }) {
                         </div>
                     </div>
                      <div>
-                        <h3 className="font-semibold mb-2">Meetings Absent ({absences.length})</h3>
+                        <h3 className="font-semibold mb-2">{t('meetings_absent')} ({absences.length})</h3>
                         <div className="max-h-48 overflow-y-auto border rounded-md">
                             <Table>
                                  <TableBody>
@@ -179,7 +181,7 @@ export function MemberProfile({ member }: { member: Member | MP }) {
                                         )
                                     }) : (
                                          <TableRow>
-                                            <TableCell className="h-24 text-center">No absences recorded.</TableCell>
+                                            <TableCell className="h-24 text-center">{t('no_absences_recorded')}</TableCell>
                                         </TableRow>
                                     )}
                                 </TableBody>
@@ -192,11 +194,11 @@ export function MemberProfile({ member }: { member: Member | MP }) {
              {isMP && (
                 <Card>
                     <CardHeader>
-                         <CardTitle>Voting Record</CardTitle>
-                        <CardDescription>A log of all recorded votes on parliamentary and party motions.</CardDescription>
+                         <CardTitle>{t('voting_record_title')}</CardTitle>
+                        <CardDescription>{t('voting_record_subtitle')}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-muted-foreground">Detailed voting record will be displayed here. <Link href={`/parliament/${member.id}`} className="text-primary hover:underline">View Full Record</Link></p>
+                        <p className="text-muted-foreground">{t('voting_record_placeholder_desc')} <Link href={`/parliament/${member.id}`} className="text-primary hover:underline">{t('view_full_record')}</Link></p>
                     </CardContent>
                 </Card>
              )}

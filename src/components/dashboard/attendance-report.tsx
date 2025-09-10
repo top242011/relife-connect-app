@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -24,8 +23,11 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import Link from 'next/link';
+import { useLanguage } from '@/hooks/use-language';
 
 export function AttendanceReport() {
+    const { t } = useLanguage();
+
     const attendanceData = React.useMemo(() => {
         const data = meetings.map(meeting => {
             const motionIds = meeting.motions.map(m => m.id);
@@ -71,11 +73,11 @@ export function AttendanceReport() {
 
     const chartConfig = {
         absent: {
-          label: 'Absent',
+          label: t('absent'),
           color: 'hsl(var(--destructive))',
         },
         leave: {
-            label: 'On Leave',
+            label: t('on_leave'),
             color: 'hsl(var(--chart-2))'
         }
       };
@@ -84,8 +86,8 @@ export function AttendanceReport() {
         <div className="grid gap-6 lg:grid-cols-2">
             <Card>
                 <CardHeader>
-                    <CardTitle>Absences & Leaves per Meeting</CardTitle>
-                    <CardDescription>Number of members absent or on leave for recent meetings.</CardDescription>
+                    <CardTitle>{t('absences_leaves_per_meeting_title')}</CardTitle>
+                    <CardDescription>{t('absences_leaves_per_meeting_subtitle')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
@@ -105,17 +107,17 @@ export function AttendanceReport() {
             </Card>
              <Card>
                 <CardHeader>
-                    <CardTitle>Detailed Absence & Leave Log</CardTitle>
-                    <CardDescription>A log of all recorded absences and leaves.</CardDescription>
+                    <CardTitle>{t('detailed_absence_leave_log_title')}</CardTitle>
+                    <CardDescription>{t('detailed_absence_leave_log_subtitle')}</CardDescription>
                 </CardHeader>
                 <CardContent className="max-h-[350px] overflow-y-auto">
                    <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Member</TableHead>
-                                <TableHead>Meeting</TableHead>
-                                <TableHead>Status</TableHead>
+                                <TableHead>{t('date')}</TableHead>
+                                <TableHead>{t('member')}</TableHead>
+                                <TableHead>{t('meeting')}</TableHead>
+                                <TableHead>{t('status')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -132,7 +134,7 @@ export function AttendanceReport() {
                                             {item.meetingTitle}
                                         </Link>
                                     </TableCell>
-                                    <TableCell>{item.status}</TableCell>
+                                    <TableCell>{t(item.status as any)}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

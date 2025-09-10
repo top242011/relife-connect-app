@@ -1,4 +1,4 @@
-
+'use client'
 
 import { meetings, mps, votes } from "@/lib/data";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,19 +9,21 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, CheckCircle2, MinusCircle, UserX, XCircle, AlertTriangle, Edit } from "lucide-react";
 import { EditProfileForm } from "@/components/members/edit-profile-form";
+import { useLanguage } from "@/hooks/use-language";
 
 export default function MPProfilePage({ params }: { params: { id: string } }) {
+    const { t } = useLanguage();
     const mp = mps.find(m => m.id === params.id);
 
     if (!mp) {
         return (
             <div className="text-center">
-                <h1 className="text-2xl font-bold">Member of Parliament not found</h1>
-                <p className="text-muted-foreground">The requested MP could not be located.</p>
+                <h1 className="text-2xl font-bold">{t('mp_not_found_title')}</h1>
+                <p className="text-muted-foreground">{t('mp_not_found_subtitle')}</p>
                 <Button asChild className="mt-4">
                     <Link href="/parliament">
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back to Parliament List
+                        {t('back_to_parliament_list')}
                     </Link>
                 </Button>
             </div>
@@ -36,9 +38,9 @@ export default function MPProfilePage({ params }: { params: { id: string } }) {
     const getVoteResult = (motionId: string) => {
         const ayes = votes.filter(v => v.motionId === motionId && v.vote === 'Aye').length;
         const nays = votes.filter(v => v.motionId === motionId && v.vote === 'Nay').length;
-        if (ayes > nays) return <Badge variant="default" className="bg-green-600">Passed</Badge>;
-        if (nays > ayes) return <Badge variant="destructive">Failed</Badge>;
-        return <Badge variant="secondary">Tied</Badge>
+        if (ayes > nays) return <Badge variant="default" className="bg-green-600">{t('passed')}</Badge>;
+        if (nays > ayes) return <Badge variant="destructive">{t('failed')}</Badge>;
+        return <Badge variant="secondary">{t('tied')}</Badge>
     }
 
     return (
@@ -51,58 +53,58 @@ export default function MPProfilePage({ params }: { params: { id: string } }) {
                     </Avatar>
                     <div>
                         <h1 className="text-3xl font-bold">{mp.name}</h1>
-                        <p className="text-muted-foreground">{mp.parliamentaryRoles} for {mp.location}</p>
+                        <p className="text-muted-foreground">{t(mp.parliamentaryRoles as any)} {t('for')} {t(mp.location as any)}</p>
                         <div className="flex flex-wrap gap-2 mt-2">
                             {mp.keyPolicyInterests.split(', ').map(interest => (
-                                <Badge key={interest} variant="secondary">{interest}</Badge>
+                                <Badge key={interest} variant="secondary">{t(interest as any)}</Badge>
                             ))}
                         </div>
                     </div>
                 </div>
                  <EditProfileForm member={mp}>
-                    <Button variant="outline"><Edit className="mr-2 h-4 w-4" /> Edit Profile</Button>
+                    <Button variant="outline"><Edit className="mr-2 h-4 w-4" />{t('edit_profile')}</Button>
                 </EditProfileForm>
             </div>
 
             {absences > ABSENCE_THRESHOLD && (
                  <Card className="border-destructive">
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-destructive flex items-center text-lg"><AlertTriangle className="mr-2 h-5 w-5"/>Attendance Warning</CardTitle>
+                        <CardTitle className="text-destructive flex items-center text-lg"><AlertTriangle className="mr-2 h-5 w-5"/>{t('attendance_warning_title')}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p>This member has exceeded the absence threshold.</p>
-                        <p className="text-xl font-bold">Absences: {absences}/{ABSENCE_THRESHOLD}</p>
+                        <p>{t('attendance_warning_subtitle')}</p>
+                        <p className="text-xl font-bold">{t('absences')}: {absences}/{ABSENCE_THRESHOLD}</p>
                     </CardContent>
                 </Card>
             )}
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Profile Details</CardTitle>
+                    <CardTitle>{t('profile_details_title')}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-2 gap-4">
-                    <div><span className="font-semibold">Email:</span> {mp.email}</div>
-                    <div><span className="font-semibold">Age:</span> {mp.age}</div>
-                    <div><span className="font-semibold">Gender:</span> {mp.gender}</div>
-                    <div><span className="font-semibold">Education:</span> {mp.education}</div>
-                    <div><span className="font-semibold">Background:</span> {mp.professionalBackground}</div>
-                    <div className="col-span-2"><span className="font-semibold">Electoral History:</span> {mp.electoralHistory}</div>
+                    <div><span className="font-semibold">{t('email')}:</span> {mp.email}</div>
+                    <div><span className="font-semibold">{t('age')}:</span> {mp.age}</div>
+                    <div><span className="font-semibold">{t('gender')}:</span> {t(mp.gender as any)}</div>
+                    <div><span className="font-semibold">{t('education')}:</span> {t(mp.education as any)}</div>
+                    <div><span className="font-semibold">{t('background')}:</span> {t(mp.professionalBackground as any)}</div>
+                    <div className="col-span-2"><span className="font-semibold">{t('electoral_history')}:</span> {t(mp.electoralHistory as any)}</div>
                 </CardContent>
             </Card>
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Sponsored Motions</CardTitle>
-                    <CardDescription>Motions this member has sponsored.</CardDescription>
+                    <CardTitle>{t('sponsored_motions_title')}</CardTitle>
+                    <CardDescription>{t('sponsored_motions_subtitle')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Motion</TableHead>
-                                <TableHead>Topic</TableHead>
-                                <TableHead>Meeting</TableHead>
-                                <TableHead>Outcome</TableHead>
+                                <TableHead>{t('motion')}</TableHead>
+                                <TableHead>{t('topic')}</TableHead>
+                                <TableHead>{t('meeting')}</TableHead>
+                                <TableHead>{t('outcome')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -111,7 +113,7 @@ export default function MPProfilePage({ params }: { params: { id: string } }) {
                                 return (
                                     <TableRow key={motion.id}>
                                         <TableCell className="font-medium">{motion.title}</TableCell>
-                                        <TableCell><Badge variant="outline">{motion.topic}</Badge></TableCell>
+                                        <TableCell><Badge variant="outline">{t(motion.topic as any)}</Badge></TableCell>
                                         <TableCell>
                                             <Link href={`/meetings/manage/${meeting?.id}`} className="text-primary hover:underline">
                                                 {meeting?.title}
@@ -122,7 +124,7 @@ export default function MPProfilePage({ params }: { params: { id: string } }) {
                                 )
                             }) : (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="text-center">No sponsored motions found.</TableCell>
+                                    <TableCell colSpan={4} className="text-center">{t('no_sponsored_motions')}</TableCell>
                                 </TableRow>
                             )}
                         </TableBody>
@@ -133,17 +135,17 @@ export default function MPProfilePage({ params }: { params: { id: string } }) {
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Voting Record</CardTitle>
-                    <CardDescription>A log of all recorded votes on parliamentary and party motions.</CardDescription>
+                    <CardTitle>{t('voting_record_title')}</CardTitle>
+                    <CardDescription>{t('voting_record_subtitle')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Meeting</TableHead>
-                                <TableHead>Motion</TableHead>
-                                <TableHead>Vote</TableHead>
+                                <TableHead>{t('date')}</TableHead>
+                                <TableHead>{t('meeting')}</TableHead>
+                                <TableHead>{t('motion')}</TableHead>
+                                <TableHead>{t('vote')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -165,13 +167,13 @@ export default function MPProfilePage({ params }: { params: { id: string } }) {
                                                 vote.vote === 'Nay' ? 'destructive' :
                                                 vote.vote === 'Abstain' ? 'secondary' :
                                                 'outline'
-                                            }>{vote.vote}</Badge>
+                                            }>{t(vote.vote as any)}</Badge>
                                         </TableCell>
                                     </TableRow>
                                 )
                             }) : (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="text-center">No voting records found.</TableCell>
+                                    <TableCell colSpan={4} className="text-center">{t('no_voting_records')}</TableCell>
                                 </TableRow>
                             )}
                         </TableBody>
@@ -182,7 +184,7 @@ export default function MPProfilePage({ params }: { params: { id: string } }) {
                  <Button asChild variant="outline">
                     <Link href="/parliament">
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back to Parliament List
+                        {t('back_to_parliament_list')}
                     </Link>
                 </Button>
             </div>

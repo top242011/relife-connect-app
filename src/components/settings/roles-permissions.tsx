@@ -1,4 +1,3 @@
-
 'use client'
 
 import { useState } from "react";
@@ -12,11 +11,12 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Edit, Trash2, Save } from "lucide-react";
 import { UsersTable } from "./users-table";
 import { Badge } from "../ui/badge";
+import { useLanguage } from "@/hooks/use-language";
 
 
 const EditRoleDialog = ({ role }: { role: Role }) => {
+    const { t } = useLanguage();
     const [isOpen, setIsOpen] = useState(false);
-    // In a real app, you'd probably have a more robust state management for this
     const [currentPermissions, setCurrentPermissions] = useState(role.permissions);
 
     const handlePermissionChange = (permissionId: string, checked: boolean) => {
@@ -28,9 +28,7 @@ const EditRoleDialog = ({ role }: { role: Role }) => {
     };
 
     const handleSave = () => {
-        // Here you would typically call an API to save the changes
         console.log(`Saving role ${role.id} with permissions:`, currentPermissions);
-        // For this mock, we'll assume it saves and then close
         setIsOpen(false);
     }
 
@@ -41,11 +39,11 @@ const EditRoleDialog = ({ role }: { role: Role }) => {
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Edit Role: {role.name}</DialogTitle>
-                    <DialogDescription>Select the permissions for this role.</DialogDescription>
+                    <DialogTitle>{t('edit_role_title')}: {t(role.name as any)}</DialogTitle>
+                    <DialogDescription>{t('edit_role_subtitle')}</DialogDescription>
                 </DialogHeader>
                 <div className="py-4">
-                        <h3 className="text-lg font-medium mb-2">Permissions</h3>
+                        <h3 className="text-lg font-medium mb-2">{t('permissions')}</h3>
                     <div className="grid grid-cols-2 gap-4">
                         {permissions.map(permission => (
                             <div key={permission.id} className="flex items-center space-x-2">
@@ -55,7 +53,7 @@ const EditRoleDialog = ({ role }: { role: Role }) => {
                                     onCheckedChange={(checked) => handlePermissionChange(permission.id, !!checked)}
                                 />
                                 <label htmlFor={`${role.id}-${permission.id}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                    {permission.name}
+                                    {t(permission.name as any)}
                                 </label>
                             </div>
                         ))}
@@ -63,9 +61,9 @@ const EditRoleDialog = ({ role }: { role: Role }) => {
                 </div>
                  <DialogFooter>
                     <DialogClose asChild>
-                        <Button variant="ghost">Cancel</Button>
+                        <Button variant="ghost">{t('cancel')}</Button>
                     </DialogClose>
-                    <Button onClick={handleSave}><Save className="mr-2 h-4 w-4"/>Save Changes</Button>
+                    <Button onClick={handleSave}><Save className="mr-2 h-4 w-4"/>{t('save_changes')}</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -73,31 +71,32 @@ const EditRoleDialog = ({ role }: { role: Role }) => {
 }
 
 export function RolesPermissions() {
+    const { t } = useLanguage();
     return (
         <div className="space-y-6">
             <Card>
                 <CardHeader>
-                    <CardTitle>Role Management</CardTitle>
-                    <CardDescription>Define roles and assign permissions to control access to system features.</CardDescription>
+                    <CardTitle>{t('role_management_title')}</CardTitle>
+                    <CardDescription>{t('role_management_subtitle')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Role</TableHead>
-                                <TableHead>Permissions</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
+                                <TableHead>{t('role')}</TableHead>
+                                <TableHead>{t('permissions')}</TableHead>
+                                <TableHead className="text-right">{t('actions')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {roles.map(role => (
                                 <TableRow key={role.id}>
-                                    <TableCell className="font-medium">{role.name}</TableCell>
+                                    <TableCell className="font-medium">{t(role.name as any)}</TableCell>
                                     <TableCell>
                                         <div className="flex flex-wrap gap-1">
                                             {role.permissions.map(pId => {
                                                 const permission = permissions.find(p => p.id === pId);
-                                                return <Badge key={pId} variant="secondary">{permission?.name}</Badge>
+                                                return <Badge key={pId} variant="secondary">{permission ? t(permission.name as any) : ''}</Badge>
                                             })}
                                         </div>
                                     </TableCell>
@@ -114,8 +113,8 @@ export function RolesPermissions() {
 
              <Card>
                 <CardHeader>
-                    <CardTitle>User Account Management</CardTitle>
-                    <CardDescription>Assign roles to users and manage their account status.</CardDescription>
+                    <CardTitle>{t('user_account_management_title')}</CardTitle>
+                    <CardDescription>{t('user_account_management_subtitle')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <UsersTable users={allPartyMembers} roles={roles} />

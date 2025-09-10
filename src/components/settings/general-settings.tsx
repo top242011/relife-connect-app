@@ -1,4 +1,3 @@
-
 'use client'
 
 import { useState } from 'react';
@@ -8,8 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlusCircle, Trash2, Edit, Save, X } from 'lucide-react';
 import { motionTopics as initialMotionTopics, committeeNames as initialCommitteeNames } from '@/lib/data';
+import { useLanguage } from '@/hooks/use-language';
 
 export function GeneralSettings() {
+    const { t } = useLanguage();
     const [motionTopics, setMotionTopics] = useState(initialMotionTopics);
     const [committeeNames, setCommitteeNames] = useState(initialCommitteeNames);
 
@@ -75,8 +76,8 @@ export function GeneralSettings() {
         <div className="grid gap-6 md:grid-cols-2">
             <Card>
                 <CardHeader>
-                    <CardTitle>Manage Motion Topics</CardTitle>
-                    <CardDescription>Add, edit, or delete topics used for categorizing motions.</CardDescription>
+                    <CardTitle>{t('manage_motion_topics_title')}</CardTitle>
+                    <CardDescription>{t('manage_motion_topics_subtitle')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4">
@@ -84,9 +85,9 @@ export function GeneralSettings() {
                             <Input
                                 value={newTopic}
                                 onChange={(e) => setNewTopic(e.target.value)}
-                                placeholder="New topic name"
+                                placeholder={t('new_topic_placeholder')}
                             />
-                            <Button onClick={handleAddTopic}><PlusCircle className="mr-2 h-4 w-4" /> Add Topic</Button>
+                            <Button onClick={handleAddTopic}><PlusCircle className="mr-2 h-4 w-4" /> {t('add_topic_button')}</Button>
                         </div>
                         <div className="rounded-md border max-h-60 overflow-y-auto">
                             <Table>
@@ -97,7 +98,7 @@ export function GeneralSettings() {
                                                 {editingTopic === topic ? (
                                                     <Input value={editingTopicValue} onChange={(e) => setEditingTopicValue(e.target.value)} />
                                                 ) : (
-                                                    topic
+                                                    t(topic as any)
                                                 )}
                                             </TableCell>
                                             <TableCell className="text-right">
@@ -124,8 +125,8 @@ export function GeneralSettings() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Manage Committee Names</CardTitle>
-                    <CardDescription>Add, edit, or delete committee names for member profiles.</CardDescription>
+                    <CardTitle>{t('manage_committee_names_title')}</CardTitle>
+                    <CardDescription>{t('manage_committee_names_subtitle')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4">
@@ -133,9 +134,9 @@ export function GeneralSettings() {
                             <Input
                                 value={newCommittee}
                                 onChange={(e) => setNewCommittee(e.target.value)}
-                                placeholder="New committee name"
+                                placeholder={t('new_committee_placeholder')}
                             />
-                            <Button onClick={handleAddCommittee}><PlusCircle className="mr-2 h-4 w-4" /> Add Committee</Button>
+                            <Button onClick={handleAddCommittee}><PlusCircle className="mr-2 h-4 w-4" /> {t('add_committee_button')}</Button>
                         </div>
                         <div className="rounded-md border max-h-60 overflow-y-auto">
                             <Table>
@@ -146,7 +147,7 @@ export function GeneralSettings() {
                                                 {editingCommittee === committee ? (
                                                     <Input value={editingCommitteeValue} onChange={(e) => setEditingCommitteeValue(e.target.value)} />
                                                 ) : (
-                                                    committee
+                                                    t(committee as any)
                                                 )}
                                             </TableCell>
                                             <TableCell className="text-right">

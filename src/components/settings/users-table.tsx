@@ -1,4 +1,3 @@
-
 'use client'
 
 import { Member, MP, Role } from "@/lib/types";
@@ -10,10 +9,12 @@ import { Button } from "../ui/button";
 import { MoreHorizontal } from "lucide-react";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
+import { useLanguage } from "@/hooks/use-language";
 
 type User = Member | MP;
 
 export function UsersTable({ users, roles }: { users: User[], roles: Role[] }) {
+    const { t } = useLanguage();
     // In a real app, user roles would be stored and fetched from a database
     const getUserRoles = (userId: string) => {
         if (userId.startsWith('mp')) return ["Admin"];
@@ -26,10 +27,10 @@ export function UsersTable({ users, roles }: { users: User[], roles: Role[] }) {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>User</TableHead>
-                        <TableHead>Role</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
+                        <TableHead>{t('user')}</TableHead>
+                        <TableHead>{t('role')}</TableHead>
+                        <TableHead>{t('status')}</TableHead>
+                        <TableHead className="text-right">{t('actions')}</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -47,14 +48,14 @@ export function UsersTable({ users, roles }: { users: User[], roles: Role[] }) {
                             <TableCell>
                                 <div className="flex flex-wrap gap-1">
                                     {getUserRoles(user.id).map(roleName => (
-                                        <Badge key={roleName}>{roleName}</Badge>
+                                        <Badge key={roleName}>{t(roleName as any)}</Badge>
                                     ))}
                                 </div>
                             </TableCell>
                              <TableCell>
                                 <div className="flex items-center space-x-2">
                                     <Switch id={`active-status-${user.id}`} defaultChecked />
-                                    <Label htmlFor={`active-status-${user.id}`}>Active</Label>
+                                    <Label htmlFor={`active-status-${user.id}`}>{t('active')}</Label>
                                 </div>
                             </TableCell>
                             <TableCell className="text-right">
@@ -63,11 +64,11 @@ export function UsersTable({ users, roles }: { users: User[], roles: Role[] }) {
                                         <Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent>
-                                        <DropdownMenuLabel>Manage User</DropdownMenuLabel>
-                                        <DropdownMenuItem>Edit Roles</DropdownMenuItem>
-                                        <DropdownMenuItem>Reset Password</DropdownMenuItem>
+                                        <DropdownMenuLabel>{t('manage_user')}</DropdownMenuLabel>
+                                        <DropdownMenuItem>{t('edit_roles')}</DropdownMenuItem>
+                                        <DropdownMenuItem>{t('reset_password')}</DropdownMenuItem>
                                         <DropdownMenuSeparator />
-                                        <DropdownMenuItem className="text-red-500">Deactivate Account</DropdownMenuItem>
+                                        <DropdownMenuItem className="text-red-500">{t('deactivate_account')}</DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </TableCell>

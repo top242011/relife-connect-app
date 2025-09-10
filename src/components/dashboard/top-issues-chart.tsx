@@ -16,15 +16,18 @@ import {
   ChartLegendContent,
 } from '@/components/ui/chart';
 import { meetings } from '@/lib/data';
+import { useLanguage } from '@/hooks/use-language';
 
 const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
 export function TopIssuesChart() {
+    const { t } = useLanguage();
     const processData = () => {
         const topics: { [key: string]: number } = {};
         meetings.forEach(meeting => {
             meeting.motions.forEach(motion => {
-                topics[motion.topic] = (topics[motion.topic] || 0) + 1;
+                const translatedTopic = t(motion.topic as any);
+                topics[translatedTopic] = (topics[translatedTopic] || 0) + 1;
             });
         });
         return Object.entries(topics).map(([name, value]) => ({ name, value, fill: 'var(--color-value)' }));
@@ -39,8 +42,8 @@ export function TopIssuesChart() {
   return (
     <Card className="lg:col-span-1">
       <CardHeader>
-        <CardTitle>Top Issues by Motion</CardTitle>
-        <CardDescription>Distribution of motions across different topics</CardDescription>
+        <CardTitle>{t('top_issues_by_motion_title')}</CardTitle>
+        <CardDescription>{t('top_issues_by_motion_subtitle')}</CardDescription>
       </CardHeader>
       <CardContent className='flex justify-center'>
         <ChartContainer config={chartConfig} className="min-h-[200px] w-full max-w-[300px]">
