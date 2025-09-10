@@ -88,7 +88,7 @@ export function EditProfileForm({ member }: { member: Member }) {
   const defaultValues: Partial<ProfileFormValues> = {
     name: member.name,
     email: member.email,
-    contact: (member as Member).contact,
+    contact: member.contact ?? undefined,
     location: member.location,
     age: member.age,
     gender: member.gender,
@@ -96,11 +96,11 @@ export function EditProfileForm({ member }: { member: Member }) {
     professionalBackground: member.professionalBackground,
     roles: member.roles || [],
     committeeMemberships: (member as Member).committeeMemberships,
-    activityLog: (member as Member).activityLog,
-    volunteerWork: (member as Member).volunteerWork,
-    electoralHistory: (member as Member).electoralHistory,
-    parliamentaryRoles: (member as Member).parliamentaryRoles,
-    keyPolicyInterests: (member as Member).keyPolicyInterests,
+    activityLog: (member as Member).activityLog ?? undefined,
+    volunteerWork: (member as Member).volunteerWork ?? undefined,
+    electoralHistory: (member as Member).electoralHistory ?? undefined,
+    parliamentaryRoles: (member as Member).parliamentaryRoles ?? undefined,
+    keyPolicyInterests: (member as Member).keyPolicyInterests ?? undefined,
   };
 
   const form = useForm<ProfileFormValues>({
@@ -354,3 +354,4 @@ MultiSelect.displayName = "MultiSelect";
     
 
     
+
