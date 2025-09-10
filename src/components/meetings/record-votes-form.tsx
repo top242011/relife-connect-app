@@ -60,7 +60,7 @@ import { Input } from '../ui/input';
 
 const voteSchema = z.object({
   memberId: z.string(),
-  vote: z.enum(['Aye', 'Nay', 'Abstain', 'Absent']),
+  vote: z.enum(['Aye', 'Nay', 'Abstain', 'Absent', 'Leave']),
 });
 
 const formSchema = z.object({
@@ -194,6 +194,7 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
                             <SelectItem value="Nay">Nay</SelectItem>
                             <SelectItem value="Abstain">Abstain</SelectItem>
                             <SelectItem value="Absent">Absent</SelectItem>
+                            <SelectItem value="Leave">Leave</SelectItem>
                         </SelectContent>
                     </Select>
                      <AlertDialog>
@@ -294,6 +295,7 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
                                         <SelectItem value="Nay">Nay</SelectItem>
                                         <SelectItem value="Abstain">Abstain</SelectItem>
                                         <SelectItem value="Absent">Absent</SelectItem>
+                                        <SelectItem value="Leave">Leave</SelectItem>
                                     </SelectContent>
                                 </Select>
                               </FormControl>

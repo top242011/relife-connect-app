@@ -1,4 +1,5 @@
 
+
 import { meetings, mps, votes } from "@/lib/data";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -6,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CheckCircle2, MinusCircle, UserX, XCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle2, MinusCircle, UserX, XCircle, AlertTriangle } from "lucide-react";
 
 export default function MPProfilePage({ params }: { params: { id: string } }) {
     const mp = mps.find(m => m.id === params.id);
@@ -28,6 +29,8 @@ export default function MPProfilePage({ params }: { params: { id: string } }) {
 
     const mpVotes = votes.filter(vote => vote.memberId === mp.id);
     const sponsoredMotions = meetings.flatMap(m => m.motions).filter(motion => motion.sponsorId === mp.id);
+    const absences = mpVotes.filter(v => v.vote === 'Absent').length;
+    const ABSENCE_THRESHOLD = 3;
 
     const getVoteResult = (motionId: string) => {
         const ayes = votes.filter(v => v.motionId === motionId && v.vote === 'Aye').length;
@@ -54,6 +57,18 @@ export default function MPProfilePage({ params }: { params: { id: string } }) {
                     </div>
                 </div>
             </div>
+
+            {absences > ABSENCE_THRESHOLD && (
+                 <Card className="border-destructive">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-destructive flex items-center text-lg"><AlertTriangle className="mr-2 h-5 w-5"/>Attendance Warning</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p>This member has exceeded the absence threshold.</p>
+                        <p className="text-xl font-bold">Absences: {absences}/{ABSENCE_THRESHOLD}</p>
+                    </CardContent>
+                </Card>
+            )}
 
             <Card>
                 <CardHeader>
@@ -142,7 +157,8 @@ export default function MPProfilePage({ params }: { params: { id: string } }) {
                                             <Badge variant={
                                                 vote.vote === 'Aye' ? 'default' :
                                                 vote.vote === 'Nay' ? 'destructive' :
-                                                'secondary'
+                                                vote.vote === 'Abstain' ? 'secondary' :
+                                                'outline'
                                             }>{vote.vote}</Badge>
                                         </TableCell>
                                     </TableRow>

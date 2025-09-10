@@ -1,7 +1,7 @@
 
 'use client'
 
-import { mps, votes as allVotes, members as allMembers, meetings } from "@/lib/data"
+import { mps, votes as allVotes, allPartyMembers as allMembers, meetings } from "@/lib/data"
 import { Meeting, Vote, Motion } from "@/lib/types"
 import {
     Card,
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Edit, FileText, Trash2, User, VoteIcon, CheckCircle2, XCircle, MinusCircle, UserX, Landmark } from "lucide-react"
+import { ArrowLeft, Edit, FileText, Trash2, User, VoteIcon, CheckCircle2, XCircle, MinusCircle, UserX, UserCheck } from "lucide-react"
 import Link from "next/link"
 import {
   AlertDialog,
@@ -38,7 +38,7 @@ import { RecordVotesForm } from "./record-votes-form"
 
 export function MeetingDetails({ meeting }: { meeting: Meeting }) {
     const getMemberName = (memberId: string) => {
-        const member = allMembers.find(m => m.id === memberId) || mps.find(m => m.id === memberId);
+        const member = allMembers.find(m => m.id === memberId)
         return member?.name || "Unknown Member";
     };
 
@@ -117,7 +117,8 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                         const partyAye = allVotes.filter(v => v.motionId === motion.id && v.vote === 'Aye').length;
                         const partyNay = allVotes.filter(v => v.motionId === motion.id && v.vote === 'Nay').length;
                         const partyAbstain = allVotes.filter(v => v.motionId === motion.id && v.vote === 'Abstain').length;
-                        const partyAbsent = meeting.attendees.length - (partyAye + partyNay + partyAbstain);
+                        const partyLeave = allVotes.filter(v => v.motionId === motion.id && v.vote === 'Leave').length;
+                        const partyAbsent = meeting.attendees.length - (partyAye + partyNay + partyAbstain + partyLeave);
                         
                         const otherAye = (motion.totalParliamentAye ?? 0) - partyAye;
                         const otherNay = (motion.totalParliamentNay ?? 0) - partyNay;
@@ -138,7 +139,7 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                             </div>
                             <p className="text-muted-foreground mb-4">{motion.description}</p>
                             
-                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 text-center">
+                             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4 text-center">
                                 <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/50 flex flex-col items-center justify-center">
                                     <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-400 mb-1" />
                                     <div className="text-2xl font-bold">{partyAye}</div>
@@ -154,10 +155,15 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                                     <div className="text-2xl font-bold">{partyAbstain}</div>
                                     <div className="text-sm text-yellow-700 dark:text-yellow-300">Abstain</div>
                                 </div>
+                                <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/50 flex flex-col items-center justify-center">
+                                    <UserCheck className="h-6 w-6 text-blue-600 dark:text-blue-400 mb-1" />
+                                    <div className="text-2xl font-bold">{partyLeave}</div>
+                                    <div className="text-sm text-blue-700 dark:text-blue-300">On Leave</div>
+                                </div>
                                 <div className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700/50 flex flex-col items-center justify-center">
                                     <UserX className="h-6 w-6 text-gray-500 dark:text-gray-400 mb-1" />
                                     <div className="text-2xl font-bold">{partyAbsent}</div>
-                                    <div className="text-sm text-gray-500 dark:text-gray-300">Absent / Not Voted</div>
+                                    <div className="text-sm text-gray-500 dark:text-gray-300">Absent</div>
                                 </div>
                             </div>
                             
@@ -222,6 +228,7 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                                                                 vote.vote === 'Aye' ? 'default' :
                                                                 vote.vote === 'Nay' ? 'destructive' :
                                                                 vote.vote === 'Abstain' ? 'secondary' :
+                                                                vote.vote === 'Leave' ? 'outline' :
                                                                 'outline'
                                                             }>{vote.vote}</Badge>
                                                         ) : (

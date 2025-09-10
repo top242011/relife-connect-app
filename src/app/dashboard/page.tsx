@@ -1,10 +1,12 @@
 
+
 import { DemographicsChart } from '@/components/dashboard/demographics-chart';
 import { MotionSuccessRateChart } from '@/components/dashboard/motion-success-rate-chart';
 import { PerformanceChart } from '@/components/dashboard/performance-chart';
 import { SponsoringMembersTable } from '@/components/dashboard/sponsoring-members-table';
 import { StatsCards } from '@/components/dashboard/stats-cards';
 import { TopIssuesChart } from '@/components/dashboard/top-issues-chart';
+import { AttendanceReport } from '@/components/dashboard/attendance-report';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function DashboardPage() {
@@ -36,6 +38,15 @@ export default function DashboardPage() {
         <TopIssuesChart />
         <SponsoringMembersTable />
       </div>
+
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight">Attendance Analytics</h2>
+        <p className="text-muted-foreground">
+            Analysis of member attendance, absences, and leaves.
+        </p>
+      </div>
+      <AttendanceReport />
+
     </div>
   );
 }

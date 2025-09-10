@@ -74,7 +74,7 @@
     committeeName?: string;
   }
   
-  export type VoteType = 'Aye' | 'Nay' | 'Abstain' | 'Absent';
+  export type VoteType = 'Aye' | 'Nay' | 'Abstain' | 'Absent' | 'Leave';
 
   export interface Vote {
     id: string;
@@ -101,5 +101,6 @@
       action: string;
       details: string;
   }
+
 
 

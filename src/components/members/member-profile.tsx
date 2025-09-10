@@ -1,19 +1,31 @@
 
-import { Member, MP } from "@/lib/types";
+
+import { Member, MP, Vote } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Edit } from "lucide-react";
+import { Edit, AlertTriangle, FileUp } from "lucide-react";
 import { EditProfileForm } from "./edit-profile-form";
 import Link from "next/link";
-import { allPartyMembers } from "@/lib/data";
+import { allPartyMembers, votes, meetings } from "@/lib/data";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+
 
 export function MemberProfile({ member }: { member: Member | MP }) {
     const isMP = 'electoralHistory' in member;
 
     const fullMemberInfo = allPartyMembers.find(m => m.id === member.id);
     const status = fullMemberInfo?.status || 'Active';
+
+    const memberVotes = votes.filter(v => v.memberId === member.id);
+    const absences = memberVotes.filter(v => v.vote === 'Absent');
+    const leaves = memberVotes.filter(v => v.vote === 'Leave');
+
+    const getMeetingFromVote = (vote: Vote) => {
+        return meetings.find(m => m.motions.some(mo => mo.id === vote.motionId));
+    }
+    const ABSENCE_THRESHOLD = 3;
 
     return (
          <div className="space-y-6">
@@ -37,6 +49,18 @@ export function MemberProfile({ member }: { member: Member | MP }) {
                 </div>
                  <EditProfileForm member={member} />
             </div>
+            
+            {isMP && absences.length > ABSENCE_THRESHOLD && (
+                 <Card className="border-destructive">
+                    <CardHeader>
+                        <CardTitle className="text-destructive flex items-center"><AlertTriangle className="mr-2"/>Attendance Warning</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p>This member has exceeded the absence threshold.</p>
+                        <p className="text-2xl font-bold">Absences: {absences.length}/{ABSENCE_THRESHOLD}</p>
+                    </CardContent>
+                </Card>
+            )}
 
             <Card>
                 <CardHeader>
@@ -104,6 +128,68 @@ export function MemberProfile({ member }: { member: Member | MP }) {
                         </div>
                     </CardContent>
                 </Card>
+                </>
+            )}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Attendance Record</CardTitle>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 className="font-semibold mb-2">Meetings on Leave ({leaves.length})</h3>
+                        <div className="max-h-48 overflow-y-auto border rounded-md">
+                            <Table>
+                                <TableBody>
+                                    {leaves.length > 0 ? leaves.map(vote => {
+                                        const meeting = getMeetingFromVote(vote);
+                                        return (
+                                            <TableRow key={vote.id}>
+                                                <TableCell>
+                                                    <div className="font-medium">{meeting?.title}</div>
+                                                    <div className="text-sm text-muted-foreground">{meeting?.date}</div>
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    <Button variant="outline" size="sm"><FileUp className="mr-2 h-3 w-3"/> Upload Doc</Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        )
+                                    }) : (
+                                         <TableRow>
+                                            <TableCell className="h-24 text-center">No leaves recorded.</TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </div>
+                     <div>
+                        <h3 className="font-semibold mb-2">Meetings Absent ({absences.length})</h3>
+                        <div className="max-h-48 overflow-y-auto border rounded-md">
+                            <Table>
+                                 <TableBody>
+                                    {absences.length > 0 ? absences.map(vote => {
+                                        const meeting = getMeetingFromVote(vote);
+                                        return (
+                                            <TableRow key={vote.id}>
+                                                <TableCell>
+                                                    <div className="font-medium">{meeting?.title}</div>
+                                                    <div className="text-sm text-muted-foreground">{meeting?.date}</div>
+                                                </TableCell>
+                                            </TableRow>
+                                        )
+                                    }) : (
+                                         <TableRow>
+                                            <TableCell className="h-24 text-center">No absences recorded.</TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+             {isMP && (
                 <Card>
                     <CardHeader>
                          <CardTitle>Voting Record</CardTitle>
@@ -113,8 +199,7 @@ export function MemberProfile({ member }: { member: Member | MP }) {
                         <p className="text-muted-foreground">Detailed voting record will be displayed here. <Link href={`/parliament/${member.id}`} className="text-primary hover:underline">View Full Record</Link></p>
                     </CardContent>
                 </Card>
-                </>
-            )}
+             )}
         </div>
     );
 }
