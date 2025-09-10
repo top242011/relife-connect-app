@@ -6,18 +6,73 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { roles, permissions, members, mps } from "@/lib/data";
-import { Role, Permission } from "@/lib/types";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Edit, Trash2 } from "lucide-react";
+import { roles, permissions, allPartyMembers } from "@/lib/data";
+import { Role } from "@/lib/types";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Edit, Trash2, Save } from "lucide-react";
 import { UsersTable } from "./users-table";
 import { Badge } from "../ui/badge";
 
-const allUsers = [...members, ...mps];
+
+const EditRoleDialog = ({ role }: { role: Role }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    // In a real app, you'd probably have a more robust state management for this
+    const [currentPermissions, setCurrentPermissions] = useState(role.permissions);
+
+    const handlePermissionChange = (permissionId: string, checked: boolean) => {
+        if (checked) {
+            setCurrentPermissions([...currentPermissions, permissionId]);
+        } else {
+            setCurrentPermissions(currentPermissions.filter(p => p !== permissionId));
+        }
+    };
+
+    const handleSave = () => {
+        // Here you would typically call an API to save the changes
+        console.log(`Saving role ${role.id} with permissions:`, currentPermissions);
+        // For this mock, we'll assume it saves and then close
+        setIsOpen(false);
+    }
+
+    return (
+         <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+                <Button variant="ghost" size="icon"><Edit className="h-4 w-4" /></Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Edit Role: {role.name}</DialogTitle>
+                    <DialogDescription>Select the permissions for this role.</DialogDescription>
+                </DialogHeader>
+                <div className="py-4">
+                        <h3 className="text-lg font-medium mb-2">Permissions</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                        {permissions.map(permission => (
+                            <div key={permission.id} className="flex items-center space-x-2">
+                                <Checkbox
+                                    id={`${role.id}-${permission.id}`}
+                                    checked={currentPermissions.includes(permission.id)}
+                                    onCheckedChange={(checked) => handlePermissionChange(permission.id, !!checked)}
+                                />
+                                <label htmlFor={`${role.id}-${permission.id}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                    {permission.name}
+                                </label>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                 <DialogFooter>
+                    <DialogClose asChild>
+                        <Button variant="ghost">Cancel</Button>
+                    </DialogClose>
+                    <Button onClick={handleSave}><Save className="mr-2 h-4 w-4"/>Save Changes</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    )
+}
 
 export function RolesPermissions() {
-    const [selectedRole, setSelectedRole] = useState<Role | null>(null);
-
     return (
         <div className="space-y-6">
             <Card>
@@ -47,32 +102,7 @@ export function RolesPermissions() {
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        <Dialog>
-                                            <DialogTrigger asChild>
-                                                <Button variant="ghost" size="icon"><Edit className="h-4 w-4" /></Button>
-                                            </DialogTrigger>
-                                            <DialogContent>
-                                                <DialogHeader>
-                                                    <DialogTitle>Edit Role: {role.name}</DialogTitle>
-                                                </DialogHeader>
-                                                <div className="py-4">
-                                                     <h3 className="text-lg font-medium mb-2">Permissions</h3>
-                                                    <div className="grid grid-cols-2 gap-4">
-                                                        {permissions.map(permission => (
-                                                            <div key={permission.id} className="flex items-center space-x-2">
-                                                                <Checkbox
-                                                                    id={`${role.id}-${permission.id}`}
-                                                                    checked={role.permissions.includes(permission.id)}
-                                                                />
-                                                                <label htmlFor={`${role.id}-${permission.id}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                                                    {permission.name}
-                                                                </label>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            </DialogContent>
-                                        </Dialog>
+                                        <EditRoleDialog role={role} />
                                         <Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button>
                                     </TableCell>
                                 </TableRow>
@@ -88,7 +118,7 @@ export function RolesPermissions() {
                     <CardDescription>Assign roles to users and manage their account status.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <UsersTable users={allUsers} roles={roles} />
+                    <UsersTable users={allPartyMembers} roles={roles} />
                 </CardContent>
             </Card>
         </div>

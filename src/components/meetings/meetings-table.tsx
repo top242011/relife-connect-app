@@ -45,17 +45,34 @@ import {
 import { Badge } from '../ui/badge';
 import type { Meeting } from '@/lib/types';
 import { Card, CardContent } from '../ui/card';
-import { mps, members } from '@/lib/data';
+import { allPartyMembers } from '@/lib/data';
 import { EditMeetingForm } from './edit-meeting-form';
 import { NewMeetingForm } from './new-meeting-form';
-
-const allPartyMembers = [...members, ...mps];
 
 export const columns: ColumnDef<Meeting>[] = [
   {
     accessorKey: 'title',
     header: 'Title',
-    cell: ({ row }) => <div className="font-medium">{row.getValue('title')}</div>
+    cell: ({ row }) => {
+        const meeting = row.original;
+        const title = meeting.meetingNumber ? 
+            `${meeting.title} (ครั้งที่ ${meeting.meetingNumber})` :
+            meeting.title;
+
+        // Simple auto-numbering for display if no number is set
+        let autoNumberedTitle = title;
+        if (!meeting.meetingNumber) {
+            const meetingType = meeting.meetingType;
+            const meetingSession = meeting.meetingSession;
+            const count = row.table.getCoreRowModel().rows.filter(r => {
+                const m = r.original as Meeting;
+                return m.meetingType === meetingType && m.meetingSession === meetingSession && new Date(m.date) <= new Date(meeting.date);
+            }).length;
+            autoNumberedTitle = `${meeting.meetingType} ${meetingSession} ครั้งที่ ${count}`;
+        }
+       
+      return <div className="font-medium">{autoNumberedTitle}</div>
+    }
   },
   {
     accessorKey: 'date',
@@ -65,9 +82,8 @@ export const columns: ColumnDef<Meeting>[] = [
     accessorKey: 'presidingOfficer',
     header: 'Presiding Officer',
     cell: ({ row }) => {
-      const memberId = row.getValue('presidingOfficer') as string;
-      const member = allPartyMembers.find(m => m.id === memberId);
-      return member ? member.name : 'Unknown';
+      const officerName = row.getValue('presidingOfficer') as string;
+      return officerName;
     },
   },
   {

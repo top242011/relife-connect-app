@@ -1,33 +1,33 @@
 
 
-export interface Member {
+  export interface Member {
     id: string;
     name: string;
     email: string;
     age: number;
     gender: 'Male' | 'Female' | 'Other';
-    location: string;
+    location: Location;
     education: string;
     professionalBackground: string;
     committeeMemberships: string[];
     activityLog: string;
     volunteerWork: string;
     contact: string;
+    roles: ('MP' | 'Executive')[];
+    status: 'Active' | 'Inactive' | 'Former Member';
+    // MP fields - only present if roles includes 'MP'
+    electoralHistory?: string;
+    parliamentaryRoles?: string;
+    votingRecord?: string;
+    keyPolicyInterests?: string;
   }
   
-  export interface MP {
-    id: string;
-    name: string;
-    email: string;
-    age: number;
-    gender: 'Male' | 'Female' | 'Other';
-    location: string;
+  // This type is now deprecated in favor of the unified Member type
+  export interface MP extends Member {
     electoralHistory: string;
     parliamentaryRoles: string;
     votingRecord: string;
     keyPolicyInterests: string;
-    education: string;
-    professionalBackground: string;
   }
 
   export type PerformanceData = {
@@ -60,13 +60,14 @@ export interface Member {
     id: string;
     title: string;
     date: string; // YYYY-MM-DD
-    attendees: string[]; // array of Member or MP IDs
-    presidingOfficer: string; // Member or MP ID
+    attendees: string[]; // array of Member IDs
+    presidingOfficer: string; // Member name (can be external)
     motions: Motion[];
     relatedDocuments?: { name: string; url: string }[];
     location: Location;
     meetingType: MeetingType;
     meetingSession: MeetingSession;
+    meetingNumber?: string;
   }
   
   export type VoteType = 'Aye' | 'Nay' | 'Abstain' | 'Absent';

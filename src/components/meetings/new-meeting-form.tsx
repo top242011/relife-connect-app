@@ -5,7 +5,7 @@ import * as React from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod";
-import { meetings, locations } from "@/lib/data";
+import { meetings, locations, allPartyMembers } from "@/lib/data";
 import {
   Dialog,
   DialogContent,
@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input";
 import { Save, PlusCircle, Trash2, Users } from "lucide-react";
-import { members as allMembers, mps as allMps, motionTopics } from "@/lib/data";
+import { motionTopics } from "@/lib/data";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
@@ -39,8 +39,6 @@ import { sendMeetingNotification } from "@/services/email";
 import { Checkbox } from "../ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Location } from "@/lib/types";
-
-const allPartyMembers = [...allMembers, ...allMps];
 
 const motionSchema = z.object({
     id: z.string(),
@@ -105,13 +103,14 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
 
     // Send notifications
     const attendees = allPartyMembers.filter(m => data.attendees.includes(m.id));
-    const presidingOfficer = allPartyMembers.find(m => m.id === data.presidingOfficer);
+    
+    // In a real app, you would look up the presiding officer object properly.
+    // For this mock, we assume the name string is sufficient for the notification.
+    const presidingOfficerName = data.presidingOfficer;
 
-    if (presidingOfficer) {
-        attendees.forEach(attendee => {
-            sendMeetingNotification(attendee, newMeeting, presidingOfficer);
-        });
-    }
+    attendees.forEach(attendee => {
+        sendMeetingNotification(attendee, newMeeting, { name: presidingOfficerName });
+    });
     
     toast({
         title: "Meeting Created Successfully!",
@@ -150,7 +149,12 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
                     render={({ field }) => (
                         <FormItem className="flex flex-col">
                             <FormLabel>Presiding Officer</FormLabel>
-                            <MultiSelect a-type="single" options={allPartyMembers.map(m => ({value: m.id, label: m.name}))} {...field} />
+                             <Combobox
+                                options={allPartyMembers.map(m => ({ value: m.name, label: m.name }))}
+                                value={field.value}
+                                onChange={field.onChange}
+                                placeholder="Select or type officer..."
+                            />
                              <FormMessage />
                         </FormItem>
                     )}
@@ -174,7 +178,18 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
                     <FormItem>
                         <div className="flex justify-between items-center">
                             <FormLabel>Attendees</FormLabel>
-                            <Button type="button" size="sm" variant="outline" onClick={() => field.onChange(allPartyMembers.map(m => m.id))}><Users className="mr-2 h-4 w-4" /> Add All Members</Button>
+                            <Select onValueChange={(val) => {
+                                if (val === 'all') field.onChange(allPartyMembers.map(m => m.id))
+                                else if (val === 'none') field.onChange([])
+                            }}>
+                                <SelectTrigger className="w-[180px]">
+                                    <SelectValue placeholder="Quick Select..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">ทุกคนเข้าร่วม</SelectItem>
+                                    <SelectItem value="none">ทุกคนลา/ขาด</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                          <MultiSelect options={allPartyMembers.map(m => ({value: m.id, label: m.name}))} {...field} />
                          <FormMessage />
@@ -241,7 +256,7 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col">
                                         <FormLabel>Sponsoring Member</FormLabel>
-                                        <MultiSelect a-type="single" options={allMps.map(m => ({value: m.id, label: m.name}))} {...field} />
+                                        <MultiSelect a-type="single" options={allPartyMembers.filter(m => m.roles.includes('MP')).map(m => ({value: m.id, label: m.name}))} {...field} />
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -372,3 +387,83 @@ const MultiSelect = React.forwardRef<
   );
 });
 MultiSelect.displayName = "MultiSelect";
+
+
+const Combobox = ({
+  options,
+  value,
+  onChange,
+  placeholder,
+}: {
+  options: { value: string; label: string }[];
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+}) => {
+  const [open, setOpen] = React.useState(false);
+  const [inputValue, setInputValue] = React.useState(value);
+
+  React.useEffect(() => {
+    setInputValue(value);
+  }, [value]);
+
+  const handleSelect = (currentValue: string) => {
+    const label = options.find(o => o.value.toLowerCase() === currentValue.toLowerCase())?.label || currentValue;
+    onChange(label);
+    setInputValue(label);
+    setOpen(false);
+  };
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <div className="relative">
+          <ChevronsUpDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 shrink-0 opacity-50" />
+          <Input
+            value={inputValue}
+            onChange={(e) => {
+              const newValue = e.target.value;
+              setInputValue(newValue);
+              onChange(newValue);
+            }}
+            placeholder={placeholder}
+            role="combobox"
+            aria-expanded={open}
+            className="w-full"
+          />
+        </div>
+      </PopoverTrigger>
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+        <Command
+          filter={(value, search) => {
+            const extendedValue = options.find(o => o.value === value)?.label || value;
+            if (extendedValue.toLowerCase().includes(search.toLowerCase())) return 1;
+            return 0;
+          }}
+        >
+          <CommandInput placeholder="Search member..." />
+          <CommandList>
+            <CommandEmpty>No member found.</CommandEmpty>
+            <CommandGroup>
+              {options.map((option) => (
+                <CommandItem
+                  key={option.value}
+                  value={option.value}
+                  onSelect={handleSelect}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      value === option.label ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                  {option.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+};

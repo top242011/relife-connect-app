@@ -1,22 +1,23 @@
 
 
-import type { Member, MP, PerformanceData, DemographicsData, Meeting, Vote, Role, Permission, SystemLog, Location } from './types';
+import type { Member, Meeting, Vote, Role, Permission, SystemLog, Location } from './types';
 
 export const locations: Location[] = ['ท่าพระจันทร์', 'รังสิต', 'ลำปาง', 'ส่วนกลาง'];
 
-export const members: Member[] = [
-  { id: 'mem-1', name: 'Alice Johnson', email: 'alice.j@example.com', age: 34, gender: 'Female', location: 'ท่าพระจันทร์', education: 'M.A. Political Science', professionalBackground: 'Policy Advisor', committeeMemberships: ['Finance', 'Outreach'], activityLog: 'Active in 5 campaigns', volunteerWork: '120 hours', contact: 'alice.j@example.com' },
-  { id: 'mem-2', name: 'Bob Williams', email: 'bob.w@example.com', age: 45, gender: 'Male', location: 'รังสิต', education: 'B.S. Economics', professionalBackground: 'Economist', committeeMemberships: ['Economic Affairs'], activityLog: 'Organized 3 town halls', volunteerWork: '80 hours', contact: 'bob.w@example.com' },
-  { id: 'mem-3', name: 'Charlie Brown', email: 'charlie.b@example.com', age: 28, gender: 'Male', location: 'ลำปาง', education: 'J.D.', professionalBackground: 'Lawyer', committeeMemberships: ['Judiciary'], activityLog: 'Attended 20 meetings', volunteerWork: '50 hours', contact: 'charlie.b@example.com' },
-  { id: 'mem-4', name: 'Diana Prince', email: 'diana.p@example.com', age: 52, gender: 'Female', location: 'ท่าพระจันทร์', education: 'Ph.D. History', professionalBackground: 'Professor', committeeMemberships: ['Education', 'Culture'], activityLog: 'Published 2 articles', volunteerWork: '200 hours', contact: 'diana.p@example.com' },
-  { id: 'mem-5', name: 'Ethan Hunt', email: 'ethan.h@example.com', age: 39, gender: 'Male', location: 'รังสิต', education: 'MBA', professionalBackground: 'Consultant', committeeMemberships: ['Strategy'], activityLog: 'Led fundraising drive', volunteerWork: '150 hours', contact: 'ethan.h@example.com' },
+export const allPartyMembers: Member[] = [
+  { id: 'mem-1', name: 'Alice Johnson', email: 'alice.j@example.com', age: 34, gender: 'Female', location: 'ท่าพระจันทร์', education: 'M.A. Political Science', professionalBackground: 'Policy Advisor', committeeMemberships: ['Finance', 'Outreach'], activityLog: 'Active in 5 campaigns', volunteerWork: '120 hours', contact: 'alice.j@example.com', roles: ['Executive'], status: 'Active' },
+  { id: 'mem-2', name: 'Bob Williams', email: 'bob.w@example.com', age: 45, gender: 'Male', location: 'รังสิต', education: 'B.S. Economics', professionalBackground: 'Economist', committeeMemberships: ['Economic Affairs'], activityLog: 'Organized 3 town halls', volunteerWork: '80 hours', contact: 'bob.w@example.com', roles: [], status: 'Active' },
+  { id: 'mem-3', name: 'Charlie Brown', email: 'charlie.b@example.com', age: 28, gender: 'Male', location: 'ลำปาง', education: 'J.D.', professionalBackground: 'Lawyer', committeeMemberships: ['Judiciary'], activityLog: 'Attended 20 meetings', volunteerWork: '50 hours', contact: 'charlie.b@example.com', roles: [], status: 'Active' },
+  { id: 'mem-4', name: 'Diana Prince', email: 'diana.p@example.com', age: 52, gender: 'Female', location: 'ท่าพระจันทร์', education: 'Ph.D. History', professionalBackground: 'Professor', committeeMemberships: ['Education', 'Culture'], activityLog: 'Published 2 articles', volunteerWork: '200 hours', contact: 'diana.p@example.com', roles: [], status: 'Former Member' },
+  { id: 'mem-5', name: 'Ethan Hunt', email: 'ethan.h@example.com', age: 39, gender: 'Male', location: 'รังสิต', education: 'MBA', professionalBackground: 'Consultant', committeeMemberships: ['Strategy'], activityLog: 'Led fundraising drive', volunteerWork: '150 hours', contact: 'ethan.h@example.com', roles: [], status: 'Active' },
+  { id: 'mp-1', name: 'Fiona Gallagher', email: 'fiona.g@example.com', age: 48, gender: 'Female', location: 'Capital City Central', electoralHistory: 'Elected 2018, 2022', parliamentaryRoles: 'Whip', votingRecord: '95% attendance', keyPolicyInterests: 'Healthcare, Social Justice', education: 'MPH', professionalBackground: 'Public Health Admin', roles: ['MP'], committeeMemberships: [], activityLog: '', volunteerWork: '', contact: 'fiona.g@example.com', status: 'Active' },
+  { id: 'mp-2', name: 'George Orwell', email: 'george.o@example.com', age: 55, gender: 'Male', location: 'Northwood District', electoralHistory: 'Elected 2010, 2014, 2018, 2022', parliamentaryRoles: 'Committee Chair (Oversight)', votingRecord: '98% attendance', keyPolicyInterests: 'Government Transparency, Civil Liberties', education: 'B.A. Journalism', professionalBackground: 'Journalist', roles: ['MP'], committeeMemberships: [], activityLog: '', volunteerWork: '', contact: 'george.o@example.com', status: 'Active' },
+  { id: 'mp-3', name: 'Hannah Abbott', email: 'hannah.a@example.com', age: 41, gender: 'Female', location: 'Eastwood Borough', electoralHistory: 'Elected 2022', parliamentaryRoles: 'Backbencher', votingRecord: '92% attendance', keyPolicyInterests: 'Environmental Protection, Renewable Energy', education: 'M.S. Environmental Science', professionalBackground: 'Scientist', roles: ['MP'], committeeMemberships: [], activityLog: '', volunteerWork: '', contact: 'hannah.a@example.com', status: 'Active' },
 ];
 
-export const mps: MP[] = [
-  { id: 'mp-1', name: 'Fiona Gallagher', email: 'fiona.g@example.com', age: 48, gender: 'Female', location: 'Capital City Central', electoralHistory: 'Elected 2018, 2022', parliamentaryRoles: 'Whip', votingRecord: '95% attendance', keyPolicyInterests: 'Healthcare, Social Justice', education: 'MPH', professionalBackground: 'Public Health Admin' },
-  { id: 'mp-2', name: 'George Orwell', email: 'george.o@example.com', age: 55, gender: 'Male', location: 'Northwood District', electoralHistory: 'Elected 2010, 2014, 2018, 2022', parliamentaryRoles: 'Committee Chair (Oversight)', votingRecord: '98% attendance', keyPolicyInterests: 'Government Transparency, Civil Liberties', education: 'B.A. Journalism', professionalBackground: 'Journalist' },
-  { id: 'mp-3', name: 'Hannah Abbott', email: 'hannah.a@example.com', age: 41, gender: 'Female', location: 'Eastwood Borough', electoralHistory: 'Elected 2022', parliamentaryRoles: 'Backbencher', votingRecord: '92% attendance', keyPolicyInterests: 'Environmental Protection, Renewable Energy', education: 'M.S. Environmental Science', professionalBackground: 'Scientist' },
-];
+export const members: Member[] = allPartyMembers.filter(m => !m.roles.includes('MP'));
+export const mps: Member[] = allPartyMembers.filter(m => m.roles.includes('MP'));
+
 
 export const meetings: Meeting[] = [
     {
@@ -24,7 +25,7 @@ export const meetings: Meeting[] = [
         title: 'Q3 Budget Committee Session',
         date: '2024-07-20',
         attendees: ['mp-1', 'mp-2', 'mem-1', 'mem-2'],
-        presidingOfficer: 'mp-2',
+        presidingOfficer: 'George Orwell',
         motions: [
             { id: 'motion-1', title: 'Approve allocation for infrastructure projects', description: 'To approve the proposed budget of $5M for the new bridge construction.', isPartySponsored: true, topic: 'Economy', sponsorId: 'mp-1'},
             { id: 'motion-2', title: 'Review healthcare subsidy proposal', description: 'Discuss and vote on the new public healthcare subsidy program.', isPartySponsored: true, topic: 'Social', sponsorId: 'mp-1'}
@@ -32,14 +33,15 @@ export const meetings: Meeting[] = [
         relatedDocuments: [{ name: 'Q3 Budget Proposal.pdf', url: '#'}],
         location: 'ท่าพระจันทร์',
         meetingType: 'การประชุมสภา',
-        meetingSession: 'การประชุมสามัญ'
+        meetingSession: 'การประชุมสามัญ',
+        meetingNumber: '1/2567'
     },
     {
         id: 'meet-2',
         title: 'Party Policy Debate on Environment',
         date: '2024-07-25',
         attendees: ['mp-1', 'mp-2', 'mp-3', 'mem-1', 'mem-4'],
-        presidingOfficer: 'mp-1',
+        presidingOfficer: 'Fiona Gallagher',
         motions: [
             { id: 'motion-3', title: 'Adopt Carbon Neutrality Goal by 2040', description: 'Commit the party to a policy of achieving carbon neutrality across the nation by the year 2040.', isPartySponsored: true, topic: 'Environment', sponsorId: 'mp-3'},
             { id: 'motion-4', title: 'Opposition motion on industrial regulations', description: 'Vote on an opposition party motion to relax industrial emission standards.', isPartySponsored: false, topic: 'Economy' }
@@ -122,3 +124,9 @@ export const systemLogs: SystemLog[] = [
 
 export const motionTopics = ["Economy", "Social", "Security", "Foreign Affairs", "Education", "Environment"];
 export const committeeNames = ["Finance", "Outreach", "Judiciary", "Economic Affairs", "Education", "Culture", "Strategy"];
+
+export const UserRoles = {
+    'mem-1': ['Admin', 'HR Manager'],
+    'mp-1': ['Admin'],
+};
+

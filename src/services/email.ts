@@ -1,8 +1,8 @@
-import { Meeting, Member, MP } from "@/lib/types";
+import { Meeting, Member } from "@/lib/types";
 
 // This is a mock email service. In a real application, you would integrate
 // with an actual email provider like SendGrid, Mailgun, or AWS SES.
-export function sendMeetingNotification(attendee: Member | MP, meeting: Meeting, presidingOfficer: Member | MP) {
+export function sendMeetingNotification(attendee: Member, meeting: Meeting, presidingOfficer: { name: string }) {
     const subject = `New Meeting Invitation: ${meeting.title}`;
     const body = `
         Dear ${attendee.name},

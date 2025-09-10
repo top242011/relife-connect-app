@@ -7,9 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Edit } from "lucide-react";
 import { EditProfileForm } from "./edit-profile-form";
 import Link from "next/link";
+import { allPartyMembers } from "@/lib/data";
 
 export function MemberProfile({ member }: { member: Member | MP }) {
     const isMP = 'electoralHistory' in member;
+
+    const fullMemberInfo = allPartyMembers.find(m => m.id === member.id);
+    const status = fullMemberInfo?.status || 'Active';
 
     return (
          <div className="space-y-6">
@@ -25,9 +29,9 @@ export function MemberProfile({ member }: { member: Member | MP }) {
                             {isMP ? (member as MP).parliamentaryRoles : member.professionalBackground}
                         </p>
                         <div className="flex flex-wrap gap-2 mt-2">
-                            <Badge variant="default">Party Member</Badge>
-                             {isMP && <Badge variant="secondary">Member of Parliament</Badge>}
-                             {(member as Member).committeeMemberships?.includes('Executive') && <Badge variant="destructive">Executive Committee</Badge>}
+                             <Badge variant={status === 'Active' ? 'default' : 'secondary'}>{status}</Badge>
+                             {member.roles.includes('MP') && <Badge variant="secondary">Member of Parliament</Badge>}
+                             {member.roles.includes('Executive') && <Badge variant="destructive">Executive Committee</Badge>}
                         </div>
                     </div>
                 </div>

@@ -12,9 +12,22 @@ import {
   ChartContainer,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { demographicsData } from '@/lib/data';
+import { members } from '@/lib/data';
+import { Location } from '@/lib/types';
 
 export function DemographicsChart() {
+  const demographicsData = members.reduce((acc, member) => {
+    const region = member.location;
+    const regionData = acc.find(d => d.region === region);
+    if (regionData) {
+      regionData.members++;
+    } else {
+      acc.push({ region, members: 1 });
+    }
+    return acc;
+  }, [] as { region: Location, members: number }[]);
+
+
   const chartConfig = {
     members: {
       label: 'Members',

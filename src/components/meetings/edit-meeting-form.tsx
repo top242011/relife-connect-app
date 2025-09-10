@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input";
 import { Save, PlusCircle, Trash2, Users } from "lucide-react";
-import { members as allMembers, mps as allMps, motionTopics, locations } from "@/lib/data";
+import { allPartyMembers, motionTopics, locations } from "@/lib/data";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
@@ -37,8 +37,6 @@ import { Textarea } from "../ui/textarea";
 import { Checkbox } from "../ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Location } from "@/lib/types";
-
-const allPartyMembers = [...allMembers, ...allMps];
 
 const motionSchema = z.object({
     id: z.string(),
@@ -58,6 +56,7 @@ const formSchema = z.object({
   location: z.enum(locations as [string, ...string[]], { required_error: "Location is required" }),
   meetingType: z.enum(["การประชุมสภา", "การประชุมพรรค"], { required_error: "Meeting type is required" }),
   meetingSession: z.enum(["การประชุมสามัญ", "การประชุมวิสามัญ"], { required_error: "Meeting session is required" }),
+  meetingNumber: z.string().optional(),
 }).refine(data => {
     for (const motion of data.motions) {
         if (motion.isPartySponsored && !motion.sponsorId) {
@@ -83,6 +82,7 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
     location: meeting.location,
     meetingType: meeting.meetingType,
     meetingSession: meeting.meetingSession,
+    meetingNumber: meeting.meetingNumber,
   };
 
   const form = useForm<MeetingFormValues>({
@@ -130,12 +130,20 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
                     render={({ field }) => (
                         <FormItem className="flex flex-col">
                             <FormLabel>Presiding Officer</FormLabel>
-                            <MultiSelect a-type="single" options={allPartyMembers.map(m => ({value: m.id, label: m.name}))} {...field} />
+                             <Combobox
+                                options={allPartyMembers.map(m => ({ value: m.name, label: m.name }))}
+                                value={field.value}
+                                onChange={field.onChange}
+                                placeholder="Select or type officer..."
+                            />
                              <FormMessage />
                         </FormItem>
                     )}
                     />
             </div>
+             <FormField control={form.control} name="meetingNumber" render={({ field }) => (
+                <FormItem><FormLabel>Meeting Number</FormLabel><FormControl><Input {...field} placeholder="e.g., 1/2567" /></FormControl><FormMessage /></FormItem>
+            )}/>
             <div className="grid grid-cols-3 gap-4">
                 <FormField control={form.control} name="location" render={({ field }) => (
                     <FormItem><FormLabel>Location</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select location" /></SelectTrigger></FormControl><SelectContent>{locations.map(loc => (<SelectItem key={loc} value={loc}>{loc}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem>
@@ -223,7 +231,7 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col">
                                         <FormLabel>Sponsoring Member</FormLabel>
-                                        <MultiSelect a-type="single" options={allMps.map(m => ({value: m.id, label: m.name}))} {...field} />
+                                        <MultiSelect a-type="single" options={allPartyMembers.filter(m => m.roles.includes('MP')).map(m => ({value: m.id, label: m.name}))} {...field} />
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -354,3 +362,82 @@ const MultiSelect = React.forwardRef<
   );
 });
 MultiSelect.displayName = "MultiSelect";
+
+const Combobox = ({
+  options,
+  value,
+  onChange,
+  placeholder,
+}: {
+  options: { value: string; label: string }[];
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+}) => {
+  const [open, setOpen] = React.useState(false);
+  const [inputValue, setInputValue] = React.useState(value);
+
+  React.useEffect(() => {
+    setInputValue(value);
+  }, [value]);
+
+  const handleSelect = (currentValue: string) => {
+    const label = options.find(o => o.value.toLowerCase() === currentValue.toLowerCase())?.label || currentValue;
+    onChange(label);
+    setInputValue(label);
+    setOpen(false);
+  };
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <div className="relative">
+          <ChevronsUpDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 shrink-0 opacity-50" />
+          <Input
+            value={inputValue}
+            onChange={(e) => {
+              const newValue = e.target.value;
+              setInputValue(newValue);
+              onChange(newValue);
+            }}
+            placeholder={placeholder}
+            role="combobox"
+            aria-expanded={open}
+            className="w-full"
+          />
+        </div>
+      </PopoverTrigger>
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+        <Command
+          filter={(value, search) => {
+            const extendedValue = options.find(o => o.value === value)?.label || value;
+            if (extendedValue.toLowerCase().includes(search.toLowerCase())) return 1;
+            return 0;
+          }}
+        >
+          <CommandInput placeholder="Search member..." />
+          <CommandList>
+            <CommandEmpty>No member found.</CommandEmpty>
+            <CommandGroup>
+              {options.map((option) => (
+                <CommandItem
+                  key={option.value}
+                  value={option.value}
+                  onSelect={handleSelect}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      value === option.label ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                  {option.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+};
