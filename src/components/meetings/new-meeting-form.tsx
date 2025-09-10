@@ -54,7 +54,7 @@ const formSchema = z.object({
   title: z.string().min(2, "Title is too short"),
   date: z.string().min(1, "Date is required"),
   presidingOfficer: z.string().min(1, "Presiding officer is required"),
-  attendees: z.array(z.string()).min(1, "At least one attendee is required"),
+  attendees: z.array(z.string()),
   motions: z.array(motionSchema).min(1, "At least one motion is required"),
   location: z.enum(locations as [string, ...string[]], { required_error: "Location is required" }),
   meetingType: z.enum(["การประชุมสภา", "การประชุมพรรค", "การประชุมกรรมาธิการ"], { required_error: "Meeting type is required" }),
@@ -493,5 +493,7 @@ const Combobox = ({
     </Popover>
   );
 };
+
+    
 
     
