@@ -96,7 +96,7 @@ export default function AssistantPage() {
                     <h3 className="font-semibold mb-2">Keywords</h3>
                     <div className="flex flex-wrap gap-2">
                         {result.keywords.map((keyword, index) => (
-                            <Badge key={index} variant="default" style={{backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))'}}>{keyword}</Badge>
+                            <Badge key={index} variant="secondary">{keyword}</Badge>
                         ))}
                     </div>
                 </div>
