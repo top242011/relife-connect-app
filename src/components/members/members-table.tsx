@@ -6,6 +6,7 @@ import {
   ArrowUpDown,
   ChevronDown,
   Eye,
+  PlusCircle,
 } from 'lucide-react';
 import {
   ColumnDef,
@@ -40,6 +41,7 @@ import { Badge } from '../ui/badge';
 import type { Member, MP } from '@/lib/types';
 import { Card, CardContent } from '../ui/card';
 import { useLanguage } from '@/hooks/use-language';
+import { NewMemberForm } from './new-member-form';
 
 type DataType = Member | MP;
 
@@ -219,6 +221,14 @@ export function MembersTable({ data, type }: { data: DataType[], type: 'member' 
                 }
                 className="max-w-sm"
                 />
+                {type === 'member' && (
+                    <NewMemberForm>
+                        <Button className="ml-4">
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            {t('new_member_button')}
+                        </Button>
+                    </NewMemberForm>
+                )}
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="ml-auto">

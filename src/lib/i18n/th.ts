@@ -114,6 +114,7 @@ export const th: { [key: string]: string } = {
     'filter_by_name_placeholder': 'กรองตามชื่อ...',
     'profession': 'อาชีพ',
     'committees': 'คณะกรรมการ',
+    'new_member_button': 'สมาชิกใหม่',
 
     // Member Profile Page
     'member_not_found_title': 'ไม่พบสมาชิก',
@@ -146,6 +147,22 @@ export const th: { [key: string]: string } = {
     'voting_record_placeholder_desc': 'บันทึกการลงคะแนนโดยละเอียดจะแสดงที่นี่',
     'view_full_record': 'ดูบันทึกฉบับเต็ม',
 
+    // New Member Form
+    'new_member_title': 'สร้างสมาชิกใหม่',
+    'new_member_subtitle': 'กรอกรายละเอียดสำหรับสมาชิกใหม่ คลิกสร้างเมื่อเสร็จสิ้น',
+    'roles_status_title': 'บทบาทและสถานะ',
+    'roles_desc': 'เลือกบทบาทสำหรับสมาชิกนี้',
+    'personal_information_title': 'ข้อมูลส่วนตัว',
+    'full_name': 'ชื่อเต็ม',
+    'select_gender': 'เลือกเพศ',
+    'location_constituency': 'สถานที่ / เขตเลือกตั้ง',
+    'party_information_title': 'ข้อมูลพรรค',
+    'committee_memberships_desc': 'เลือกคณะกรรมการที่สมาชิกนี้สังกัด',
+    'key_policy_interests_placeholder': 'รายการที่คั่นด้วยจุลภาค...',
+    'create_member_button': 'สร้างสมาชิก',
+    'toast_member_created_title': 'สร้างสมาชิกแล้ว!',
+    'toast_member_created_desc': '{{name}} ถูกเพิ่มเข้าระบบแล้ว',
+
     // Parliament Page
     'parliament_title': 'สมาชิกรัฐสภา',
     'parliament_subtitle': 'จัดการข้อมูลสำหรับสมาชิกที่ได้รับเลือกตั้ง รวมถึงบทบาท บันทึกการลงคะแนน และความสนใจในนโยบาย',
@@ -162,6 +179,7 @@ export const th: { [key: string]: string } = {
     'outcome': 'ผลลัพธ์',
     'no_sponsored_motions': 'ไม่พบญัตติที่สนับสนุน',
     'no_voting_records': 'ไม่พบบันทึกการลงคะแนน',
+    'edit_profile': 'แก้ไขโปรไฟล์',
 
     // Meetings Page
     'meetings_manage_title': 'จัดการการประชุม',
@@ -173,7 +191,6 @@ export const th: { [key: string]: string } = {
     'edit_meeting': 'แก้ไขการประชุม',
     'delete_meeting': 'ลบการประชุม',
     'filter_meetings_placeholder': 'กรองการประชุม...',
-    'new_meeting_button': 'การประชุมใหม่',
     'table_footer_selected_rows': 'เลือก {{selected}} จาก {{total}} แถว',
     'meeting_number_short': 'ครั้งที่',
     'meeting_held_on': 'ประชุมเมื่อ',
@@ -335,6 +352,10 @@ export const th: { [key: string]: string } = {
     'HR Manager': 'ผู้จัดการฝ่ายบุคคล',
     'Meeting Secretary': 'เลขานุการการประชุม',
     'Data Analyst': 'นักวิเคราะห์ข้อมูล',
+    'Party Member': 'สมาชิกพรรค',
+    'Member of Parliament (MP)': 'สมาชิกรัฐสภา (ส.ส.)',
+    'Executive Committee Member': 'กรรมการบริหารพรรค',
+
 
     // Log Actions
     'Login': 'เข้าสู่ระบบ',

@@ -114,6 +114,7 @@ export const en: { [key: string]: string } = {
     'filter_by_name_placeholder': 'Filter by name...',
     'profession': 'Profession',
     'committees': 'Committees',
+    'new_member_button': 'New Member',
 
     // Member Profile Page
     'member_not_found_title': 'Member not found',
@@ -146,6 +147,22 @@ export const en: { [key: string]: string } = {
     'voting_record_placeholder_desc': 'Detailed voting record will be displayed here.',
     'view_full_record': 'View Full Record',
 
+    // New Member Form
+    'new_member_title': 'Create New Member',
+    'new_member_subtitle': 'Fill in the details for the new member. Click create when you\'re done.',
+    'roles_status_title': 'Roles & Status',
+    'roles_desc': 'Select the roles for this member.',
+    'personal_information_title': 'Personal Information',
+    'full_name': 'Full Name',
+    'select_gender': 'Select a gender',
+    'location_constituency': 'Location / Constituency',
+    'party_information_title': 'Party Information',
+    'committee_memberships_desc': 'Select the committees this member belongs to.',
+    'key_policy_interests_placeholder': 'Comma-separated list...',
+    'create_member_button': 'Create Member',
+    'toast_member_created_title': 'Member Created!',
+    'toast_member_created_desc': '{{name}} has been added to the system.',
+
     // Parliament Page
     'parliament_title': 'Members of Parliament',
     'parliament_subtitle': 'Manage data for elected members, including roles, voting records, and policy interests.',
@@ -162,6 +179,8 @@ export const en: { [key: string]: string } = {
     'outcome': 'Outcome',
     'no_sponsored_motions': 'No sponsored motions found.',
     'no_voting_records': 'No voting records found.',
+    'edit_profile': 'Edit Profile',
+
 
     // Meetings Page
     'meetings_manage_title': 'Manage Meetings',
@@ -335,6 +354,9 @@ export const en: { [key: string]: string } = {
     'HR Manager': 'HR Manager',
     'Meeting Secretary': 'Meeting Secretary',
     'Data Analyst': 'Data Analyst',
+    'Party Member': 'Party Member',
+    'Member of Parliament (MP)': 'Member of Parliament (MP)',
+    'Executive Committee Member': 'Executive Committee Member',
 
     // Log Actions
     'Login': 'Login',
