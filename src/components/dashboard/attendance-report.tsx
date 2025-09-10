@@ -28,13 +28,23 @@ import Link from 'next/link';
 export function AttendanceReport() {
     const attendanceData = React.useMemo(() => {
         const data = meetings.map(meeting => {
-            const absentVotes = votes.filter(v => v.motionId === meeting.motions[0]?.id && v.vote === 'Absent').length;
-            const leaveVotes = votes.filter(v => v.motionId === meeting.motions[0]?.id && v.vote === 'Leave').length;
+            const motionIds = meeting.motions.map(m => m.id);
+            const absentMembers = new Set(
+                votes
+                    .filter(v => motionIds.includes(v.motionId) && v.vote === 'Absent')
+                    .map(v => v.memberId)
+            );
+            const leaveMembers = new Set(
+                votes
+                    .filter(v => motionIds.includes(v.motionId) && v.vote === 'Leave')
+                    .map(v => v.memberId)
+            );
+
             return {
                 name: meeting.title,
                 date: meeting.date,
-                absent: absentVotes,
-                leave: leaveVotes
+                absent: absentMembers.size,
+                leave: leaveMembers.size
             };
         }).sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         return data;
