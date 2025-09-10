@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Edit, FileText, Trash2, User, VoteIcon, CheckCircle2, XCircle, MinusCircle, UserX, UserCheck } from "lucide-react"
+import { ArrowLeft, Edit, FileText, Trash2, User, VoteIcon, CheckCircle2, XCircle, MinusCircle, UserX, UserCheck, Landmark } from "lucide-react"
 import Link from "next/link"
 import {
   AlertDialog,
