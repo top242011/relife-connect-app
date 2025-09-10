@@ -62,7 +62,7 @@ const fromSupabaseMotion = (motion: any): Motion => {
 
 // Member Queries
 export async function getAllMembers(): Promise<(Member)[]> {
-    const { data, error } = await supabase.from('members').select('*, member_committees(committees(name))');
+    const { data, error } = await supabase.from('members').select('*, member_committees!inner(committees!inner(name))');
     if (error) {
         console.error('Error fetching members:', error);
         throw error;
@@ -77,7 +77,7 @@ export async function getAllMembers(): Promise<(Member)[]> {
 }
 
 export async function getMemberById(id: string): Promise<Member | null> {
-     const { data, error } = await supabase.from('members').select('*, member_committees(committees(name))').eq('id', id).single();
+     const { data, error } = await supabase.from('members').select('*, member_committees!inner(committees!inner(name))').eq('id', id).single();
     if (error) {
         console.error('Error fetching member by ID:', error);
         return null;
