@@ -68,16 +68,63 @@ const getMemberColumns = (): ColumnDef<Member>[] => [
             </Button>
         ),
     },
-    { accessorKey: 'gender', header: 'Gender' },
-    { accessorKey: 'location', header: 'Location' },
-    { accessorKey: 'professionalBackground', header: 'Profession' },
+    { 
+        accessorKey: 'gender', 
+        header: ({ column }) => (
+            <Button
+              variant="ghost"
+              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            >
+              Gender
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
+    },
+    { 
+        accessorKey: 'location', 
+        header: ({ column }) => (
+            <Button
+              variant="ghost"
+              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            >
+              Location
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
+    },
+    { 
+        accessorKey: 'professionalBackground', 
+        header: ({ column }) => (
+            <Button
+              variant="ghost"
+              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            >
+              Profession
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
+    },
     {
         accessorKey: 'committeeMemberships',
-        header: 'Committees',
+        header: ({ column }) => (
+            <Button
+              variant="ghost"
+              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            >
+              Committees
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        ),
         cell: ({ row }) => {
             const committees = row.getValue('committeeMemberships') as string[];
+            if (!committees || committees.length === 0) return null;
             return <div className="flex flex-wrap gap-1">{committees.map(c => <Badge key={c} variant="secondary">{c}</Badge>)}</div>
         },
+        sortingFn: (rowA, rowB, columnId) => {
+            const a = (rowA.getValue(columnId) as string[]).join(', ');
+            const b = (rowB.getValue(columnId) as string[]).join(', ');
+            return a.localeCompare(b);
+        }
     },
     {
         id: 'actions',
@@ -188,7 +235,7 @@ export function MembersTable({ data, type }: { data: DataType[], type: 'member' 
                             column.toggleVisibility(!!value)
                             }
                         >
-                            {column.id}
+                            {column.id === 'professionalBackground' ? 'Profession' : column.id === 'committeeMemberships' ? 'Committees' : column.id}
                         </DropdownMenuCheckboxItem>
                         );
                     })}
