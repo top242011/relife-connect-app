@@ -55,23 +55,8 @@ export const columns: ColumnDef<Meeting>[] = [
     header: 'Title',
     cell: ({ row }) => {
         const meeting = row.original;
-        const title = meeting.meetingNumber ? 
-            `${meeting.title} (ครั้งที่ ${meeting.meetingNumber})` :
-            meeting.title;
-
-        // Simple auto-numbering for display if no number is set
-        let autoNumberedTitle = title;
-        if (!meeting.meetingNumber) {
-            const meetingType = meeting.meetingType;
-            const meetingSession = meeting.meetingSession;
-            const count = row.table.getCoreRowModel().rows.filter(r => {
-                const m = r.original as Meeting;
-                return m.meetingType === meetingType && m.meetingSession === meetingSession && new Date(m.date) <= new Date(meeting.date);
-            }).length;
-            autoNumberedTitle = `${meeting.meetingType} ${meetingSession} ครั้งที่ ${count}`;
-        }
-       
-      return <div className="font-medium">{autoNumberedTitle}</div>
+        const displayTitle = (meeting as any).displayTitle || meeting.title;
+        return <div className="font-medium">{displayTitle}</div>
     }
   },
   {
@@ -153,8 +138,30 @@ export function MeetingsTable({ data }: { data: Meeting[] }) {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const processedData = React.useMemo(() => {
+    const sortedData = [...data].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const counts: Record<string, number> = {};
+
+    return sortedData.map(meeting => {
+      let displayTitle = meeting.meetingNumber 
+        ? `${meeting.title} (ครั้งที่ ${meeting.meetingNumber})`
+        : meeting.title;
+
+      if (!meeting.meetingNumber) {
+        const key = `${meeting.meetingType}-${meeting.meetingSession}`;
+        counts[key] = (counts[key] || 0) + 1;
+        displayTitle = `${meeting.meetingType} ${meeting.meetingSession} ครั้งที่ ${counts[key]}`;
+      }
+
+      return {
+        ...meeting,
+        displayTitle,
+      };
+    });
+  }, [data]);
+
   const table = useReactTable({
-    data,
+    data: processedData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
