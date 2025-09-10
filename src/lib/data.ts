@@ -27,8 +27,8 @@ export let meetings: Meeting[] = [
         attendees: ['mp-1', 'mp-2', 'mem-1', 'mem-2'],
         presidingOfficer: 'George Orwell',
         motions: [
-            { id: 'motion-1', title: 'Approve allocation for infrastructure projects', description: 'To approve the proposed budget of $5M for the new bridge construction.', isPartySponsored: true, topic: 'Economy', sponsorId: 'mp-1', totalParliamentAye: 150, totalParliamentNay: 100 },
-            { id: 'motion-2', title: 'Review healthcare subsidy proposal', description: 'Discuss and vote on the new public healthcare subsidy program.', isPartySponsored: true, topic: 'Social', sponsorId: 'mp-1', totalParliamentAye: 180, totalParliamentNay: 70}
+            { id: 'motion-1', title: 'Approve allocation for infrastructure projects', description: 'To approve the proposed budget of $5M for the new bridge construction.', isPartySponsored: true, topic: 'Economy', sponsorId: 'mp-1', totalParliamentAye: 150, totalParliamentNay: 100, totalParliamentAbstain: 5 },
+            { id: 'motion-2', title: 'Review healthcare subsidy proposal', description: 'Discuss and vote on the new public healthcare subsidy program.', isPartySponsored: true, topic: 'Social', sponsorId: 'mp-1', totalParliamentAye: 180, totalParliamentNay: 70, totalParliamentAbstain: 5 }
         ],
         relatedDocuments: [{ name: 'Q3 Budget Proposal.pdf', url: '#'}],
         location: 'ท่าพระจันทร์',
@@ -129,3 +129,4 @@ export const UserRoles = {
     'mem-1': ['Admin', 'HR Manager'],
     'mp-1': ['Admin'],
 };
+

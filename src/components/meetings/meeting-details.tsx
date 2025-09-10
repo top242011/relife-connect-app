@@ -121,6 +121,8 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                         
                         const otherAye = (motion.totalParliamentAye ?? 0) - partyAye;
                         const otherNay = (motion.totalParliamentNay ?? 0) - partyNay;
+                        const otherAbstain = (motion.totalParliamentAbstain ?? 0) - partyAbstain;
+
                         
                         return (
                         <div key={motion.id} className="border rounded-lg p-4">
@@ -171,6 +173,7 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                                                     <TableHead></TableHead>
                                                     <TableHead className="text-center">Aye</TableHead>
                                                     <TableHead className="text-center">Nay</TableHead>
+                                                    <TableHead className="text-center">Abstain</TableHead>
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
@@ -178,16 +181,19 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                                                     <TableCell className="font-medium">Our Party</TableCell>
                                                     <TableCell className="text-center font-semibold text-green-600">{partyAye}</TableCell>
                                                     <TableCell className="text-center font-semibold text-red-600">{partyNay}</TableCell>
+                                                    <TableCell className="text-center font-semibold text-yellow-600">{partyAbstain}</TableCell>
                                                 </TableRow>
                                                  <TableRow>
                                                     <TableCell className="font-medium">Other Parties</TableCell>
                                                     <TableCell className="text-center font-semibold">{otherAye}</TableCell>
                                                     <TableCell className="text-center font-semibold">{otherNay}</TableCell>
+                                                    <TableCell className="text-center font-semibold">{otherAbstain}</TableCell>
                                                 </TableRow>
                                                 <TableRow className="bg-muted/50">
                                                     <TableCell className="font-bold">Total Parliament</TableCell>
                                                     <TableCell className="text-center font-bold">{motion.totalParliamentAye}</TableCell>
                                                     <TableCell className="text-center font-bold">{motion.totalParliamentNay}</TableCell>
+                                                    <TableCell className="text-center font-bold">{motion.totalParliamentAbstain}</TableCell>
                                                 </TableRow>
                                             </TableBody>
                                         </Table>

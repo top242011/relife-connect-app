@@ -67,6 +67,7 @@ const formSchema = z.object({
   votes: z.array(voteSchema),
   totalParliamentAye: z.coerce.number().optional(),
   totalParliamentNay: z.coerce.number().optional(),
+  totalParliamentAbstain: z.coerce.number().optional(),
 });
 
 type VoteFormValues = z.infer<typeof formSchema>;
@@ -96,6 +97,7 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
     }),
     totalParliamentAye: motion.totalParliamentAye,
     totalParliamentNay: motion.totalParliamentNay,
+    totalParliamentAbstain: motion.totalParliamentAbstain,
   };
 
   const form = useForm<VoteFormValues>({
@@ -134,6 +136,7 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
         if (motionToUpdate) {
             motionToUpdate.totalParliamentAye = data.totalParliamentAye;
             motionToUpdate.totalParliamentNay = data.totalParliamentNay;
+            motionToUpdate.totalParliamentAbstain = data.totalParliamentAbstain;
         }
     }
 
@@ -167,7 +170,7 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Record Votes: {motion.title}</DialogTitle>
           <DialogDescription>
@@ -219,13 +222,13 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
                         <CardTitle className="text-lg flex items-center"><Landmark className="mr-2" />Parliamentary Vote Totals</CardTitle>
                         <CardDescription>Enter the final vote counts from the entire parliament.</CardDescription>
                     </CardHeader>
-                    <CardContent className='grid grid-cols-2 gap-4'>
+                    <CardContent className='grid grid-cols-3 gap-4'>
                         <FormField
                             control={form.control}
                             name="totalParliamentAye"
                             render={({ field }) => (
                                 <FormItem>
-                                <FormLabel>Total Parliament 'Aye' Votes</FormLabel>
+                                <FormLabel>Total 'Aye' Votes</FormLabel>
                                 <FormControl>
                                     <Input type="number" placeholder="e.g., 150" {...field} />
                                 </FormControl>
@@ -238,9 +241,22 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
                             name="totalParliamentNay"
                             render={({ field }) => (
                                 <FormItem>
-                                <FormLabel>Total Parliament 'Nay' Votes</FormLabel>
+                                <FormLabel>Total 'Nay' Votes</FormLabel>
                                 <FormControl>
                                     <Input type="number" placeholder="e.g., 100" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                         <FormField
+                            control={form.control}
+                            name="totalParliamentAbstain"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Total 'Abstain' Votes</FormLabel>
+                                <FormControl>
+                                    <Input type="number" placeholder="e.g., 10" {...field} />
                                 </FormControl>
                                 <FormMessage />
                                 </FormItem>

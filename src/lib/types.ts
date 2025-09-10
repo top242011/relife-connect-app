@@ -51,6 +51,7 @@
     sponsorId?: string;
     totalParliamentAye?: number;
     totalParliamentNay?: number;
+    totalParliamentAbstain?: number;
   }
   
   export type MeetingType = 'การประชุมสภา' | 'การประชุมพรรค';
@@ -99,3 +100,4 @@
       action: string;
       details: string;
   }
+
