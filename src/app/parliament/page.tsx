@@ -14,7 +14,7 @@ export default function ParliamentPage() {
     React.useEffect(() => {
         const fetchMembers = async () => {
             const members = await getAllMembers();
-            const mpsData = members.filter(m => m.roles.includes('isMP'));
+            const mpsData = members.filter(m => m.roles.includes('isCouncilMember'));
             setMps(mpsData);
         };
         fetchMembers();
@@ -23,9 +23,9 @@ export default function ParliamentPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">{t('parliament_title')}</h1>
+                <h1 className="text-3xl font-bold tracking-tight">{t('council_members_title')}</h1>
                 <p className="text-muted-foreground">
-                    {t('parliament_subtitle')}
+                    {t('council_members_subtitle')}
                 </p>
             </div>
             <MembersTable data={mps} type="mp" />

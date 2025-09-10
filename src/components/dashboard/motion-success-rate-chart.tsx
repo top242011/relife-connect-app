@@ -44,8 +44,8 @@ export function MotionSuccessRateChart() {
     }, []);
 
     const chartData = React.useMemo(() => {
-        const partySponsored = { total: 0, passed: 0 };
-        const nonPartySponsored = { total: 0, passed: 0 };
+        const partyProposed = { total: 0, passed: 0 };
+        const nonPartyProposed = { total: 0, passed: 0 };
 
         meetings.forEach(meeting => {
             meeting.motions.forEach(motion => {
@@ -53,19 +53,19 @@ export function MotionSuccessRateChart() {
                 const nays = votes.filter(v => v.motionId === motion.id && v.vote === 'Nay').length;
                 const passed = ayes > nays;
 
-                if (motion.isPartySponsored) {
-                    partySponsored.total++;
-                    if (passed) partySponsored.passed++;
+                if (motion.isPartyProposed) {
+                    partyProposed.total++;
+                    if (passed) partyProposed.passed++;
                 } else {
-                    nonPartySponsored.total++;
-                    if (passed) nonPartySponsored.passed++;
+                    nonPartyProposed.total++;
+                    if (passed) nonPartyProposed.passed++;
                 }
             });
         });
         
         return [
-            { name: t('party_sponsored'), passed: partySponsored.total > 0 ? (partySponsored.passed / partySponsored.total) * 100 : 0 },
-            { name: t('not_party_sponsored'), passed: nonPartySponsored.total > 0 ? (nonPartySponsored.passed / nonPartySponsored.total) * 100 : 0 },
+            { name: t('party_proposed'), passed: partyProposed.total > 0 ? (partyProposed.passed / partyProposed.total) * 100 : 0 },
+            { name: t('not_party_proposed'), passed: nonPartyProposed.total > 0 ? (nonPartyProposed.passed / nonPartyProposed.total) * 100 : 0 },
         ];
     }, [meetings, votes, t]);
 

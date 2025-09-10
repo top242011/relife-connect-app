@@ -43,9 +43,9 @@ const motionSchema = z.object({
     id: z.string(),
     title: z.string().min(1, "Motion title is required"),
     description: z.string().min(1, "Motion description is required"),
-    isPartySponsored: z.boolean().default(false),
+    isPartyProposed: z.boolean().default(false),
     topic: z.string().min(1, "Topic is required"),
-    sponsorId: z.string().optional(),
+    proposerId: z.string().optional(),
 });
 
 const formSchema = z.object({
@@ -60,13 +60,13 @@ const formSchema = z.object({
   committeeName: z.string().optional(),
 }).refine(data => {
     for (const motion of data.motions) {
-        if (motion.isPartySponsored && !motion.sponsorId) {
+        if (motion.isPartyProposed && !motion.proposerId) {
             return false;
         }
     }
     return true;
 }, {
-    message: "A party-sponsored motion must have a sponsoring member.",
+    message: "A party-proposed motion must have a proposing member.",
     path: ["motions"],
 }).refine(data => {
     if (data.meetingType === 'การประชุมกรรมาธิการ' && !data.committeeName) {
@@ -115,7 +115,7 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
         date: "",
         presidingOfficer: "",
         attendees: [],
-        motions: [{ id: `new-motion-${Date.now()}`, title: '', description: '', isPartySponsored: false, topic: '' }],
+        motions: [{ id: `new-motion-${Date.now()}`, title: '', description: '', isPartyProposed: false, topic: '' }],
     },
   });
 
@@ -130,7 +130,7 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
 
   const availableAttendees = React.useMemo(() => {
     if (meetingType === 'การประชุมสภา') {
-        const mps = allMembers.filter(m => m.roles.includes('isMP'));
+        const mps = allMembers.filter(m => m.roles.includes('isCouncilMember'));
         if (location && location !== 'ส่วนกลาง') {
             return mps.filter(m => m.location === location);
         }
@@ -301,12 +301,12 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
                                 )}
                             />
                             <FormField
-                                name={`motions.${index}.sponsorId`}
+                                name={`motions.${index}.proposerId`}
                                 control={form.control}
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col">
-                                        <FormLabel>{t('sponsoring_member')}</FormLabel>
-                                        <MultiSelect a-type="single" options={allMembers.filter(m => m.roles.includes('isMP')).map(m => ({value: m.id, label: m.name}))} {...field} />
+                                        <FormLabel>{t('proposing_member')}</FormLabel>
+                                        <MultiSelect a-type="single" options={allMembers.filter(m => m.roles.includes('isCouncilMember')).map(m => ({value: m.id, label: m.name}))} {...field} />
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -314,7 +314,7 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
                         </div>
                         <FormField
                             control={form.control}
-                            name={`motions.${index}.isPartySponsored`}
+                            name={`motions.${index}.isPartyProposed`}
                             render={({ field }) => (
                                 <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
                                 <FormControl>
@@ -325,10 +325,10 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
                                 </FormControl>
                                 <div className="space-y-1 leading-none">
                                     <FormLabel>
-                                    {t('party_sponsored_motion')}
+                                    {t('party_proposed_motion')}
                                     </FormLabel>
                                     <FormDescription>
-                                     {t('party_sponsored_motion_desc')}
+                                     {t('party_proposed_motion_desc')}
                                     </FormDescription>
                                 </div>
                                 </FormItem>
@@ -338,7 +338,7 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
                 ))}
                 </div>
                  {form.formState.errors.motions?.root && <FormMessage className="mt-2">{form.formState.errors.motions.root.message}</FormMessage>}
-                <Button type="button" variant="outline" size="sm" className="mt-4" onClick={() => append({id: `new-motion-${Date.now()}`, title: '', description: '', isPartySponsored: false, topic: ''})}>
+                <Button type="button" variant="outline" size="sm" className="mt-4" onClick={() => append({id: `new-motion-${Date.now()}`, title: '', description: '', isPartyProposed: false, topic: ''})}>
                     <PlusCircle className="mr-2 h-4 w-4" /> {t('add_motion')}
                 </Button>
             </div>

@@ -4,22 +4,22 @@
     id: string;
     name: string;
     email: string;
-    age: number | null;
+    year: number | null;
     gender: 'Male' | 'Female' | 'Other' | null;
     location: Location | null;
     education: string | null;
-    professionalBackground: string | null;
+    faculty: string | null;
     committeeMemberships: string[] | null;
     activityLog: string | null;
     volunteerWork: string | null;
     contact: string | null;
     roles: string[] | null;
     status: 'Active' | 'Inactive' | 'Former Member' | null;
-    // MP fields - only present if roles includes 'MP'
-    electoralHistory?: string | null;
-    parliamentaryRoles?: string | null;
+    // Council member fields - only present if roles includes 'isCouncilMember'
+    electionHistory?: string | null;
+    councilRoles?: string | null;
     votingRecord?: string | null;
-    keyPolicyInterests?: string | null;
+    policyInterests?: string | null;
   }
   
   export interface PerformanceData {
@@ -38,12 +38,12 @@
     id: string;
     title: string;
     description: string | null;
-    isPartySponsored: boolean | null;
+    isPartyProposed: boolean | null;
     topic: string | null;
-    sponsorId?: string | null;
-    totalParliamentAye?: number | null;
-    totalParliamentNay?: number | null;
-    totalParliamentAbstain?: number | null;
+    proposerId?: string | null;
+    totalCouncilAye?: number | null;
+    totalCouncilNay?: number | null;
+    totalCouncilAbstain?: number | null;
   }
   
   export type MeetingType = 'การประชุมสภา' | 'การประชุมพรรค' | 'การประชุมกรรมาธิการ';

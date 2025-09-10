@@ -3,7 +3,6 @@
 import * as React from 'react';
 import { Member, Vote, Meeting } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
@@ -31,7 +30,7 @@ export function MPProfileContent({ mp }: { mp: Member }) {
     }, []);
 
     const mpVotes = votes.filter(vote => vote.memberId === mp.id);
-    const sponsoredMotions = meetings.flatMap(m => m.motions).filter(motion => motion.sponsorId === mp.id);
+    const proposedMotions = meetings.flatMap(m => m.motions).filter(motion => motion.proposerId === mp.id);
     const absences = mpVotes.filter(v => v.vote === 'Absent').length;
     const ABSENCE_THRESHOLD = 3;
 
@@ -47,14 +46,11 @@ export function MPProfileContent({ mp }: { mp: Member }) {
         <div className="space-y-6">
             <div className="flex justify-between items-start">
                 <div className="flex items-center space-x-4">
-                    <Avatar className="h-24 w-24">
-                        <AvatarFallback>{mp.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
                     <div>
                         <h1 className="text-3xl font-bold">{mp.name}</h1>
-                        <p className="text-muted-foreground">{t(mp.parliamentaryRoles as any)} {t('for')} {t(mp.location as any)}</p>
+                        <p className="text-muted-foreground">{t(mp.councilRoles as any)} {t('for')} {t(mp.location as any)}</p>
                         <div className="flex flex-wrap gap-2 mt-2">
-                            {mp.keyPolicyInterests?.split(', ').map(interest => (
+                            {mp.policyInterests?.split(', ').map(interest => (
                                 <Badge key={interest} variant="secondary">{t(interest as any)}</Badge>
                             ))}
                         </div>
@@ -83,18 +79,17 @@ export function MPProfileContent({ mp }: { mp: Member }) {
                 </CardHeader>
                 <CardContent className="grid grid-cols-2 gap-4">
                     <div><span className="font-semibold">{t('email')}:</span> {mp.email}</div>
-                    <div><span className="font-semibold">{t('age')}:</span> {mp.age}</div>
+                    <div><span className="font-semibold">{t('year')}:</span> {mp.year}</div>
                     <div><span className="font-semibold">{t('gender')}:</span> {t(mp.gender as any)}</div>
-                    <div><span className="font-semibold">{t('profession')}:</span> {t(mp.professionalBackground as any)}</div>
-                    <div><span className="font-semibold">{t('background')}:</span> {t(mp.professionalBackground as any)}</div>
-                    <div className="col-span-2"><span className="font-semibold">{t('electoral_history')}:</span> {t(mp.electoralHistory as any)}</div>
+                    <div><span className="font-semibold">{t('faculty')}:</span> {t(mp.faculty as any)}</div>
+                    <div className="col-span-2"><span className="font-semibold">{t('election_history')}:</span> {t(mp.electionHistory as any)}</div>
                 </CardContent>
             </Card>
 
             <Card>
                 <CardHeader>
-                    <CardTitle>{t('sponsored_motions_title')}</CardTitle>
-                    <CardDescription>{t('sponsored_motions_subtitle')}</CardDescription>
+                    <CardTitle>{t('proposed_motions_title')}</CardTitle>
+                    <CardDescription>{t('proposed_motions_subtitle')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Table>
@@ -107,7 +102,7 @@ export function MPProfileContent({ mp }: { mp: Member }) {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {sponsoredMotions.length > 0 ? sponsoredMotions.map(motion => {
+                            {proposedMotions.length > 0 ? proposedMotions.map(motion => {
                                 const meeting = meetings.find(m => m.motions.some(mo => mo.id === motion.id));
                                 return (
                                     <TableRow key={motion.id}>
@@ -123,7 +118,7 @@ export function MPProfileContent({ mp }: { mp: Member }) {
                                 )
                             }) : (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="text-center">{t('no_sponsored_motions')}</TableCell>
+                                    <TableCell colSpan={4} className="text-center">{t('no_proposed_motions')}</TableCell>
                                 </TableRow>
                             )}
                         </TableBody>
@@ -183,7 +178,7 @@ export function MPProfileContent({ mp }: { mp: Member }) {
                  <Button asChild variant="outline">
                     <Link href="/parliament">
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        {t('back_to_parliament_list')}
+                        {t('back_to_council_list')}
                     </Link>
                 </Button>
             </div>

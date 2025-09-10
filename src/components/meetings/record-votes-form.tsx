@@ -66,9 +66,9 @@ const voteSchema = z.object({
 
 const formSchema = z.object({
   votes: z.array(voteSchema),
-  totalParliamentAye: z.coerce.number().optional(),
-  totalParliamentNay: z.coerce.number().optional(),
-  totalParliamentAbstain: z.coerce.number().optional(),
+  totalCouncilAye: z.coerce.number().optional(),
+  totalCouncilNay: z.coerce.number().optional(),
+  totalCouncilAbstain: z.coerce.number().optional(),
 });
 
 type VoteFormValues = z.infer<typeof formSchema>;
@@ -107,9 +107,9 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
         vote: existingVote ? existingVote.vote : 'Absent',
       };
     }),
-    totalParliamentAye: motion.totalParliamentAye,
-    totalParliamentNay: motion.totalParliamentNay,
-    totalParliamentAbstain: motion.totalParliamentAbstain,
+    totalCouncilAye: motion.totalCouncilAye,
+    totalCouncilNay: motion.totalCouncilNay,
+    totalCouncilAbstain: motion.totalCouncilAbstain,
   }), [meeting.attendees, allVotesData, motion]);
 
   const form = useForm<VoteFormValues>({
@@ -129,9 +129,9 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
   const onSubmit = async (data: VoteFormValues) => {
     try {
       await updateVotes(motion.id, data.votes, {
-          total_parliament_aye: data.totalParliamentAye,
-          total_parliament_nay: data.totalParliamentNay,
-          total_parliament_abstain: data.totalParliamentAbstain,
+          total_council_aye: data.totalCouncilAye,
+          total_council_nay: data.totalCouncilNay,
+          total_council_abstain: data.totalCouncilAbstain,
       });
 
       toast({
@@ -222,13 +222,13 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
             {meeting.meetingType === 'การประชุมสภา' && (
                 <Card>
                      <CardHeader className='pb-2'>
-                        <CardTitle className="text-lg flex items-center"><Landmark className="mr-2" />{t('parliamentary_vote_totals_title')}</CardTitle>
-                        <CardDescription>{t('parliamentary_vote_totals_subtitle')}</CardDescription>
+                        <CardTitle className="text-lg flex items-center"><Landmark className="mr-2" />{t('council_vote_totals_title')}</CardTitle>
+                        <CardDescription>{t('council_vote_totals_subtitle')}</CardDescription>
                     </CardHeader>
                     <CardContent className='grid grid-cols-3 gap-4'>
                         <FormField
                             control={form.control}
-                            name="totalParliamentAye"
+                            name="totalCouncilAye"
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>{t('total_aye_votes')}</FormLabel>
@@ -241,7 +241,7 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
                         />
                          <FormField
                             control={form.control}
-                            name="totalParliamentNay"
+                            name="totalCouncilNay"
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>{t('total_nay_votes')}</FormLabel>
@@ -254,7 +254,7 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
                         />
                          <FormField
                             control={form.control}
-                            name="totalParliamentAbstain"
+                            name="totalCouncilAbstain"
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>{t('total_abstain_votes')}</FormLabel>

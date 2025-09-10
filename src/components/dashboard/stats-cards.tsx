@@ -38,7 +38,7 @@ import { Skeleton } from '../ui/skeleton';
     }, []);
 
     const totalMembers = members.length;
-    const mps = members.filter(m => m.roles.includes('isMP')).length;
+    const mps = members.filter(m => m.roles.includes('isCouncilMember')).length;
     const upcomingMeetings = meetings.filter(m => new Date(m.date) >= new Date()).length;
 
     if (loading) {
@@ -92,12 +92,12 @@ import { Skeleton } from '../ui/skeleton';
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('members_of_parliament')}</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('council_members')}</CardTitle>
             <Landmark className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{mps}</div>
-            <p className="text-xs text-muted-foreground">{t('members_of_parliament_subtitle', { count: mps })}</p>
+            <p className="text-xs text-muted-foreground">{t('council_members_subtitle', { count: mps })}</p>
           </CardContent>
         </Card>
         <Card>

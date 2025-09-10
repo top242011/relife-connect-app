@@ -48,19 +48,19 @@ export function SponsoringMembersTable() {
     }, []);
 
     const memberData = React.useMemo(() => {
-        const mps = members.filter(m => m.roles.includes('isMP'));
-        const getSponsoredMotionsCount = (mpId: string) => {
-            return meetings.flatMap(m => m.motions).filter(motion => motion.sponsorId === mpId).length;
+        const mps = members.filter(m => m.roles.includes('isCouncilMember'));
+        const getProposedMotionsCount = (mpId: string) => {
+            return meetings.flatMap(m => m.motions).filter(motion => motion.proposerId === mpId).length;
         };
 
         return mps
             .map(mp => ({
                 id: mp.id,
                 name: mp.name,
-                sponsoredCount: getSponsoredMotionsCount(mp.id),
+                proposedCount: getProposedMotionsCount(mp.id),
             }))
-            .filter(mp => mp.sponsoredCount > 0)
-            .sort((a, b) => b.sponsoredCount - a.sponsoredCount);
+            .filter(mp => mp.proposedCount > 0)
+            .sort((a, b) => b.proposedCount - a.proposedCount);
     }, [members, meetings]);
     
     if (loading) {
@@ -92,7 +92,7 @@ export function SponsoringMembersTable() {
                     <TableHeader>
                         <TableRow>
                             <TableHead>{t('member')}</TableHead>
-                            <TableHead className="text-right">{t('sponsored_motions')}</TableHead>
+                            <TableHead className="text-right">{t('proposed_motions')}</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -103,7 +103,7 @@ export function SponsoringMembersTable() {
                                         {mp.name}
                                     </Link>
                                 </TableCell>
-                                <TableCell className="text-right font-semibold">{mp.sponsoredCount}</TableCell>
+                                <TableCell className="text-right font-semibold">{mp.proposedCount}</TableCell>
                             </TableRow>
                         ))}
                          {memberData.length === 0 && (

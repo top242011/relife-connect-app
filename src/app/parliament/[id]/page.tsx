@@ -7,7 +7,7 @@ import { ArrowLeft } from "lucide-react";
 export default async function MPProfilePage({ params }: { params: { id: string } }) {
     const mp = await getMemberById(params.id);
 
-    if (!mp || !mp.roles.includes('isMP')) {
+    if (!mp || !mp.roles.includes('isCouncilMember')) {
         return (
             <div className="text-center">
                 <h1 className="text-2xl font-bold">Member of Parliament not found</h1>

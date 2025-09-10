@@ -9,21 +9,21 @@ const fromSupabaseMember = (member: Tables<'members'> | any): Member => {
         id: member.id,
         name: member.name,
         email: member.email,
-        age: member.age,
+        year: member.year,
         gender: member.gender,
         location: member.location,
         education: member.education,
-        professionalBackground: member.professional_background,
+        faculty: member.faculty,
         committeeMemberships: member.committee_memberships || [],
         activityLog: member.activity_log,
         volunteerWork: member.volunteer_work,
         contact: member.contact,
         roles: member.roles || [],
         status: member.status,
-        electoralHistory: member.electoral_history,
-        parliamentaryRoles: member.parliamentary_roles,
+        electionHistory: member.election_history,
+        councilRoles: member.council_roles,
         votingRecord: member.voting_record,
-        keyPolicyInterests: member.key_policy_interests,
+        policyInterests: member.policy_interests,
     } as Member;
 }
 
@@ -50,12 +50,12 @@ const fromSupabaseMotion = (motion: any): Motion => {
         id: motion.id,
         title: motion.title,
         description: motion.description,
-        isPartySponsored: motion.is_party_sponsored,
+        isPartyProposed: motion.is_party_proposed,
         topic: motion.topic,
-        sponsorId: motion.sponsor_id,
-        totalParliamentAye: motion.total_parliament_aye,
-        totalParliamentNay: motion.total_parliament_nay,
-        totalParliamentAbstain: motion.total_parliament_abstain,
+        proposerId: motion.proposer_id,
+        totalCouncilAye: motion.total_council_aye,
+        totalCouncilNay: motion.total_council_nay,
+        totalCouncilAbstain: motion.total_council_abstain,
     }
 }
 
@@ -94,20 +94,20 @@ export async function createMember(memberData: Partial<Member>) {
         id: newMemberId,
         name: memberData.name!,
         email: memberData.email!,
-        age: memberData.age,
+        year: memberData.year,
         gender: memberData.gender,
         location: memberData.location,
         education: memberData.education,
-        professional_background: memberData.professionalBackground,
+        faculty: memberData.faculty,
         activity_log: memberData.activityLog,
         volunteer_work: memberData.volunteerWork,
         contact: memberData.contact,
         roles: memberData.roles,
         status: 'Active',
-        electoral_history: memberData.electoralHistory,
-        parliamentary_roles: memberData.parliamentaryRoles,
+        election_history: memberData.electionHistory,
+        council_roles: memberData.councilRoles,
         voting_record: memberData.votingRecord,
-        key_policy_interests: memberData.keyPolicyInterests,
+        policy_interests: memberData.policyInterests,
     };
     
     const { error: memberError } = await supabase.from('members').insert(newMember);
@@ -136,18 +136,18 @@ export async function updateMember(id: string, memberData: Partial<Member>) {
     const memberUpdate: TablesUpdate<'members'> = {
         name: memberData.name!,
         email: memberData.email!,
-        age: memberData.age,
+        year: memberData.year,
         gender: memberData.gender,
         location: memberData.location,
         education: memberData.education,
-        professional_background: memberData.professionalBackground,
+        faculty: memberData.faculty,
         activity_log: memberData.activityLog,
         volunteer_work: memberData.volunteerWork,
         contact: memberData.contact,
         roles: memberData.roles,
-        electoral_history: memberData.electoralHistory,
-        parliamentary_roles: memberData.parliamentaryRoles,
-        key_policy_interests: memberData.keyPolicyInterests,
+        election_history: memberData.electionHistory,
+        council_roles: memberData.councilRoles,
+        policy_interests: memberData.policyInterests,
     };
 
     const { error: memberError } = await supabase.from('members').update(memberUpdate).eq('id', id);
@@ -228,9 +228,9 @@ export async function updateMeeting(id: string, meetingData: Partial<Meeting>) {
             meeting_id: id,
             title: motion.title,
             description: motion.description,
-            is_party_sponsored: motion.isPartySponsored,
+            is_party_proposed: motion.isPartyProposed,
             topic: motion.topic,
-            sponsor_id: motion.sponsorId || null
+            proposer_id: motion.proposerId || null
         }));
         const { error: motionsError } = await supabase.from('motions').insert(motionsToInsert);
         if (motionsError) throw motionsError;

@@ -59,13 +59,13 @@ const getMemberColumns = (t: (key: string) => string): ColumnDef<Member>[] => [
         ),
     },
     { 
-        accessorKey: 'age', 
+        accessorKey: 'year', 
         header: ({ column }) => (
             <Button
               variant="ghost"
               onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
-              {t('age')}
+              {t('year')}
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
         ),
@@ -97,17 +97,17 @@ const getMemberColumns = (t: (key: string) => string): ColumnDef<Member>[] => [
          cell: ({ row }) => t(row.getValue('location') as any)
     },
     { 
-        accessorKey: 'professionalBackground', 
+        accessorKey: 'faculty', 
         header: ({ column }) => (
             <Button
               variant="ghost"
               onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
-              {t('profession')}
+              {t('faculty')}
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
         ),
-         cell: ({ row }) => t(row.getValue('professionalBackground') as any)
+         cell: ({ row }) => t(row.getValue('faculty') as any)
     },
     {
         accessorKey: 'committeeMemberships',
@@ -148,18 +148,18 @@ const getMemberColumns = (t: (key: string) => string): ColumnDef<Member>[] => [
     }
 ];
 
-const getMPColumns = (t: (key: string) => string): ColumnDef<Member>[] => [
+const getCouncilMemberColumns = (t: (key: string) => string): ColumnDef<Member>[] => [
     { 
         accessorKey: 'name', 
         header: t('name')
     },
     { accessorKey: 'location', header: t('constituency'), cell: ({ row }) => t(row.getValue('location') as any) },
-    { accessorKey: 'parliamentaryRoles', header: t('role'), cell: ({ row }) => t(row.getValue('parliamentaryRoles') as any) },
+    { accessorKey: 'councilRoles', header: t('role'), cell: ({ row }) => t(row.getValue('councilRoles') as any) },
     {
-        accessorKey: 'keyPolicyInterests',
+        accessorKey: 'policyInterests',
         header: t('policy_interests'),
         cell: ({ row }) => {
-            const interests = (row.getValue('keyPolicyInterests') as string)?.split(', ');
+            const interests = (row.getValue('policyInterests') as string)?.split(', ');
             if (!interests) return null;
             return <div className="flex flex-wrap gap-1">{interests.map(i => <Badge key={i} variant="secondary">{t(i as any)}</Badge>)}</div>
         }
@@ -184,7 +184,7 @@ const getMPColumns = (t: (key: string) => string): ColumnDef<Member>[] => [
 
 export function MembersTable({ data, type }: { data: DataType[], type: 'member' | 'mp' }) {
     const { t } = useLanguage();
-    const columns = React.useMemo(() => (type === 'member' ? getMemberColumns(t) : getMPColumns(t)), [type, t]) as ColumnDef<DataType>[];
+    const columns = React.useMemo(() => (type === 'member' ? getMemberColumns(t) : getCouncilMemberColumns(t)), [type, t]) as ColumnDef<DataType>[];
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});

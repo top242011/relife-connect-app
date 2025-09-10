@@ -103,7 +103,7 @@ export function DemographicsResults({ members, loading }: DemographicsResultsPro
               <TableRow>
                 <TableHead>{t('name')}</TableHead>
                 <TableHead>{t('role')}</TableHead>
-                <TableHead>{t('age')}</TableHead>
+                <TableHead>{t('year')}</TableHead>
                 <TableHead>{t('gender')}</TableHead>
                 <TableHead>{t('location')}</TableHead>
                 <TableHead>{t('committees')}</TableHead>
@@ -119,7 +119,7 @@ export function DemographicsResults({ members, loading }: DemographicsResultsPro
                             {member.roles?.map(r => <Badge key={r} variant="outline">{t(r as any)}</Badge>)}
                         </div>
                     </TableCell>
-                    <TableCell>{member.age}</TableCell>
+                    <TableCell>{member.year}</TableCell>
                     <TableCell>{t(member.gender as any)}</TableCell>
                     <TableCell>{t(member.location as any)}</TableCell>
                      <TableCell>

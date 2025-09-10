@@ -13,7 +13,7 @@ export interface FilterState {
     committees: string[];
     policyInterest: string;
     location: string;
-    age: number[];
+    year: number[];
 }
 
 export default function DemographicsReportPage() {
@@ -30,7 +30,7 @@ export default function DemographicsReportPage() {
         committees: [],
         policyInterest: '',
         location: 'all',
-        age: [],
+        year: [],
     }), []);
 
     const [filters, setFilters] = React.useState<FilterState>(initialFilters);
@@ -79,7 +79,7 @@ export default function DemographicsReportPage() {
         // Policy interest filter
         if (newFilters.policyInterest.trim()) {
             const keyword = newFilters.policyInterest.trim().toLowerCase();
-            results = results.filter(m => m.keyPolicyInterests && m.keyPolicyInterests.toLowerCase().includes(keyword));
+            results = results.filter(m => m.policyInterests && m.policyInterests.toLowerCase().includes(keyword));
         }
 
         // Location filter
@@ -87,9 +87,9 @@ export default function DemographicsReportPage() {
             results = results.filter(m => m.location === newFilters.location);
         }
 
-        // Age (Year) filter
-        if (newFilters.age.length > 0) {
-            results = results.filter(m => m.age && newFilters.age.includes(m.age));
+        // Year filter
+        if (newFilters.year.length > 0) {
+            results = results.filter(m => m.year && newFilters.year.includes(m.year));
         }
 
         setFilteredMembers(results);

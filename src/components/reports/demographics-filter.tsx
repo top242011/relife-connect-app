@@ -25,7 +25,7 @@ interface DemographicsFilterProps {
 
 const roles = [
   { id: 'isExec', label: 'Executive Committee Member' },
-  { id: 'isMP', label: 'Member of Parliament (MP)' },
+  { id: 'isCouncilMember', label: 'Student Council Member' },
   { id: 'isPartyMember', label: 'Party Member' },
 ];
 
@@ -44,7 +44,7 @@ export function DemographicsFilter({
     onFilterChange({ ...filters, [field]: value });
   };
   
-  const handleCheckboxChange = (field: keyof Pick<FilterState, 'roles' | 'committees' | 'age'>, id: string | number) => {
+  const handleCheckboxChange = (field: keyof Pick<FilterState, 'roles' | 'committees' | 'year'>, id: string | number) => {
     const currentValues = filters[field] as any[];
     const newValues = currentValues.includes(id)
       ? currentValues.filter((v: any) => v !== id)
@@ -102,12 +102,12 @@ export function DemographicsFilter({
                 </Select>
             </div>
              <div>
-                <Label>{t('age')}</Label>
+                <Label>{t('year')}</Label>
                  <MultiSelectPopover
                     placeholder={t('select_year')}
                     options={years.map(y => ({ value: y, label: String(y) }))}
-                    selected={filters.age}
-                    onChange={(selected) => handleInputChange('age', selected)}
+                    selected={filters.year}
+                    onChange={(selected) => handleInputChange('year', selected)}
                 />
             </div>
           </div>
@@ -124,7 +124,7 @@ export function DemographicsFilter({
                 />
             </div>
              <div>
-                <Label htmlFor="policy-filter">{t('key_policy_interests')}</Label>
+                <Label htmlFor="policy-filter">{t('policy_interests')}</Label>
                 <Input
                     id="policy-filter"
                     placeholder={t('search_placeholder')}

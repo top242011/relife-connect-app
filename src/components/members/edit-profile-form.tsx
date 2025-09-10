@@ -45,18 +45,18 @@ const formSchema = z.object({
   email: z.string().email("Invalid email address"),
   contact: z.string().optional(),
   location: z.string().min(1, "Location is required"),
-  age: z.coerce.number().min(1, "Must be at least 1").max(6, "Must be at most 6"),
+  year: z.coerce.number().min(1, "Must be at least 1").max(6, "Must be at most 6"),
   gender: z.enum(["Male", "Female", "Other"]),
   education: z.string(),
-  professionalBackground: z.string(),
+  faculty: z.string(),
   roles: z.array(z.string()),
   committeeMemberships: z.array(z.string()),
   activityLog: z.string().optional(),
   volunteerWork: z.string().optional(),
-  // MP fields
-  electoralHistory: z.string().optional(),
-  parliamentaryRoles: z.string().optional(),
-  keyPolicyInterests: z.string().optional(),
+  // Council member fields
+  electionHistory: z.string().optional(),
+  councilRoles: z.string().optional(),
+  policyInterests: z.string().optional(),
 });
 
 
@@ -64,7 +64,7 @@ type ProfileFormValues = z.infer<typeof formSchema>;
 
 const roles = [
   { id: 'isPartyMember', label: 'Party Member' },
-  { id: 'isMP', label: 'Member of Parliament (MP)' },
+  { id: 'isCouncilMember', label: 'Student Council Member' },
   { id: 'isExec', label: 'Executive Committee Member' },
 ]
 
@@ -95,17 +95,17 @@ export function EditProfileForm({ member }: { member: Member }) {
     email: member.email,
     contact: member.contact ?? '',
     location: member.location ?? '',
-    age: member.age ?? 1,
+    year: member.year ?? 1,
     gender: member.gender ?? "Other",
     education: member.education ?? '',
-    professionalBackground: member.professionalBackground ?? '',
+    faculty: member.faculty ?? '',
     roles: member.roles || [],
     committeeMemberships: member.committeeMemberships || [],
     activityLog: member.activityLog ?? '',
     volunteerWork: member.volunteerWork ?? '',
-    electoralHistory: member.electoralHistory ?? '',
-    parliamentaryRoles: member.parliamentaryRoles ?? '',
-    keyPolicyInterests: member.keyPolicyInterests ?? '',
+    electionHistory: member.electionHistory ?? '',
+    councilRoles: member.councilRoles ?? '',
+    policyInterests: member.policyInterests ?? '',
   };
 
   const form = useForm<ProfileFormValues>({
@@ -141,13 +141,13 @@ export function EditProfileForm({ member }: { member: Member }) {
   };
   
   const watchedRoles = form.watch("roles", []);
-  const isMpSelected = watchedRoles.includes('isMP');
+  const isCouncilMemberSelected = watchedRoles.includes('isCouncilMember');
   
   React.useEffect(() => {
-    if (isMpSelected && !watchedRoles.includes('isPartyMember')) {
+    if (isCouncilMemberSelected && !watchedRoles.includes('isPartyMember')) {
       form.setValue('roles', [...watchedRoles, 'isPartyMember']);
     }
-  }, [isMpSelected, watchedRoles, form]);
+  }, [isCouncilMemberSelected, watchedRoles, form]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -181,7 +181,7 @@ export function EditProfileForm({ member }: { member: Member }) {
                       control={form.control}
                       name="roles"
                       render={({ field }) => {
-                        const isDisabled = item.id === 'isPartyMember' && field.value?.includes('isMP');
+                        const isDisabled = item.id === 'isPartyMember' && field.value?.includes('isCouncilMember');
                         return (
                           <FormItem
                             key={item.id}
@@ -223,8 +223,8 @@ export function EditProfileForm({ member }: { member: Member }) {
                 <FormItem><FormLabel>{t('email')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
             <div className="grid grid-cols-2 gap-4">
-                 <FormField control={form.control} name="age" render={({ field }) => (
-                    <FormItem><FormLabel>{t('age')}</FormLabel>
+                 <FormField control={form.control} name="year" render={({ field }) => (
+                    <FormItem><FormLabel>{t('year')}</FormLabel>
                      <Select onValueChange={(value) => field.onChange(Number(value))} value={String(field.value)}>
                         <FormControl>
                             <SelectTrigger><SelectValue placeholder={t('select_year')} /></SelectTrigger>
@@ -270,8 +270,8 @@ export function EditProfileForm({ member }: { member: Member }) {
              <FormField control={form.control} name="education" render={({ field }) => (
                 <FormItem><FormLabel>{t('education')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
-             <FormField control={form.control} name="professionalBackground" render={({ field }) => (
-                <FormItem><FormLabel>{t('professional_background')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+             <FormField control={form.control} name="faculty" render={({ field }) => (
+                <FormItem><FormLabel>{t('faculty')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
              <FormField control={form.control} name="contact" render={({ field }) => (
                 <FormItem><FormLabel>{t('contact')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
@@ -302,17 +302,17 @@ export function EditProfileForm({ member }: { member: Member }) {
                 <FormItem><FormLabel>{t('volunteer_work')}</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
             
-            {isMpSelected && (
+            {isCouncilMemberSelected && (
                 <>
-                 <h3 className="text-lg font-medium border-t pt-4">{t('parliamentary_information_title')}</h3>
-                 <FormField control={form.control} name="electoralHistory" render={({ field }) => (
-                    <FormItem><FormLabel>{t('electoral_history')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                 <h3 className="text-lg font-medium border-t pt-4">{t('council_information_title')}</h3>
+                 <FormField control={form.control} name="electionHistory" render={({ field }) => (
+                    <FormItem><FormLabel>{t('election_history')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                 )}/>
-                 <FormField control={form.control} name="parliamentaryRoles" render={({ field }) => (
-                    <FormItem><FormLabel>{t('parliamentary_roles')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                 <FormField control={form.control} name="councilRoles" render={({ field }) => (
+                    <FormItem><FormLabel>{t('council_roles')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                 )}/>
-                 <FormField control={form.control} name="keyPolicyInterests" render={({ field }) => (
-                    <FormItem><FormLabel>{t('key_policy_interests')}</FormLabel><FormControl><Textarea placeholder={t('key_policy_interests_placeholder')} {...field} /></FormControl><FormMessage /></FormItem>
+                 <FormField control={form.control} name="policyInterests" render={({ field }) => (
+                    <FormItem><FormLabel>{t('policy_interests')}</FormLabel><FormControl><Textarea placeholder={t('policy_interests_placeholder')} {...field} /></FormControl><FormMessage /></FormItem>
                 )}/>
                 </>
             )}
@@ -401,3 +401,4 @@ const MultiSelect = React.forwardRef<
   );
 });
 MultiSelect.displayName = "MultiSelect";
+

@@ -3,7 +3,6 @@
 import * as React from 'react';
 import { Member, Vote } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Edit, AlertTriangle, FileUp } from "lucide-react";
@@ -17,7 +16,7 @@ import { Meeting } from '@/lib/types';
 
 export function MemberProfile({ member }: { member: Member }) {
     const { t } = useLanguage();
-    const isMP = member.roles?.includes('isMP');
+    const isCouncilMember = member.roles?.includes('isCouncilMember');
     const [votes, setVotes] = React.useState<Vote[]>([]);
     const [meetings, setMeetings] = React.useState<Meeting[]>([]);
     
@@ -48,17 +47,14 @@ export function MemberProfile({ member }: { member: Member }) {
          <div className="space-y-6">
             <div className="flex justify-between items-start">
                 <div className="flex items-center space-x-4">
-                    <Avatar className="h-24 w-24">
-                        <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
                     <div>
                         <h1 className="text-3xl font-bold">{member.name}</h1>
                         <p className="text-muted-foreground">
-                            {isMP ? t((member as Member).parliamentaryRoles as any) : t(member.professionalBackground as any)}
+                            {isCouncilMember ? t((member as Member).councilRoles as any) : t(member.faculty as any)}
                         </p>
                         <div className="flex flex-wrap gap-2 mt-2">
                              <Badge variant={status === 'Active' ? 'default' : 'secondary'}>{t(status as any)}</Badge>
-                             {member.roles?.includes('isMP') && <Badge variant="secondary">{t('member_of_parliament')}</Badge>}
+                             {member.roles?.includes('isCouncilMember') && <Badge variant="secondary">{t('student_council_member')}</Badge>}
                              {member.roles?.includes('isExec') && <Badge variant="destructive">{t('executive_committee')}</Badge>}
                         </div>
                     </div>
@@ -66,14 +62,14 @@ export function MemberProfile({ member }: { member: Member }) {
                  <EditProfileForm member={member} />
             </div>
             
-            {isMP && absences.length > ABSENCE_THRESHOLD && (
+            {isCouncilMember && absences.length > ABSENCE_THRESHOLD && (
                  <Card className="border-destructive">
                     <CardHeader>
                         <CardTitle className="text-destructive flex items-center"><AlertTriangle className="mr-2"/>{t('attendance_warning_title')}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <p>{t('attendance_warning_subtitle')}</p>
-                        <p className="text-2xl font-bold">{t('absences')}: {absences.length}/{ABSENCE_THRESHOLD}</p>
+                        <p className="text-2xl font-bold">{t('absences')}: {absences.length}</p>
                     </CardContent>
                 </Card>
             )}
@@ -93,14 +89,14 @@ export function MemberProfile({ member }: { member: Member }) {
                     <CardTitle>{t('profile_details_title')}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-2 gap-4">
-                    <div><span className="font-semibold">{t('age')}:</span> {member.age}</div>
+                    <div><span className="font-semibold">{t('year')}:</span> {member.year}</div>
                     <div><span className="font-semibold">{t('gender')}:</span> {t(member.gender as any)}</div>
                     <div><span className="font-semibold">{t('education')}:</span> {t(member.education as any)}</div>
-                    <div><span className="font-semibold">{t('professional_background')}:</span> {t(member.professionalBackground as any)}</div>
+                    <div><span className="font-semibold">{t('faculty')}:</span> {t(member.faculty as any)}</div>
                 </CardContent>
             </Card>
             
-            {!isMP && (
+            {!isCouncilMember && (
                  <Card>
                     <CardHeader>
                         <CardTitle>{t('party_involvement_title')}</CardTitle>
@@ -124,20 +120,20 @@ export function MemberProfile({ member }: { member: Member }) {
                 </Card>
             )}
 
-            {isMP && (
+            {isCouncilMember && (
                 <>
                 <Card>
                     <CardHeader>
-                        <CardTitle>{t('parliamentary_information_title')}</CardTitle>
+                        <CardTitle>{t('council_information_title')}</CardTitle>
                     </CardHeader>
                     <CardContent className="grid grid-cols-2 gap-4">
                         <div><span className="font-semibold">{t('constituency')}:</span> {t(member.location as any)}</div>
-                        <div><span className="font-semibold">{t('electoral_history')}:</span> {t((member as Member).electoralHistory as any)}</div>
-                        <div><span className="font-semibold">{t('parliamentary_roles')}:</span> {t((member as Member).parliamentaryRoles as any)}</div>
+                        <div><span className="font-semibold">{t('election_history')}:</span> {t((member as Member).electionHistory as any)}</div>
+                        <div><span className="font-semibold">{t('council_roles')}:</span> {t((member as Member).councilRoles as any)}</div>
                         <div>
-                            <h3 className="font-semibold mb-2">{t('key_policy_interests')}</h3>
+                            <h3 className="font-semibold mb-2">{t('policy_interests')}</h3>
                              <div className="flex flex-wrap gap-2">
-                                {(member as Member).keyPolicyInterests?.split(', ').map(interest => (
+                                {(member as Member).policyInterests?.split(', ').map(interest => (
                                     <Badge key={interest} variant="secondary">{t(interest as any)}</Badge>
                                 ))}
                             </div>
@@ -205,7 +201,7 @@ export function MemberProfile({ member }: { member: Member }) {
                 </CardContent>
             </Card>
 
-             {isMP && (
+             {isCouncilMember && (
                 <Card>
                     <CardHeader>
                          <CardTitle>{t('voting_record_title')}</CardTitle>

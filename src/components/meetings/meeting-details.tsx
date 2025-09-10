@@ -136,9 +136,9 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                         const partyLeave = allVotes.filter(v => v.motionId === motion.id && v.vote === 'Leave').length;
                         const partyAbsent = allVotes.filter(v => v.motionId === motion.id && v.vote === 'Absent').length;
                         
-                        const otherAye = (motion.totalParliamentAye ?? 0) - partyAye;
-                        const otherNay = (motion.totalParliamentNay ?? 0) - partyNay;
-                        const otherAbstain = (motion.totalParliamentAbstain ?? 0) - partyAbstain;
+                        const otherAye = (motion.totalCouncilAye ?? 0) - partyAye;
+                        const otherNay = (motion.totalCouncilNay ?? 0) - partyNay;
+                        const otherAbstain = (motion.totalCouncilAbstain ?? 0) - partyAbstain;
 
                         
                         return (
@@ -147,11 +147,11 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                                 <div>
                                     <h3 className="font-bold text-lg">{t('motion')} {index + 1}: {motion.title}</h3>
                                     <div className="text-sm text-muted-foreground">{t('topic')}: <Badge variant="outline" className="ml-1">{t(motion.topic as any)}</Badge></div>
-                                    {motion.sponsorId && (
-                                        <div className="text-sm text-muted-foreground mt-1">{t('sponsor')}: <Badge variant="secondary" className="ml-1">{getMemberName(motion.sponsorId)}</Badge></div>
+                                    {motion.proposerId && (
+                                        <div className="text-sm text-muted-foreground mt-1">{t('proposer')}: <Badge variant="secondary" className="ml-1">{getMemberName(motion.proposerId)}</Badge></div>
                                     )}
                                 </div>
-                                {motion.isPartySponsored && <Badge>{t('party_sponsored_motion')}</Badge>}
+                                {motion.isPartyProposed && <Badge>{t('party_proposed_motion')}</Badge>}
                             </div>
                             <p className="text-muted-foreground mb-4">{motion.description}</p>
                             
@@ -183,10 +183,10 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                                 </div>
                             </div>
                             
-                            {meeting.meetingType === 'การประชุมสภา' && (motion.totalParliamentAye !== undefined && motion.totalParliamentNay !== undefined) && (
+                            {meeting.meetingType === 'การประชุมสภา' && (motion.totalCouncilAye !== undefined && motion.totalCouncilNay !== undefined) && (
                                 <Card className="mb-4">
                                     <CardHeader className="pb-4">
-                                        <CardTitle className="text-lg flex items-center"><Landmark className="mr-2 h-5 w-5" />{t('parliamentary_vote_outcome')}</CardTitle>
+                                        <CardTitle className="text-lg flex items-center"><Landmark className="mr-2 h-5 w-5" />{t('council_vote_outcome')}</CardTitle>
                                     </CardHeader>
                                     <CardContent>
                                         <Table>
@@ -212,10 +212,10 @@ export function MeetingDetails({ meeting }: { meeting: Meeting }) {
                                                     <TableCell className="text-center font-semibold">{otherAbstain}</TableCell>
                                                 </TableRow>
                                                 <TableRow className="bg-muted/50">
-                                                    <TableCell className="font-bold">{t('total_parliament')}</TableCell>
-                                                    <TableCell className="text-center font-bold">{motion.totalParliamentAye}</TableCell>
-                                                    <TableCell className="text-center font-bold">{motion.totalParliamentNay}</TableCell>
-                                                    <TableCell className="text-center font-bold">{motion.totalParliamentAbstain}</TableCell>
+                                                    <TableCell className="font-bold">{t('total_council')}</TableCell>
+                                                    <TableCell className="text-center font-bold">{motion.totalCouncilAye}</TableCell>
+                                                    <TableCell className="text-center font-bold">{motion.totalCouncilNay}</TableCell>
+                                                    <TableCell className="text-center font-bold">{motion.totalCouncilAbstain}</TableCell>
                                                 </TableRow>
                                             </TableBody>
                                         </Table>
