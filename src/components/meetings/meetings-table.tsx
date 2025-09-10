@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -56,7 +57,14 @@ export const columns: ColumnDef<Meeting>[] = [
     cell: ({ row }) => {
         const meeting = row.original;
         const displayTitle = (meeting as any).displayTitle || meeting.title;
-        return <div className="font-medium">{displayTitle}</div>
+        return (
+          <div>
+            <div className="font-medium">{displayTitle}</div>
+            {meeting.meetingType === 'การประชุมกรรมาธิการ' && (
+              <Badge variant="outline" className='mt-1'>{meeting.committeeName}</Badge>
+            )}
+          </div>
+        )
     }
   },
   {
@@ -139,7 +147,7 @@ export function MeetingsTable({ data }: { data: Meeting[] }) {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const processedData = React.useMemo(() => {
-    const sortedData = [...data].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const sortedData = [...data].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     const counts: Record<string, number> = {};
 
     return sortedData.map(meeting => {
@@ -157,7 +165,7 @@ export function MeetingsTable({ data }: { data: Meeting[] }) {
         ...meeting,
         displayTitle,
       };
-    });
+    }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [data]);
 
   const table = useReactTable({

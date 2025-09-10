@@ -1,11 +1,12 @@
 
+
 'use client'
 
 import * as React from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod";
-import { meetings, locations, allPartyMembers } from "@/lib/data";
+import { meetings, locations, allPartyMembers, committeeNames } from "@/lib/data";
 import {
   Dialog,
   DialogContent,
@@ -56,8 +57,9 @@ const formSchema = z.object({
   attendees: z.array(z.string()).min(1, "At least one attendee is required"),
   motions: z.array(motionSchema).min(1, "At least one motion is required"),
   location: z.enum(locations as [string, ...string[]], { required_error: "Location is required" }),
-  meetingType: z.enum(["การประชุมสภา", "การประชุมพรรค"], { required_error: "Meeting type is required" }),
+  meetingType: z.enum(["การประชุมสภา", "การประชุมพรรค", "การประชุมกรรมาธิการ"], { required_error: "Meeting type is required" }),
   meetingSession: z.enum(["การประชุมสามัญ", "การประชุมวิสามัญ"], { required_error: "Meeting session is required" }),
+  committeeName: z.string().optional(),
 }).refine(data => {
     for (const motion of data.motions) {
         if (motion.isPartySponsored && !motion.sponsorId) {
@@ -68,6 +70,14 @@ const formSchema = z.object({
 }, {
     message: "A party-sponsored motion must have a sponsoring member.",
     path: ["motions"],
+}).refine(data => {
+    if (data.meetingType === 'การประชุมกรรมาธิการ' && !data.committeeName) {
+        return false;
+    }
+    return true;
+}, {
+    message: "Committee Name is required for Committee Meetings.",
+    path: ["committeeName"],
 });
 
 
@@ -92,6 +102,8 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
     control: form.control,
     name: "motions"
   });
+
+  const meetingType = form.watch('meetingType');
 
 
   const onSubmit = (data: MeetingFormValues) => {
@@ -165,12 +177,17 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
                     <FormItem><FormLabel>Location</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select location" /></SelectTrigger></FormControl><SelectContent>{locations.map(loc => (<SelectItem key={loc} value={loc}>{loc}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem>
                 )}/>
                  <FormField control={form.control} name="meetingType" render={({ field }) => (
-                    <FormItem><FormLabel>Meeting Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger></FormControl><SelectContent><SelectItem value="การประชุมสภา">การประชุมสภา</SelectItem><SelectItem value="การประชุมพรรค">การประชุมพรรค</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                    <FormItem><FormLabel>Meeting Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger></FormControl><SelectContent><SelectItem value="การประชุมสภา">การประชุมสภา</SelectItem><SelectItem value="การประชุมพรรค">การประชุมพรรค</SelectItem><SelectItem value="การประชุมกรรมาธิการ">การประชุมกรรมาธิการ</SelectItem></SelectContent></Select><FormMessage /></FormItem>
                 )}/>
                  <FormField control={form.control} name="meetingSession" render={({ field }) => (
                     <FormItem><FormLabel>Meeting Session</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select session" /></SelectTrigger></FormControl><SelectContent><SelectItem value="การประชุมสามัญ">การประชุมสามัญ</SelectItem><SelectItem value="การประชุมวิสามัญ">การประชุมวิสามัญ</SelectItem></SelectContent></Select><FormMessage /></FormItem>
                 )}/>
             </div>
+            {meetingType === 'การประชุมกรรมาธิการ' && (
+                <FormField control={form.control} name="committeeName" render={({ field }) => (
+                    <FormItem><FormLabel>Committee Name</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select committee" /></SelectTrigger></FormControl><SelectContent>{committeeNames.map(name => (<SelectItem key={name} value={name}>{name}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem>
+                )}/>
+            )}
              <FormField
                 name="attendees"
                 control={form.control}
@@ -418,14 +435,17 @@ const Combobox = ({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-        <Command>
+        <Command
+          filter={(value, search) => {
+            if (options.find(o => o.value === value)) return 1;
+            if (value.toLowerCase().includes(search.toLowerCase())) return 1;
+            return 0;
+          }}
+        >
           <CommandInput
             placeholder={placeholder}
             onValueChange={(search) => {
-              const match = options.find(o => o.label.toLowerCase() === search.toLowerCase());
-              if (!match) {
-                onChange(search);
-              }
+               onChange(search);
             }}
            />
           <CommandList>

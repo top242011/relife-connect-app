@@ -54,7 +54,7 @@
     totalParliamentAbstain?: number;
   }
   
-  export type MeetingType = 'การประชุมสภา' | 'การประชุมพรรค';
+  export type MeetingType = 'การประชุมสภา' | 'การประชุมพรรค' | 'การประชุมกรรมาธิการ';
   export type MeetingSession = 'การประชุมสามัญ' | 'การประชุมวิสามัญ';
   export type Location = 'ท่าพระจันทร์' | 'รังสิต' | 'ลำปาง' | 'ส่วนกลาง';
 
@@ -71,6 +71,7 @@
     meetingType: MeetingType;
     meetingSession: MeetingSession;
     meetingNumber?: string;
+    committeeName?: string;
   }
   
   export type VoteType = 'Aye' | 'Nay' | 'Abstain' | 'Absent';
@@ -100,4 +101,5 @@
       action: string;
       details: string;
   }
+
 
