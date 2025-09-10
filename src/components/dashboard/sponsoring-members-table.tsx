@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import {
   Card,
   CardContent,
@@ -16,23 +17,69 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useLanguage } from '@/hooks/use-language';
-import { meetings, mps } from '@/lib/data';
+import { getAllMeetings, getAllMembers } from '@/lib/supabase/queries';
+import { Meeting, Member } from '@/lib/types';
 import Link from 'next/link';
+import { Skeleton } from '../ui/skeleton';
 
 export function SponsoringMembersTable() {
     const { t } = useLanguage();
-    const getSponsoredMotionsCount = (mpId: string) => {
-        return meetings.flatMap(m => m.motions).filter(motion => motion.sponsorId === mpId).length;
-    };
+    const [loading, setLoading] = React.useState(true);
+    const [meetings, setMeetings] = React.useState<Meeting[]>([]);
+    const [members, setMembers] = React.useState<Member[]>([]);
 
-    const memberData = mps
-        .map(mp => ({
-            id: mp.id,
-            name: mp.name,
-            sponsoredCount: getSponsoredMotionsCount(mp.id),
-        }))
-        .filter(mp => mp.sponsoredCount > 0)
-        .sort((a, b) => b.sponsoredCount - a.sponsoredCount);
+    React.useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const [meetingsData, membersData] = await Promise.all([
+                    getAllMeetings(),
+                    getAllMembers(),
+                ]);
+                setMeetings(meetingsData);
+                setMembers(membersData);
+            } catch (error) {
+                console.error("Failed to fetch sponsoring members data", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const memberData = React.useMemo(() => {
+        const mps = members.filter(m => m.roles.includes('isMP'));
+        const getSponsoredMotionsCount = (mpId: string) => {
+            return meetings.flatMap(m => m.motions).filter(motion => motion.sponsorId === mpId).length;
+        };
+
+        return mps
+            .map(mp => ({
+                id: mp.id,
+                name: mp.name,
+                sponsoredCount: getSponsoredMotionsCount(mp.id),
+            }))
+            .filter(mp => mp.sponsoredCount > 0)
+            .sort((a, b) => b.sponsoredCount - a.sponsoredCount);
+    }, [members, meetings]);
+    
+    if (loading) {
+        return (
+            <Card className="lg:col-span-1">
+                <CardHeader>
+                    <Skeleton className="h-6 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-2">
+                        <Skeleton className="h-8 w-full" />
+                        <Skeleton className="h-8 w-full" />
+                        <Skeleton className="h-8 w-full" />
+                    </div>
+                </CardContent>
+            </Card>
+        )
+    }
 
     return (
         <Card className="lg:col-span-1">

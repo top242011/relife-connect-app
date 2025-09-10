@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import {
   Card,
@@ -12,22 +13,44 @@ import {
   ChartContainer,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { members } from '@/lib/data';
-import { Location } from '@/lib/types';
+import { getAllMembers } from '@/lib/supabase/queries';
+import { Location, Member } from '@/lib/types';
 import { useLanguage } from '@/hooks/use-language';
+import { Skeleton } from '../ui/skeleton';
 
 export function DemographicsChart() {
   const { t } = useLanguage();
-  const demographicsData = members.reduce((acc, member) => {
-    const region = member.location;
-    const regionData = acc.find(d => d.region === region);
-    if (regionData) {
-      regionData.members++;
-    } else {
-      acc.push({ region, members: 1 });
-    }
-    return acc;
-  }, [] as { region: Location, members: number }[]);
+  const [loading, setLoading] = React.useState(true);
+  const [members, setMembers] = React.useState<Member[]>([]);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const membersData = await getAllMembers();
+        setMembers(membersData);
+      } catch (error) {
+        console.error("Failed to fetch members data", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const demographicsData = React.useMemo(() => {
+    return members.reduce((acc, member) => {
+      if (!member.location) return acc;
+      const region = member.location;
+      const regionData = acc.find(d => d.region === region);
+      if (regionData) {
+        regionData.members++;
+      } else {
+        acc.push({ region, members: 1 });
+      }
+      return acc;
+    }, [] as { region: Location, members: number }[]);
+  }, [members]);
 
 
   const chartConfig = {
@@ -36,6 +59,20 @@ export function DemographicsChart() {
       color: 'hsl(var(--primary))',
     },
   };
+  
+  if (loading) {
+    return (
+        <Card>
+            <CardHeader>
+                <Skeleton className="h-6 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+            </CardHeader>
+            <CardContent>
+                <Skeleton className="h-[200px] w-full" />
+            </CardContent>
+        </Card>
+    );
+  }
 
   return (
     <Card>

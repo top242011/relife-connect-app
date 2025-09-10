@@ -1,7 +1,6 @@
 'use client'
 
-import { mps, votes as allVotes, allPartyMembers as allMembers, meetings } from "@/lib/data"
-import { Meeting, Vote, Motion } from "@/lib/types"
+import { Meeting, Vote } from "@/lib/types"
 import {
     Card,
     CardContent,
@@ -35,9 +34,24 @@ import {
 import { EditMeetingForm } from "./edit-meeting-form"
 import { RecordVotesForm } from "./record-votes-form"
 import { useLanguage } from "@/hooks/use-language"
+import * as React from "react"
+import { getAllMembers, getAllVotes } from "@/lib/supabase/queries"
+import { Member } from "@/lib/types"
 
 export function MeetingDetails({ meeting }: { meeting: Meeting }) {
     const { t } = useLanguage();
+    const [allMembers, setAllMembers] = React.useState<Member[]>([]);
+    const [allVotes, setAllVotes] = React.useState<Vote[]>([]);
+    
+    React.useEffect(() => {
+        const fetchData = async () => {
+            const [membersData, votesData] = await Promise.all([getAllMembers(), getAllVotes()]);
+            setAllMembers(membersData);
+            setAllVotes(votesData);
+        };
+        fetchData();
+    }, []);
+
     const getMemberName = (memberId: string) => {
         const member = allMembers.find(m => m.id === memberId)
         return member?.name || "Unknown Member";

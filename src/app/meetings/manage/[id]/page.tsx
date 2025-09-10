@@ -1,11 +1,11 @@
-import { meetings } from "@/lib/data";
+import { getMeetingById } from "@/lib/supabase/queries";
 import { MeetingDetails } from "@/components/meetings/meeting-details";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-export default function MeetingDetailsPage({ params }: { params: { id: string } }) {
-    const meeting = meetings.find(m => m.id === params.id);
+export default async function MeetingDetailsPage({ params }: { params: { id: string } }) {
+    const meeting = await getMeetingById(params.id);
 
     if (!meeting) {
         return (

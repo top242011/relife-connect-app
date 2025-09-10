@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { roles, permissions, allPartyMembers } from "@/lib/data";
-import { Role } from "@/lib/types";
+import { getRolesAndPermissions, getAllMembers } from "@/lib/supabase/queries";
+import { Role, Member, Permission } from "@/lib/types";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Edit, Trash2, Save } from "lucide-react";
 import { UsersTable } from "./users-table";
@@ -14,7 +14,7 @@ import { Badge } from "../ui/badge";
 import { useLanguage } from "@/hooks/use-language";
 
 
-const EditRoleDialog = ({ role }: { role: Role }) => {
+const EditRoleDialog = ({ role, permissions }: { role: Role, permissions: Permission[] }) => {
     const { t } = useLanguage();
     const [isOpen, setIsOpen] = useState(false);
     const [currentPermissions, setCurrentPermissions] = useState(role.permissions);
@@ -72,6 +72,23 @@ const EditRoleDialog = ({ role }: { role: Role }) => {
 
 export function RolesPermissions() {
     const { t } = useLanguage();
+    const [roles, setRoles] = useState<Role[]>([]);
+    const [permissions, setPermissions] = useState<Permission[]>([]);
+    const [users, setUsers] = useState<Member[]>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const [{ roles, permissions }, users] = await Promise.all([
+                getRolesAndPermissions(),
+                getAllMembers()
+            ]);
+            setRoles(roles);
+            setPermissions(permissions);
+            setUsers(users);
+        };
+        fetchData();
+    }, []);
+
     return (
         <div className="space-y-6">
             <Card>
@@ -101,7 +118,7 @@ export function RolesPermissions() {
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        <EditRoleDialog role={role} />
+                                        <EditRoleDialog role={role} permissions={permissions}/>
                                         <Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button>
                                     </TableCell>
                                 </TableRow>
@@ -117,7 +134,7 @@ export function RolesPermissions() {
                     <CardDescription>{t('user_account_management_subtitle')}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <UsersTable users={allPartyMembers} roles={roles} />
+                    <UsersTable users={users} roles={roles} />
                 </CardContent>
             </Card>
         </div>

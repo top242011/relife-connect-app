@@ -4,8 +4,8 @@ import * as React from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Meeting, Motion, Vote, VoteType } from '@/lib/types';
-import { members as allMembers, mps as allMps, votes as allVotesData, meetings } from '@/lib/data';
+import { Meeting, Motion, Vote, VoteType, Member } from '@/lib/types';
+import { getAllMembers, getAllVotes } from '@/lib/supabase/queries';
 import {
   Dialog,
   DialogContent,
@@ -72,19 +72,28 @@ const formSchema = z.object({
 
 type VoteFormValues = z.infer<typeof formSchema>;
 
-const allPartyMembers = [...allMembers, ...allMps];
-
-const getMemberName = (memberId: string) => {
-    return allPartyMembers.find((m) => m.id === memberId)?.name || 'Unknown Member';
-};
-
 
 export function RecordVotesForm({ meeting, motion, children }: { meeting: Meeting; motion: Motion, children: React.ReactNode }) {
     const { toast } = useToast();
     const { t } = useLanguage();
     const [dialogOpen, setDialogOpen] = React.useState(false);
     const [bulkVote, setBulkVote] = React.useState<VoteType | ''>('');
-
+    const [allMembers, setAllMembers] = React.useState<Member[]>([]);
+    const [allVotesData, setAllVotesData] = React.useState<Vote[]>([]);
+    
+    const getMemberName = (memberId: string) => {
+        return allMembers.find((m) => m.id === memberId)?.name || 'Unknown Member';
+    };
+    
+    React.useEffect(() => {
+        if (!dialogOpen) return;
+        const fetchData = async () => {
+            const [membersData, votesData] = await Promise.all([getAllMembers(), getAllVotes()]);
+            setAllMembers(membersData);
+            setAllVotesData(votesData);
+        };
+        fetchData();
+    }, [dialogOpen]);
 
   const defaultValues: VoteFormValues = {
     votes: meeting.attendees.map((attendeeId) => {
@@ -111,35 +120,13 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
     name: 'votes',
   });
 
+  React.useEffect(() => {
+    form.reset(defaultValues);
+  }, [allVotesData, form, meeting, motion]);
+
   const onSubmit = (data: VoteFormValues) => {
-    // Update individual party votes
-    data.votes.forEach((voteData) => {
-      const existingVoteIndex = allVotesData.findIndex(
-        (v) => v.motionId === motion.id && v.memberId === voteData.memberId
-      );
-
-      if (existingVoteIndex !== -1) {
-        allVotesData[existingVoteIndex].vote = voteData.vote;
-      } else {
-        allVotesData.push({
-          id: `vote-${Date.now()}-${Math.random()}`,
-          motionId: motion.id,
-          memberId: voteData.memberId,
-          vote: voteData.vote,
-        });
-      }
-    });
-
-    const meetingToUpdate = meetings.find(m => m.id === meeting.id);
-    if (meetingToUpdate) {
-        const motionToUpdate = meetingToUpdate.motions.find(m => m.id === motion.id);
-        if (motionToUpdate) {
-            motionToUpdate.totalParliamentAye = data.totalParliamentAye;
-            motionToUpdate.totalParliamentNay = data.totalParliamentNay;
-            motionToUpdate.totalParliamentAbstain = data.totalParliamentAbstain;
-        }
-    }
-
+    // In a real app, this would be a DB transaction
+    console.log("Saving vote data:", data);
 
     toast({
         title: t('toast_votes_saved_title'),

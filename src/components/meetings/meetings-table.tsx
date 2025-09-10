@@ -44,7 +44,6 @@ import {
 import { Badge } from '../ui/badge';
 import type { Meeting } from '@/lib/types';
 import { Card, CardContent } from '../ui/card';
-import { allPartyMembers } from '@/lib/data';
 import { EditMeetingForm } from './edit-meeting-form';
 import { NewMeetingForm } from './new-meeting-form';
 import { useLanguage } from '@/hooks/use-language';

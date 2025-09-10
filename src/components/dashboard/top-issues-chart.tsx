@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { Pie, PieChart, Cell } from 'recharts';
 import {
   Card,
@@ -15,14 +16,34 @@ import {
   ChartLegend,
   ChartLegendContent,
 } from '@/components/ui/chart';
-import { meetings } from '@/lib/data';
+import { getAllMeetings } from '@/lib/supabase/queries';
+import { Meeting } from '@/lib/types';
 import { useLanguage } from '@/hooks/use-language';
+import { Skeleton } from '../ui/skeleton';
 
 const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
 export function TopIssuesChart() {
     const { t } = useLanguage();
-    const processData = () => {
+    const [loading, setLoading] = React.useState(true);
+    const [meetings, setMeetings] = React.useState<Meeting[]>([]);
+
+    React.useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const meetingsData = await getAllMeetings();
+                setMeetings(meetingsData);
+            } catch (error) {
+                console.error("Failed to fetch meetings data", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const chartData = React.useMemo(() => {
         const topics: { [key: string]: number } = {};
         meetings.forEach(meeting => {
             meeting.motions.forEach(motion => {
@@ -31,13 +52,26 @@ export function TopIssuesChart() {
             });
         });
         return Object.entries(topics).map(([name, value]) => ({ name, value, fill: 'var(--color-value)' }));
-    };
+    }, [meetings, t]);
 
-    const chartData = processData();
     const chartConfig = chartData.reduce((acc, item, index) => {
         acc[item.name] = { label: item.name, color: COLORS[index % COLORS.length] };
         return acc;
-    }, {} as any)
+    }, {} as any);
+
+  if (loading) {
+    return (
+        <Card className="lg:col-span-1">
+            <CardHeader>
+                <Skeleton className="h-6 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+            </CardHeader>
+            <CardContent className='flex justify-center'>
+                <Skeleton className="h-[200px] w-[200px] rounded-full" />
+            </CardContent>
+        </Card>
+    )
+  }
 
   return (
     <Card className="lg:col-span-1">

@@ -13,7 +13,9 @@ import {
   ChartContainer,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { meetings, votes, allPartyMembers } from '@/lib/data';
+import { getAllMeetings, getAllMembers, getAllVotes } from '@/lib/supabase/queries';
+import { Meeting, Member, Vote } from '@/lib/types';
+
 import {
     Table,
     TableBody,
@@ -24,39 +26,74 @@ import {
 } from '@/components/ui/table';
 import Link from 'next/link';
 import { useLanguage } from '@/hooks/use-language';
+import { Skeleton } from '../ui/skeleton';
 
 export function AttendanceReport() {
     const { t } = useLanguage();
+    const [loading, setLoading] = React.useState(true);
+    const [meetings, setMeetings] = React.useState<Meeting[]>([]);
+    const [votes, setVotes] = React.useState<Vote[]>([]);
+    const [members, setMembers] = React.useState<Member[]>([]);
+
+    React.useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const [meetingsData, votesData, membersData] = await Promise.all([
+                    getAllMeetings(),
+                    getAllVotes(),
+                    getAllMembers(),
+                ]);
+                setMeetings(meetingsData);
+                setVotes(votesData);
+                setMembers(membersData);
+            } catch (error) {
+                console.error("Failed to fetch attendance data", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
 
     const attendanceData = React.useMemo(() => {
-        const data = meetings.map(meeting => {
-            const motionIds = meeting.motions.map(m => m.id);
-            const absentMembers = new Set(
-                votes
-                    .filter(v => motionIds.includes(v.motionId) && v.vote === 'Absent')
-                    .map(v => v.memberId)
-            );
-            const leaveMembers = new Set(
-                votes
-                    .filter(v => motionIds.includes(v.motionId) && v.vote === 'Leave')
-                    .map(v => v.memberId)
-            );
+        if (!meetings.length || !votes.length) return [];
+
+        return meetings.map(meeting => {
+            const absentMemberIds = new Set<string>();
+            const onLeaveMemberIds = new Set<string>();
+
+            // A member is absent/on-leave for the meeting if they are marked as such for ANY motion.
+            meeting.attendees.forEach(attendeeId => {
+                const memberVotesForMeeting = votes.filter(v => 
+                    v.memberId === attendeeId && 
+                    meeting.motions.some(m => m.id === v.motionId)
+                );
+
+                const isAbsent = memberVotesForMeeting.some(v => v.vote === 'Absent');
+                const isOnLeave = memberVotesForMeeting.some(v => v.vote === 'Leave');
+
+                if(isAbsent) {
+                    absentMemberIds.add(attendeeId);
+                } else if(isOnLeave) {
+                    onLeaveMemberIds.add(attendeeId);
+                }
+            });
 
             return {
                 name: meeting.title,
                 date: meeting.date,
-                absent: absentMembers.size,
-                leave: leaveMembers.size
+                absent: absentMemberIds.size,
+                leave: onLeaveMemberIds.size,
             };
         }).sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-        return data;
-    }, []);
+    }, [meetings, votes]);
 
     const detailedAbsences = React.useMemo(() => {
         return votes
             .filter(v => v.vote === 'Absent' || v.vote === 'Leave')
             .map(vote => {
-                const member = allPartyMembers.find(m => m.id === vote.memberId);
+                const member = members.find(m => m.id === vote.memberId);
                 const meeting = meetings.find(m => m.motions.some(mo => mo.id === vote.motionId));
                 return {
                     id: vote.id,
@@ -69,7 +106,7 @@ export function AttendanceReport() {
                 };
             })
             .sort((a,b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime());
-    }, []);
+    }, [votes, members, meetings]);
 
     const chartConfig = {
         absent: {
@@ -81,6 +118,31 @@ export function AttendanceReport() {
             color: 'hsl(var(--chart-2))'
         }
       };
+
+    if (loading) {
+        return (
+            <div className="grid gap-6 lg:grid-cols-2">
+                <Card>
+                    <CardHeader>
+                        <Skeleton className="h-6 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                    </CardHeader>
+                    <CardContent>
+                        <Skeleton className="h-[300px] w-full" />
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <Skeleton className="h-6 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                    </CardHeader>
+                    <CardContent>
+                        <Skeleton className="h-[350px] w-full" />
+                    </CardContent>
+                </Card>
+            </div>
+        )
+    }
 
     return (
         <div className="grid gap-6 lg:grid-cols-2">

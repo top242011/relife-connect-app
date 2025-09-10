@@ -7,7 +7,6 @@ import { SponsoringMembersTable } from '@/components/dashboard/sponsoring-member
 import { StatsCards } from '@/components/dashboard/stats-cards';
 import { TopIssuesChart } from '@/components/dashboard/top-issues-chart';
 import { AttendanceReport } from '@/components/dashboard/attendance-report';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useLanguage } from '@/hooks/use-language';
 
 export default function DashboardPage() {

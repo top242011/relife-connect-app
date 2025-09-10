@@ -1,6 +1,7 @@
 'use client';
 
-import { Member, MP, Vote } from "@/lib/types";
+import * as React from 'react';
+import { Member, Vote } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -8,17 +9,31 @@ import { Button } from "@/components/ui/button";
 import { Edit, AlertTriangle, FileUp } from "lucide-react";
 import { EditProfileForm } from "./edit-profile-form";
 import Link from "next/link";
-import { allPartyMembers, votes, meetings } from "@/lib/data";
+import { getAllMeetings, getAllVotes } from "@/lib/supabase/queries";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { useLanguage } from "@/hooks/use-language";
+import { Meeting } from '@/lib/types';
 
 
-export function MemberProfile({ member }: { member: Member | MP }) {
+export function MemberProfile({ member }: { member: Member }) {
     const { t } = useLanguage();
-    const isMP = 'electoralHistory' in member;
+    const isMP = member.roles?.includes('isMP');
+    const [votes, setVotes] = React.useState<Vote[]>([]);
+    const [meetings, setMeetings] = React.useState<Meeting[]>([]);
+    
+    React.useEffect(() => {
+        const fetchData = async () => {
+            const [votesData, meetingsData] = await Promise.all([
+                getAllVotes(),
+                getAllMeetings()
+            ]);
+            setVotes(votesData);
+            setMeetings(meetingsData);
+        };
+        fetchData();
+    }, []);
 
-    const fullMemberInfo = allPartyMembers.find(m => m.id === member.id);
-    const status = fullMemberInfo?.status || 'Active';
+    const status = member?.status || 'Active';
 
     const memberVotes = votes.filter(v => v.memberId === member.id);
     const absences = memberVotes.filter(v => v.vote === 'Absent');
@@ -40,12 +55,12 @@ export function MemberProfile({ member }: { member: Member | MP }) {
                     <div>
                         <h1 className="text-3xl font-bold">{member.name}</h1>
                         <p className="text-muted-foreground">
-                            {isMP ? t((member as MP).parliamentaryRoles as any) : t(member.professionalBackground as any)}
+                            {isMP ? t((member as Member).parliamentaryRoles as any) : t(member.professionalBackground as any)}
                         </p>
                         <div className="flex flex-wrap gap-2 mt-2">
                              <Badge variant={status === 'Active' ? 'default' : 'secondary'}>{t(status as any)}</Badge>
-                             {member.roles.includes('MP') && <Badge variant="secondary">{t('member_of_parliament')}</Badge>}
-                             {member.roles.includes('Executive') && <Badge variant="destructive">{t('executive_committee')}</Badge>}
+                             {member.roles?.includes('isMP') && <Badge variant="secondary">{t('member_of_parliament')}</Badge>}
+                             {member.roles?.includes('isExec') && <Badge variant="destructive">{t('executive_committee')}</Badge>}
                         </div>
                     </div>
                 </div>
@@ -104,7 +119,7 @@ export function MemberProfile({ member }: { member: Member | MP }) {
                         </div>
                          <div>
                             <h3 className="font-semibold">{t('volunteer_work')}</h3>
-                            <p className="text-muted-foreground">{t((member as Member).volunteerWork as any, {hours: (member as Member).volunteerWork.match(/\\d+/)?.[0] })}</p>
+                            <p className="text-muted-foreground">{t((member as Member).volunteerWork as any, {hours: (member as Member).volunteerWork?.match(/\\d+/)?.[0] })}</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -118,12 +133,12 @@ export function MemberProfile({ member }: { member: Member | MP }) {
                     </CardHeader>
                     <CardContent className="grid grid-cols-2 gap-4">
                         <div><span className="font-semibold">{t('constituency')}:</span> {t(member.location as any)}</div>
-                        <div><span className="font-semibold">{t('electoral_history')}:</span> {t((member as MP).electoralHistory as any)}</div>
-                        <div><span className="font-semibold">{t('parliamentary_roles')}:</span> {t((member as MP).parliamentaryRoles as any)}</div>
+                        <div><span className="font-semibold">{t('electoral_history')}:</span> {t((member as Member).electoralHistory as any)}</div>
+                        <div><span className="font-semibold">{t('parliamentary_roles')}:</span> {t((member as Member).parliamentaryRoles as any)}</div>
                         <div>
                             <h3 className="font-semibold mb-2">{t('key_policy_interests')}</h3>
                              <div className="flex flex-wrap gap-2">
-                                {(member as MP).keyPolicyInterests.split(', ').map(interest => (
+                                {(member as Member).keyPolicyInterests?.split(', ').map(interest => (
                                     <Badge key={interest} variant="secondary">{t(interest as any)}</Badge>
                                 ))}
                             </div>

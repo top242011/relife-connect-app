@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import {
   Card,
@@ -12,12 +13,37 @@ import {
   ChartContainer,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { meetings, votes } from '@/lib/data';
+import { getAllMeetings, getAllVotes } from '@/lib/supabase/queries';
+import { Meeting, Vote } from '@/lib/types';
 import { useLanguage } from '@/hooks/use-language';
+import { Skeleton } from '../ui/skeleton';
 
 export function MotionSuccessRateChart() {
     const { t } = useLanguage();
-    const processData = () => {
+    const [loading, setLoading] = React.useState(true);
+    const [meetings, setMeetings] = React.useState<Meeting[]>([]);
+    const [votes, setVotes] = React.useState<Vote[]>([]);
+
+    React.useEffect(() => {
+      const fetchData = async () => {
+        setLoading(true);
+        try {
+          const [meetingsData, votesData] = await Promise.all([
+            getAllMeetings(),
+            getAllVotes(),
+          ]);
+          setMeetings(meetingsData);
+          setVotes(votesData);
+        } catch (error) {
+          console.error("Failed to fetch motion success data", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchData();
+    }, []);
+
+    const chartData = React.useMemo(() => {
         const partySponsored = { total: 0, passed: 0 };
         const nonPartySponsored = { total: 0, passed: 0 };
 
@@ -41,9 +67,7 @@ export function MotionSuccessRateChart() {
             { name: t('party_sponsored'), passed: partySponsored.total > 0 ? (partySponsored.passed / partySponsored.total) * 100 : 0 },
             { name: t('not_party_sponsored'), passed: nonPartySponsored.total > 0 ? (nonPartySponsored.passed / nonPartySponsored.total) * 100 : 0 },
         ];
-    };
-
-    const chartData = processData();
+    }, [meetings, votes, t]);
 
   const chartConfig = {
     passed: {
@@ -51,6 +75,20 @@ export function MotionSuccessRateChart() {
       color: 'hsl(var(--primary))',
     },
   };
+  
+  if (loading) {
+    return (
+        <Card className="lg:col-span-1">
+            <CardHeader>
+                <Skeleton className="h-6 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+            </CardHeader>
+            <CardContent>
+                <Skeleton className="h-[200px] w-full" />
+            </CardContent>
+        </Card>
+    )
+  }
 
   return (
     <Card className="lg:col-span-1">

@@ -4,7 +4,7 @@ import * as React from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod";
-import { Meeting } from "@/lib/types";
+import { Meeting, Member } from "@/lib/types";
 import {
   Dialog,
   DialogContent,
@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input";
 import { Save, PlusCircle, Trash2, Users } from "lucide-react";
-import { allPartyMembers, motionTopics, locations, committeeNames } from "@/lib/data";
+import { getAllMembers, getCommitteeNames, getMotionTopics, getLocations } from "@/lib/supabase/queries";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
@@ -52,7 +52,7 @@ const formSchema = z.object({
   presidingOfficer: z.string().min(1, "Presiding officer is required"),
   attendees: z.array(z.string()),
   motions: z.array(motionSchema).min(1, "At least one motion is required"),
-  location: z.enum(locations as [string, ...string[]], { required_error: "Location is required" }),
+  location: z.any({ required_error: "Location is required" }),
   meetingType: z.enum(["การประชุมสภา", "การประชุมพรรค", "การประชุมกรรมาธิการ"], { required_error: "Meeting type is required" }),
   meetingSession: z.enum(["การประชุมสามัญ", "การประชุมวิสามัญ"], { required_error: "Meeting session is required" }),
   meetingNumber: z.string().optional(),
@@ -81,6 +81,27 @@ const formSchema = z.object({
 type MeetingFormValues = z.infer<typeof formSchema>;
 
 export function EditMeetingForm({ meeting, children }: { meeting: Meeting, children: React.ReactNode }) {
+    const [allMembers, setAllMembers] = React.useState<Member[]>([]);
+    const [motionTopics, setMotionTopics] = React.useState<string[]>([]);
+    const [committeeNames, setCommitteeNames] = React.useState<string[]>([]);
+    const [locations, setLocations] = React.useState<string[]>([]);
+
+    React.useEffect(() => {
+        const fetchData = async () => {
+            const [membersData, topicsData, committeesData, locationsData] = await Promise.all([
+                getAllMembers(),
+                getMotionTopics(),
+                getCommitteeNames(),
+                getLocations(),
+            ]);
+            setAllMembers(membersData);
+            setMotionTopics(topicsData);
+            setCommitteeNames(committeesData);
+            setLocations(locationsData);
+        };
+        fetchData();
+    }, []);
+
   const defaultValues: Partial<MeetingFormValues> = {
     title: meeting.title,
     date: meeting.date,
@@ -110,17 +131,17 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
 
   const availableAttendees = React.useMemo(() => {
     if (meetingType === 'การประชุมสภา') {
-        const mps = allPartyMembers.filter(m => m.roles.includes('MP'));
+        const mps = allMembers.filter(m => m.roles.includes('isMP'));
         if (location && location !== 'ส่วนกลาง') {
             return mps.filter(m => m.location === location);
         }
         return mps; // For 'ส่วนกลาง' or if location is not set yet
     }
     if (meetingType === 'การประชุมกรรมาธิการ' && committeeName) {
-      return allPartyMembers.filter(m => m.committeeMemberships.includes(committeeName));
+      return allMembers.filter(m => m.committeeMemberships?.includes(committeeName));
     }
-    return allPartyMembers;
-  }, [meetingType, committeeName, location]);
+    return allMembers;
+  }, [meetingType, committeeName, location, allMembers]);
 
 
   const onSubmit = (data: MeetingFormValues) => {
@@ -158,7 +179,7 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
                         <FormItem className="flex flex-col">
                             <FormLabel>Presiding Officer</FormLabel>
                              <Combobox
-                                options={allPartyMembers.map(m => ({ value: m.name, label: m.name }))}
+                                options={allMembers.map(m => ({ value: m.name, label: m.name }))}
                                 value={field.value}
                                 onChange={field.onChange}
                                 placeholder="Select or type officer..."
@@ -202,8 +223,8 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
                                     <SelectValue placeholder="Quick Select..." />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">ทุกคนเข้าร่วม</SelectItem>
-                                    <SelectItem value="none">ทุกคนลา/ขาด</SelectItem>
+                                    <SelectItem value="all">Everyone Attending</SelectItem>
+                                    <SelectItem value="none">Everyone Absent/Leave</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -274,7 +295,7 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col">
                                         <FormLabel>Sponsoring Member</FormLabel>
-                                        <MultiSelect a-type="single" options={allPartyMembers.filter(m => m.roles.includes('MP')).map(m => ({value: m.id, label: m.name}))} {...field} />
+                                        <MultiSelect a-type="single" options={allMembers.filter(m => m.roles.includes('isMP')).map(m => ({value: m.id, label: m.name}))} {...field} />
                                         <FormMessage />
                                     </FormItem>
                                 )}

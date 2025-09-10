@@ -12,23 +12,33 @@ import {
   ChartContainer,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { performanceData } from '@/lib/data';
 import { useLanguage } from '@/hooks/use-language';
+import { PerformanceData } from '@/lib/types';
+
+const performanceData: PerformanceData[] = [
+    { month: 'Jan', engagement: 65, legislation: 28, attendance: 80 },
+    { month: 'Feb', engagement: 59, legislation: 48, attendance: 85 },
+    { month: 'Mar', engagement: 80, legislation: 40, attendance: 75 },
+    { month: 'Apr', engagement: 81, legislation: 43, attendance: 90 },
+    { month: 'May', engagement: 56, legislation: 55, attendance: 88 },
+    { month: 'Jun', engagement: 55, legislation: 45, attendance: 92 },
+];
+
 
 export function PerformanceChart() {
   const { t } = useLanguage();
   const chartConfig = {
     engagement: {
       label: t('engagement'),
-      color: 'hsl(var(--primary))',
+      color: 'hsl(var(--chart-2))',
     },
     legislation: {
       label: t('legislation'),
-      color: 'hsl(var(--accent))',
+      color: 'hsl(var(--chart-1))',
     },
     attendance: {
         label: t('attendance'),
-        color: 'hsl(var(--secondary-foreground))'
+        color: 'hsl(var(--chart-3))'
     }
   };
 

@@ -4,7 +4,6 @@ import * as React from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod";
-import { meetings, locations, allPartyMembers, committeeNames } from "@/lib/data";
 import {
   Dialog,
   DialogContent,
@@ -27,7 +26,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input";
 import { Save, PlusCircle, Trash2, Users } from "lucide-react";
-import { motionTopics } from "@/lib/data";
+import { getAllMembers, getCommitteeNames, getMotionTopics, getLocations } from "@/lib/supabase/queries";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
@@ -37,7 +36,7 @@ import { useToast } from "@/hooks/use-toast";
 import { sendMeetingNotification } from "@/services/email";
 import { Checkbox } from "../ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Location } from "@/lib/types";
+import { Location, Member } from "@/lib/types";
 import { useLanguage } from "@/hooks/use-language";
 
 const motionSchema = z.object({
@@ -55,7 +54,7 @@ const formSchema = z.object({
   presidingOfficer: z.string().min(1, "Presiding officer is required"),
   attendees: z.array(z.string()),
   motions: z.array(motionSchema).min(1, "At least one motion is required"),
-  location: z.enum(locations as [string, ...string[]], { required_error: "Location is required" }),
+  location: z.any({ required_error: "Location is required" }),
   meetingType: z.enum(["การประชุมสภา", "การประชุมพรรค", "การประชุมกรรมาธิการ"], { required_error: "Meeting type is required" }),
   meetingSession: z.enum(["การประชุมสามัญ", "การประชุมวิสามัญ"], { required_error: "Meeting session is required" }),
   committeeName: z.string().optional(),
@@ -87,6 +86,28 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
     const { t } = useLanguage();
     const [open, setOpen] = React.useState(false);
 
+    const [allMembers, setAllMembers] = React.useState<Member[]>([]);
+    const [motionTopics, setMotionTopics] = React.useState<string[]>([]);
+    const [committeeNames, setCommitteeNames] = React.useState<string[]>([]);
+    const [locations, setLocations] = React.useState<string[]>([]);
+
+    React.useEffect(() => {
+        if (!open) return;
+        const fetchData = async () => {
+            const [membersData, topicsData, committeesData, locationsData] = await Promise.all([
+                getAllMembers(),
+                getMotionTopics(),
+                getCommitteeNames(),
+                getLocations(),
+            ]);
+            setAllMembers(membersData);
+            setMotionTopics(topicsData);
+            setCommitteeNames(committeesData);
+            setLocations(locationsData);
+        };
+        fetchData();
+    }, [open]);
+
   const form = useForm<MeetingFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -109,17 +130,17 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
 
   const availableAttendees = React.useMemo(() => {
     if (meetingType === 'การประชุมสภา') {
-        const mps = allPartyMembers.filter(m => m.roles.includes('MP'));
+        const mps = allMembers.filter(m => m.roles.includes('isMP'));
         if (location && location !== 'ส่วนกลาง') {
             return mps.filter(m => m.location === location);
         }
         return mps;
     }
     if (meetingType === 'การประชุมกรรมาธิการ' && committeeName) {
-      return allPartyMembers.filter(m => m.committeeMemberships.includes(committeeName));
+      return allMembers.filter(m => m.committeeMemberships?.includes(committeeName));
     }
-    return allPartyMembers;
-  }, [meetingType, committeeName, location]);
+    return allMembers;
+  }, [meetingType, committeeName, location, allMembers]);
 
 
   const onSubmit = (data: MeetingFormValues) => {
@@ -127,13 +148,13 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
         id: `meet-${Date.now()}`,
         ...data,
     };
-    meetings.unshift(newMeeting);
+    // meetings.unshift(newMeeting); // This would now be a DB insert call
 
-    const attendees = allPartyMembers.filter(m => data.attendees.includes(m.id));
+    const attendees = allMembers.filter(m => data.attendees.includes(m.id));
     const presidingOfficerName = data.presidingOfficer;
 
     attendees.forEach(attendee => {
-        sendMeetingNotification(attendee, newMeeting, { name: presidingOfficerName });
+        sendMeetingNotification(attendee, newMeeting as Meeting, { name: presidingOfficerName });
     });
     
     toast({
@@ -174,7 +195,7 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
                         <FormItem className="flex flex-col">
                             <FormLabel>{t('presiding_officer')}</FormLabel>
                              <Combobox
-                                options={allPartyMembers.map(m => ({ value: m.name, label: m.name }))}
+                                options={allMembers.map(m => ({ value: m.name, label: m.name }))}
                                 value={field.value}
                                 onChange={field.onChange}
                                 placeholder={t('select_or_type_officer')}
@@ -285,7 +306,7 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col">
                                         <FormLabel>{t('sponsoring_member')}</FormLabel>
-                                        <MultiSelect a-type="single" options={allPartyMembers.filter(m => m.roles.includes('MP')).map(m => ({value: m.id, label: m.name}))} {...field} />
+                                        <MultiSelect a-type="single" options={allMembers.filter(m => m.roles.includes('isMP')).map(m => ({value: m.id, label: m.name}))} {...field} />
                                         <FormMessage />
                                     </FormItem>
                                 )}

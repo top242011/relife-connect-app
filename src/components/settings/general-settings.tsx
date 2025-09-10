@@ -1,18 +1,27 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlusCircle, Trash2, Edit, Save, X } from 'lucide-react';
-import { motionTopics as initialMotionTopics, committeeNames as initialCommitteeNames } from '@/lib/data';
+import { getMotionTopics, getCommitteeNames } from '@/lib/supabase/queries';
 import { useLanguage } from '@/hooks/use-language';
 
 export function GeneralSettings() {
     const { t } = useLanguage();
-    const [motionTopics, setMotionTopics] = useState(initialMotionTopics);
-    const [committeeNames, setCommitteeNames] = useState(initialCommitteeNames);
+    const [motionTopics, setMotionTopics] = useState<string[]>([]);
+    const [committeeNames, setCommitteeNames] = useState<string[]>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const [topics, committees] = await Promise.all([getMotionTopics(), getCommitteeNames()]);
+            setMotionTopics(topics);
+            setCommitteeNames(committees);
+        };
+        fetchData();
+    }, []);
 
     const [newTopic, setNewTopic] = useState("");
     const [newCommittee, setNewCommittee] = useState("");

@@ -2,17 +2,27 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { systemLogs } from "@/lib/data";
+import { getSystemLogs } from "@/lib/supabase/queries";
+import { SystemLog } from "@/lib/types";
 import { Badge } from "../ui/badge";
 import { Input } from "../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLanguage } from "@/hooks/use-language";
 
 export function SystemLogs() {
     const { t } = useLanguage();
     const [searchTerm, setSearchTerm] = useState("");
     const [actionFilter, setActionFilter] = useState("all");
+    const [systemLogs, setSystemLogs] = useState<SystemLog[]>([]);
+    
+    useEffect(() => {
+        const fetchLogs = async () => {
+            const logs = await getSystemLogs();
+            setSystemLogs(logs);
+        };
+        fetchLogs();
+    }, []);
 
     const filteredLogs = systemLogs
         .filter(log => log.user.toLowerCase().includes(searchTerm.toLowerCase()) || log.details.toLowerCase().includes(searchTerm.toLowerCase()))

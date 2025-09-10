@@ -4,33 +4,25 @@
     id: string;
     name: string;
     email: string;
-    age: number;
-    gender: 'Male' | 'Female' | 'Other';
-    location: Location;
-    education: string;
-    professionalBackground: string;
-    committeeMemberships: string[];
-    activityLog: string;
-    volunteerWork: string;
-    contact: string;
-    roles: ('MP' | 'Executive')[];
-    status: 'Active' | 'Inactive' | 'Former Member';
+    age: number | null;
+    gender: 'Male' | 'Female' | 'Other' | null;
+    location: Location | null;
+    education: string | null;
+    professionalBackground: string | null;
+    committeeMemberships: string[] | null;
+    activityLog: string | null;
+    volunteerWork: string | null;
+    contact: string | null;
+    roles: string[] | null;
+    status: 'Active' | 'Inactive' | 'Former Member' | null;
     // MP fields - only present if roles includes 'MP'
-    electoralHistory?: string;
-    parliamentaryRoles?: string;
-    votingRecord?: string;
-    keyPolicyInterests?: string;
+    electoralHistory?: string | null;
+    parliamentaryRoles?: string | null;
+    votingRecord?: string | null;
+    keyPolicyInterests?: string | null;
   }
   
-  // This type is now deprecated in favor of the unified Member type
-  export interface MP extends Member {
-    electoralHistory: string;
-    parliamentaryRoles: string;
-    votingRecord: string;
-    keyPolicyInterests: string;
-  }
-
-  export type PerformanceData = {
+  export interface PerformanceData {
     month: string;
     engagement: number;
     legislation: number;
@@ -45,13 +37,13 @@
   export interface Motion {
     id: string;
     title: string;
-    description: string;
-    isPartySponsored: boolean;
-    topic: string;
-    sponsorId?: string;
-    totalParliamentAye?: number;
-    totalParliamentNay?: number;
-    totalParliamentAbstain?: number;
+    description: string | null;
+    isPartySponsored: boolean | null;
+    topic: string | null;
+    sponsorId?: string | null;
+    totalParliamentAye?: number | null;
+    totalParliamentNay?: number | null;
+    totalParliamentAbstain?: number | null;
   }
   
   export type MeetingType = 'การประชุมสภา' | 'การประชุมพรรค' | 'การประชุมกรรมาธิการ';
@@ -64,23 +56,23 @@
     title: string;
     date: string; // YYYY-MM-DD
     attendees: string[]; // array of Member IDs
-    presidingOfficer: string; // Member name (can be external)
+    presidingOfficer: string | null;
     motions: Motion[];
-    relatedDocuments?: { name: string; url: string }[];
-    location: Location;
-    meetingType: MeetingType;
-    meetingSession: MeetingSession;
-    meetingNumber?: string;
-    committeeName?: string;
+    relatedDocuments?: { name: string; url: string }[] | null;
+    location: Location | null;
+    meetingType: MeetingType | null;
+    meetingSession: MeetingSession | null;
+    meetingNumber?: string | null;
+    committeeName?: string | null;
   }
   
   export type VoteType = 'Aye' | 'Nay' | 'Abstain' | 'Absent' | 'Leave';
 
   export interface Vote {
     id: string;
-    motionId: string;
-    memberId: string; // Member or MP ID
-    vote: VoteType;
+    motionId: string | null;
+    memberId: string | null;
+    vote: VoteType | null;
   }
 
   export interface Permission {
@@ -101,6 +93,3 @@
       action: string;
       details: string;
   }
-
-
-
