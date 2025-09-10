@@ -85,7 +85,7 @@ export function MPProfileContent({ mp }: { mp: Member }) {
                     <div><span className="font-semibold">{t('email')}:</span> {mp.email}</div>
                     <div><span className="font-semibold">{t('age')}:</span> {mp.age}</div>
                     <div><span className="font-semibold">{t('gender')}:</span> {t(mp.gender as any)}</div>
-                    <div><span className="font-semibold">{t('education')}:</span> {t(mp.education as any)}</div>
+                    <div><span className="font-semibold">{t('profession')}:</span> {t(mp.professionalBackground as any)}</div>
                     <div><span className="font-semibold">{t('background')}:</span> {t(mp.professionalBackground as any)}</div>
                     <div className="col-span-2"><span className="font-semibold">{t('electoral_history')}:</span> {t(mp.electoralHistory as any)}</div>
                 </CardContent>
