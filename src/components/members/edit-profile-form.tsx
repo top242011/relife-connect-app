@@ -223,7 +223,7 @@ export function EditProfileForm({ member }: { member: Member }) {
                 </FormItem>
             )}/>
              <FormField control={form.control} name="education" render={({ field }) => (
-                <FormItem><FormLabel>Education</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormMessage>
+                <FormItem><FormLabel>Education</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
              <FormField control={form.control} name="professionalBackground" render={({ field }) => (
                 <FormItem><FormLabel>Professional Background</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
@@ -354,5 +354,6 @@ MultiSelect.displayName = "MultiSelect";
     
 
     
+
 
 
