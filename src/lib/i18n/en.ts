@@ -45,6 +45,7 @@ export const en: { [key: string]: string } = {
     'active': 'Active',
     'inactive': 'Inactive',
     'former_member': 'Former Member',
+    'contact': 'Contact',
 
     // Gender
     'Male': 'Male',
@@ -150,6 +151,16 @@ export const en: { [key: string]: string } = {
     'voting_record_placeholder_desc': 'Detailed voting record will be displayed here.',
     'view_full_record': 'View Full Record',
 
+    // Edit Profile Form
+    'edit_profile_title': 'Edit Profile: {{name}}',
+    'edit_profile_subtitle': 'Make changes to the member\'s profile here. Click save when you\'re done.',
+    'select_year': 'Select year',
+    'committee_information_title': 'Commission Information',
+    'toast_profile_updated_title': 'Profile Updated',
+    'toast_profile_updated_desc': '{{name}}\'s profile has been successfully saved.',
+    'toast_update_failed_title': 'Update Failed',
+    'toast_update_failed_desc': 'An error occurred while saving the profile.',
+    
     // New Member Form
     'new_member_title': 'Create New Member',
     'new_member_subtitle': 'Fill in the details for the new member. Click create when you\'re done.',
@@ -177,7 +188,7 @@ export const en: { [key: string]: string } = {
     'mp_not_found_subtitle': 'The requested council member could not be located.',
     'back_to_parliament_list': 'Back to Council Member List',
     'sponsored_motions_title': 'Proposed Motions',
-    'sponsored_motions_subtitle': 'A list of motions this council member has proposed.',
+    'sponsored_motions_subtitle': 'A list of all motions this council member has proposed.',
     'passed': 'Passed',
     'failed': 'Failed',
     'tied': 'Tied',
@@ -361,7 +372,7 @@ export const en: { [key: string]: string } = {
     'Meeting Secretary': 'Meeting Secretary',
     'Data Analyst': 'Data Analyst',
     'Party Member': 'Party Member',
-    'member_of_parliament': 'Student Council Member',
+    'Member of Parliament (MP)': 'Student Council Member',
     'Executive Committee Member': 'Executive Committee Member',
 
     // Log Actions

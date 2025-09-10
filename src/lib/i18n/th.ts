@@ -45,6 +45,7 @@ export const th: { [key: string]: string } = {
     'active': 'ใช้งาน',
     'inactive': 'ไม่ใช้งาน',
     'former_member': 'อดีตสมาชิก',
+    'contact': 'ข้อมูลติดต่อ',
 
     // Gender
     'Male': 'ชาย',
@@ -149,6 +150,16 @@ export const th: { [key: string]: string } = {
     'voting_record_subtitle': 'บันทึกการลงคะแนนทั้งหมดในญัตติของสภาและพรรค',
     'voting_record_placeholder_desc': 'บันทึกการลงคะแนนโดยละเอียดจะแสดงที่นี่',
     'view_full_record': 'ดูบันทึกฉบับเต็ม',
+    
+    // Edit Profile Form
+    'edit_profile_title': 'แก้ไขโปรไฟล์: {{name}}',
+    'edit_profile_subtitle': 'ทำการเปลี่ยนแปลงโปรไฟล์ของสมาชิกที่นี่ คลิกบันทึกเมื่อเสร็จสิ้น',
+    'select_year': 'เลือกชั้นปี',
+    'committee_information_title': 'ข้อมูลคณะกรรมาธิการ',
+    'toast_profile_updated_title': 'อัปเดตโปรไฟล์แล้ว',
+    'toast_profile_updated_desc': 'โปรไฟล์ของ {{name}} ถูกบันทึกเรียบร้อยแล้ว',
+    'toast_update_failed_title': 'การอัปเดตล้มเหลว',
+    'toast_update_failed_desc': 'เกิดข้อผิดพลาดขณะบันทึกโปรไฟล์',
 
     // New Member Form
     'new_member_title': 'สร้างสมาชิกใหม่',
@@ -361,7 +372,7 @@ export const th: { [key: string]: string } = {
     'Meeting Secretary': 'เลขานุการการประชุม',
     'Data Analyst': 'นักวิเคราะห์ข้อมูล',
     'Party Member': 'สมาชิกพรรค',
-    'member_of_parliament': 'สมาชิกสภานักศึกษา',
+    'Member of Parliament (MP)': 'สมาชิกสภานักศึกษา',
     'Executive Committee Member': 'กรรมการบริหารพรรค',
 
 

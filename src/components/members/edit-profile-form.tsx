@@ -38,13 +38,14 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/hooks/use-language";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name is too short"),
   email: z.string().email("Invalid email address"),
   contact: z.string().optional(),
   location: z.string().min(1, "Location is required"),
-  age: z.coerce.number().min(18, "Must be at least 18"),
+  age: z.coerce.number().min(1, "Must be at least 1").max(6, "Must be at most 6"),
   gender: z.enum(["Male", "Female", "Other"]),
   education: z.string(),
   professionalBackground: z.string(),
@@ -70,6 +71,7 @@ const roles = [
 export function EditProfileForm({ member }: { member: Member }) {
   const router = useRouter();
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [open, setOpen] = React.useState(false);
   const [committeeOptions, setCommitteeOptions] = React.useState<string[]>([]);
   const [locationOptions, setLocationOptions] = React.useState<string[]>([]);
@@ -93,7 +95,7 @@ export function EditProfileForm({ member }: { member: Member }) {
     email: member.email,
     contact: member.contact ?? '',
     location: member.location ?? '',
-    age: member.age ?? 18,
+    age: member.age ?? 1,
     gender: member.gender ?? "Other",
     education: member.education ?? '',
     professionalBackground: member.professionalBackground ?? '',
@@ -113,23 +115,25 @@ export function EditProfileForm({ member }: { member: Member }) {
 
   // Keep form in sync with member prop
   React.useEffect(() => {
-    form.reset(defaultValues);
-  }, [member, form]);
+    if (open) {
+      form.reset(defaultValues);
+    }
+  }, [member, form, open]);
 
 
   const onSubmit = async (data: ProfileFormValues) => {
     try {
         await updateMember(member.id, data);
         toast({
-            title: "Profile Updated",
-            description: `${data.name}'s profile has been successfully saved.`,
+            title: t('toast_profile_updated_title'),
+            description: t('toast_profile_updated_desc', { name: data.name }),
         });
         setOpen(false);
         router.refresh();
     } catch (error) {
         toast({
-            title: "Update Failed",
-            description: "An error occurred while saving the profile.",
+            title: t('toast_update_failed_title'),
+            description: t('toast_update_failed_desc'),
             variant: "destructive",
         });
         console.error("Failed to update member:", error);
@@ -148,27 +152,27 @@ export function EditProfileForm({ member }: { member: Member }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline"><Edit className="mr-2 h-4 w-4" /> Edit Profile</Button>
+        <Button variant="outline"><Edit className="mr-2 h-4 w-4" /> {t('edit_profile')}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit Profile: {member.name}</DialogTitle>
+          <DialogTitle>{t('edit_profile_title', { name: member.name })}</DialogTitle>
           <DialogDescription>
-            Make changes to the member's profile here. Click save when you're done.
+            {t('edit_profile_subtitle')}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 px-1 py-4">
-            <h3 className="text-lg font-medium">Roles & Status</h3>
+            <h3 className="text-lg font-medium">{t('roles_status_title')}</h3>
             <FormField
               control={form.control}
               name="roles"
               render={() => (
                 <FormItem>
                   <div className="mb-4">
-                    <FormLabel className="text-base">Roles</FormLabel>
+                    <FormLabel className="text-base">{t('roles')}</FormLabel>
                     <FormDescription>
-                      Select the roles for this member.
+                      {t('roles_desc')}
                     </FormDescription>
                   </div>
                   {roles.map((item) => (
@@ -199,7 +203,7 @@ export function EditProfileForm({ member }: { member: Member }) {
                               />
                             </FormControl>
                             <FormLabel className="font-normal">
-                              {item.label}
+                              {t(item.label as any)}
                             </FormLabel>
                           </FormItem>
                         )
@@ -211,32 +215,52 @@ export function EditProfileForm({ member }: { member: Member }) {
               )}
             />
 
-            <h3 className="text-lg font-medium border-t pt-4">Personal Information</h3>
+            <h3 className="text-lg font-medium border-t pt-4">{t('personal_information_title')}</h3>
             <FormField control={form.control} name="name" render={({ field }) => (
-                <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>{t('full_name')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
              <FormField control={form.control} name="email" render={({ field }) => (
-                <FormItem><FormLabel>Email</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>{t('email')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
             <div className="grid grid-cols-2 gap-4">
                  <FormField control={form.control} name="age" render={({ field }) => (
-                    <FormItem><FormLabel>Age</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>{t('age')}</FormLabel>
+                     <Select onValueChange={(value) => field.onChange(Number(value))} value={String(field.value)}>
+                        <FormControl>
+                            <SelectTrigger><SelectValue placeholder={t('select_year')} /></SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            {[1, 2, 3, 4, 5, 6].map(year => (
+                                <SelectItem key={year} value={String(year)}>{year}</SelectItem>
+                            ))}
+                        </SelectContent>
+                     </Select>
+                    <FormMessage /></FormItem>
                 )}/>
                 <FormField control={form.control} name="gender" render={({ field }) => (
-                    <FormItem><FormLabel>Gender</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>{t('gender')}</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl><SelectTrigger><SelectValue placeholder={t('select_gender')} /></SelectTrigger></FormControl>
+                            <SelectContent>
+                                <SelectItem value="Male">{t('Male')}</SelectItem>
+                                <SelectItem value="Female">{t('Female')}</SelectItem>
+                                <SelectItem value="Other">{t('Other')}</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    <FormMessage /></FormItem>
                 )}/>
             </div>
              <FormField control={form.control} name="location" render={({ field }) => (
-                <FormItem><FormLabel>Location / Constituency</FormLabel>
+                <FormItem><FormLabel>{t('location_constituency')}</FormLabel>
                  <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                         <SelectTrigger>
-                            <SelectValue placeholder="Select location" />
+                            <SelectValue placeholder={t('select_location')} />
                         </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                         {locationOptions.map(loc => (
-                            <SelectItem key={loc} value={loc}>{loc}</SelectItem>
+                            <SelectItem key={loc} value={loc}>{t(loc as any)}</SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
@@ -244,55 +268,60 @@ export function EditProfileForm({ member }: { member: Member }) {
                 </FormItem>
             )}/>
              <FormField control={form.control} name="education" render={({ field }) => (
-                <FormItem><FormLabel>Education</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>{t('education')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
              <FormField control={form.control} name="professionalBackground" render={({ field }) => (
-                <FormItem><FormLabel>Professional Background</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>{t('professional_background')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+            )}/>
+             <FormField control={form.control} name="contact" render={({ field }) => (
+                <FormItem><FormLabel>{t('contact')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
 
-             <h3 className="text-lg font-medium border-t pt-4">Party Information</h3>
+             <h3 className="text-lg font-medium border-t pt-4">{t('committee_information_title')}</h3>
               <FormField 
                 control={form.control} 
                 name="committeeMemberships" 
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Committee Memberships</FormLabel>
+                        <FormLabel>{t('committee_memberships')}</FormLabel>
                         <MultiSelect 
-                            options={committeeOptions.map(c => ({ value: c, label: c }))} 
+                            options={committeeOptions.map(c => ({ value: c, label: t(c as any) }))} 
                             {...field}
                         />
-                        <FormDescription>Select the committees this member belongs to.</FormDescription>
+                        <FormDescription>{t('committee_memberships_desc')}</FormDescription>
                         <FormMessage />
                     </FormItem>
                 )}
               />
+
+             <h3 className="text-lg font-medium border-t pt-4">{t('party_information_title')}</h3>
              <FormField control={form.control} name="activityLog" render={({ field }) => (
-                <FormItem><FormLabel>Activity Log</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>{t('activity_log')}</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
             <FormField control={form.control} name="volunteerWork" render={({ field }) => (
-                <FormItem><FormLabel>Volunteer Work</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>{t('volunteer_work')}</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
             
             {isMpSelected && (
                 <>
-                 <h3 className="text-lg font-medium border-t pt-4">Parliamentary Information</h3>
+                 <h3 className="text-lg font-medium border-t pt-4">{t('parliamentary_information_title')}</h3>
                  <FormField control={form.control} name="electoralHistory" render={({ field }) => (
-                    <FormItem><FormLabel>Electoral History</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>{t('electoral_history')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                 )}/>
                  <FormField control={form.control} name="parliamentaryRoles" render={({ field }) => (
-                    <FormItem><FormLabel>Parliamentary Roles</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>{t('parliamentary_roles')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                 )}/>
                  <FormField control={form.control} name="keyPolicyInterests" render={({ field }) => (
-                    <FormItem><FormLabel>Key Policy Interests</FormLabel><FormControl><Textarea placeholder="Comma-separated list..." {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>{t('key_policy_interests')}</FormLabel><FormControl><Textarea placeholder={t('key_policy_interests_placeholder')} {...field} /></FormControl><FormMessage /></FormItem>
                 )}/>
                 </>
             )}
 
             <DialogFooter>
                 <DialogClose asChild>
-                    <Button type="button" variant="secondary">Cancel</Button>
+                    <Button type="button" variant="secondary">{t('cancel')}</Button>
                 </DialogClose>
-                <Button type="submit"><Save className="mr-2 h-4 w-4" /> Save Changes</Button>
+                <Button type="submit"><Save className="mr-2 h-4 w-4" /> {t('save_changes')}</Button>
             </DialogFooter>
           </form>
         </Form>
@@ -310,6 +339,7 @@ const MultiSelect = React.forwardRef<
   }
 >(({ options, value, onChange }, ref) => {
   const [open, setOpen] = React.useState(false);
+  const { t } = useLanguage();
 
   const handleSelect = (selectedValue: string) => {
     const currentValue = value || [];
@@ -336,15 +366,15 @@ const MultiSelect = React.forwardRef<
           className="w-full justify-between"
           ref={ref}
         >
-          <span className="truncate">{selectedLabels || "Select..."}</span>
+          <span className="truncate">{selectedLabels || t('select_placeholder')}</span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
         <Command>
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder={t('search_placeholder')} />
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandEmpty>{t('no_results')}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem
