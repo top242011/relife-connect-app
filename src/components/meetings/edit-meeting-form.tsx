@@ -375,60 +375,53 @@ const Combobox = ({
   placeholder: string;
 }) => {
   const [open, setOpen] = React.useState(false);
-  const [inputValue, setInputValue] = React.useState(value);
-
-  React.useEffect(() => {
-    setInputValue(value);
-  }, [value]);
-
-  const handleSelect = (currentValue: string) => {
-    const label = options.find(o => o.value.toLowerCase() === currentValue.toLowerCase())?.label || currentValue;
-    onChange(label);
-    setInputValue(label);
-    setOpen(false);
-  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <div className="relative">
-          <ChevronsUpDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 shrink-0 opacity-50" />
-          <Input
-            value={inputValue}
-            onChange={(e) => {
-              const newValue = e.target.value;
-              setInputValue(newValue);
-              onChange(newValue);
-            }}
-            placeholder={placeholder}
-            role="combobox"
-            aria-expanded={open}
-            className="w-full"
-          />
-        </div>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-full justify-between"
+        >
+          {value
+            ? options.find((option) => option.value === value)?.label || value
+            : placeholder}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-        <Command
-          filter={(value, search) => {
-            const extendedValue = options.find(o => o.value === value)?.label || value;
-            if (extendedValue.toLowerCase().includes(search.toLowerCase())) return 1;
-            return 0;
-          }}
-        >
-          <CommandInput placeholder="Search member..." />
+        <Command>
+          <CommandInput
+            placeholder={placeholder}
+            onValueChange={(search) => {
+              const match = options.find(o => o.label.toLowerCase() === search.toLowerCase());
+              if (!match) {
+                onChange(search);
+              }
+            }}
+           />
           <CommandList>
-            <CommandEmpty>No member found.</CommandEmpty>
+            <CommandEmpty>
+                 <div className="p-2 text-sm text-center">
+                    No member found. You can add a custom name.
+                </div>
+            </CommandEmpty>
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem
                   key={option.value}
                   value={option.value}
-                  onSelect={handleSelect}
+                  onSelect={(currentValue) => {
+                    onChange(currentValue === value ? "" : currentValue)
+                    setOpen(false)
+                  }}
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === option.label ? "opacity-100" : "opacity-0"
+                      value === option.value ? "opacity-100" : "opacity-0"
                     )}
                   />
                   {option.label}
