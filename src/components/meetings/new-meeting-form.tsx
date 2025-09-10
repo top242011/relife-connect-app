@@ -105,6 +105,13 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
 
   const meetingType = form.watch('meetingType');
 
+  const availableAttendees = React.useMemo(() => {
+    if (meetingType === 'การประชุมสภา') {
+        return allPartyMembers.filter(m => m.roles.includes('MP'));
+    }
+    return allPartyMembers;
+  }, [meetingType]);
+
 
   const onSubmit = (data: MeetingFormValues) => {
     const newMeeting = {
@@ -196,7 +203,7 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
                         <div className="flex justify-between items-center">
                             <FormLabel>Attendees</FormLabel>
                             <Select onValueChange={(val) => {
-                                if (val === 'all') field.onChange(allPartyMembers.map(m => m.id))
+                                if (val === 'all') field.onChange(availableAttendees.map(m => m.id))
                                 else if (val === 'none') field.onChange([])
                             }}>
                                 <SelectTrigger className="w-[180px]">
@@ -208,7 +215,7 @@ export function NewMeetingForm({ children }: { children: React.ReactNode }) {
                                 </SelectContent>
                             </Select>
                         </div>
-                         <MultiSelect options={allPartyMembers.map(m => ({value: m.id, label: m.name}))} {...field} />
+                         <MultiSelect options={availableAttendees.map(m => ({value: m.id, label: m.name}))} {...field} />
                          <FormMessage />
                     </FormItem>
                 )}
@@ -437,7 +444,7 @@ const Combobox = ({
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
         <Command
           filter={(value, search) => {
-            if (options.find(o => o.value === value)) return 1;
+            if (options.some(o => o.value.toLowerCase() === value.toLowerCase())) return 1;
             if (value.toLowerCase().includes(search.toLowerCase())) return 1;
             return 0;
           }}
@@ -447,6 +454,7 @@ const Combobox = ({
             onValueChange={(search) => {
                onChange(search);
             }}
+            value={value}
            />
           <CommandList>
             <CommandEmpty>
