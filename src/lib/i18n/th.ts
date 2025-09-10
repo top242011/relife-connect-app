@@ -1,3 +1,4 @@
+
 export const th: { [key: string]: string } = {
     // General
     'PolityConnect': 'PolityConnect',
@@ -127,6 +128,7 @@ export const th: { [key: string]: string } = {
     'absences': 'การขาด',
     'contact_information': 'ข้อมูลติดต่อ',
     'profile_details_title': 'รายละเอียดโปรไฟล์',
+    'education': 'การศึกษา',
     'professional_background': 'ประวัติการทำงาน',
     'party_involvement_title': 'การมีส่วนร่วมในพรรค',
     'committee_memberships': 'การเป็นสมาชิกในคณะกรรมการ',

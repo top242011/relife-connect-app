@@ -1,3 +1,4 @@
+
 export const en: { [key: string]: string } = {
     // General
     'PolityConnect': 'PolityConnect',
@@ -127,6 +128,7 @@ export const en: { [key: string]: string } = {
     'absences': 'Absences',
     'contact_information': 'Contact Information',
     'profile_details_title': 'Profile Details',
+    'education': 'Education',
     'professional_background': 'Professional Background',
     'party_involvement_title': 'Party Involvement',
     'committee_memberships': 'Committee Memberships',
