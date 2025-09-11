@@ -14,7 +14,7 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { getAllMeetings, getAllMembers, getAllVotes } from '@/lib/supabase/queries';
-import { Meeting, Member, Vote } from '@/lib/types';
+import { Meeting, Member, Motion, Vote } from '@/lib/types';
 
 import {
     Table,
@@ -90,24 +90,48 @@ export function AttendanceReport() {
     }, [meetings, votes]);
 
     const detailedAbsences = React.useMemo(() => {
+        if (loading) return [];
+        // Create a map for quick lookups
+        const meetingMap = new Map<string, Meeting>();
+        const motionToMeetingMap = new Map<string, string>();
+        meetings.forEach(meeting => {
+            meetingMap.set(meeting.id, meeting);
+            meeting.motions.forEach(motion => {
+                motionToMeetingMap.set(motion.id, meeting.id);
+            });
+        });
+
+        const memberMap = new Map<string, Member>();
+        members.forEach(member => {
+            memberMap.set(member.id, member);
+        });
+
         return votes
             .filter(v => v.vote === 'Absent' || v.vote === 'Leave')
             .map(vote => {
-                const member = members.find(m => m.id === vote.memberId);
-                const meetingWithMotion = meetings.find(m => m.motions.some(mo => mo.id === vote.motionId));
+                if (!vote.motionId || !vote.memberId) return null;
+
+                const meetingId = motionToMeetingMap.get(vote.motionId);
+                if (!meetingId) return null;
+
+                const meeting = meetingMap.get(meetingId);
+                const member = memberMap.get(vote.memberId);
+
+                if (!meeting || !member) return null;
+
                 return {
                     id: vote.id,
-                    memberName: member?.name,
-                    memberId: member?.id,
-                    meetingTitle: meetingWithMotion?.title,
-                    meetingId: meetingWithMotion?.id,
-                    date: meetingWithMotion?.date,
+                    memberName: member.name,
+                    memberId: member.id,
+                    meetingTitle: meeting.title,
+                    meetingId: meeting.id,
+                    date: meeting.date,
                     status: vote.vote
                 };
             })
-            .filter(item => item.memberName && item.meetingTitle) // Filter out items where member or meeting couldn't be found
-            .sort((a,b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime());
-    }, [votes, members, meetings]);
+            .filter((item): item is NonNullable<typeof item> => item !== null)
+            .sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    }, [votes, members, meetings, loading]);
 
     const chartConfig = {
         absent: {
