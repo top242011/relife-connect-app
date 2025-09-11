@@ -5,7 +5,7 @@ import type { Member, Meeting, Vote, Motion, SystemLog, Role, Permission } from 
 import { Tables, TablesInsert, TablesUpdate } from "./database.types";
 
 // Helper to convert Supabase member to app Member type
-const fromSupabaseMember = (member: Tables<'members'> & { members_committees?: any[] }): Member => {
+const fromSupabaseMember = (member: Tables<'members'> & { member_committees?: any[] }): Member => {
     return {
         id: member.id,
         name: member.name,
@@ -15,7 +15,7 @@ const fromSupabaseMember = (member: Tables<'members'> & { members_committees?: a
         location: member.location,
         education: member.education,
         faculty: member.faculty,
-        committeeMemberships: (member.members_committees || []).map((mc: any) => mc.committees.name),
+        committeeMemberships: (member.member_committees || []).map((mc: any) => mc.committees.name),
         activityLog: member.activity_log,
         volunteerWork: member.volunteer_work,
         contact: member.contact,
@@ -63,14 +63,14 @@ const fromSupabaseMotion = (motion: Tables<'motions'>): Motion => {
 
 // Member Queries
 export async function getAllMembers(): Promise<(Member)[]> {
-    const { data, error } = await supabase.from('members').select('*, members_committees(committees(name))');
+    const { data, error } = await supabase.from('members').select('*, member_committees(committees(name))');
     if (error) {
         console.error('Error fetching members:', error);
         throw error;
     };
 
     const members = data.map(m => {
-        const committee_memberships = (m.members_committees || []).map((mc: any) => mc.committees.name);
+        const committee_memberships = (m.member_committees || []).map((mc: any) => mc.committees.name);
         return { ...m, committee_memberships };
     });
 
@@ -78,14 +78,14 @@ export async function getAllMembers(): Promise<(Member)[]> {
 }
 
 export async function getMemberById(id: string): Promise<Member | null> {
-     const { data, error } = await supabase.from('members').select('*, members_committees(committees(name))').eq('id', id).single();
+     const { data, error } = await supabase.from('members').select('*, member_committees(committees(name))').eq('id', id).single();
     if (error) {
         console.error('Error fetching member by ID:', error);
         return null;
     }
     if (!data) return null;
 
-    const committee_memberships = (data.members_committees || []).map((mc: any) => mc.committees.name);
+    const committee_memberships = (data.member_committees || []).map((mc: any) => mc.committees.name);
     return fromSupabaseMember({ ...data, committee_memberships } as any);
 }
 
@@ -124,7 +124,7 @@ export async function createMember(memberData: Partial<Member>) {
                 member_id: newMemberId,
                 committee_id: c.id
             }));
-            const { error: committeeError } = await supabase.from('members_committees').insert(newMemberCommittees);
+            const { error: committeeError } = await supabase.from('member_committees').insert(newMemberCommittees);
             if (committeeError) {
                  console.error('Error adding committee memberships:', committeeError);
                  throw committeeError;
@@ -155,7 +155,7 @@ export async function updateMember(id: string, memberData: Partial<Member>) {
     if (memberError) throw memberError;
 
     // Handle committee memberships update
-    await supabase.from('members_committees').delete().eq('member_id', id);
+    await supabase.from('member_committees').delete().eq('member_id', id);
     if (memberData.committeeMemberships && memberData.committeeMemberships.length > 0) {
         const { data: committees } = await supabase.from('committees').select('id, name').in('name', memberData.committeeMemberships);
         if (committees) {
@@ -163,7 +163,7 @@ export async function updateMember(id: string, memberData: Partial<Member>) {
                 member_id: id,
                 committee_id: c.id
             }));
-            const { error: committeeError } = await supabase.from('members_committees').insert(newMemberCommittees);
+            const { error: committeeError } = await supabase.from('member_committees').insert(newMemberCommittees);
             if (committeeError) throw committeeError;
         }
     }
@@ -204,6 +204,40 @@ export async function getMeetingById(id: string): Promise<Meeting | null> {
     return data ? fromSupabaseMeeting(data as any) : null;
 }
 
+export async function createMeeting(meetingData: Partial<Omit<Meeting, 'id'>>) {
+    const newMeetingId = `meet-${Date.now()}`;
+    const meetingInsert: TablesInsert<'meetings'> = {
+        id: newMeetingId,
+        title: meetingData.title!,
+        date: meetingData.date!,
+        presiding_officer: meetingData.presidingOfficer,
+        attendees: meetingData.attendees,
+        location: meetingData.location,
+        meeting_type: meetingData.meetingType,
+        meeting_session: meetingData.meetingSession,
+        meeting_number: meetingData.meetingNumber,
+        committee_name: meetingData.committeeName,
+    };
+
+    const { error: meetingError } = await supabase.from('meetings').insert(meetingInsert);
+    if (meetingError) throw meetingError;
+
+    if (meetingData.motions && meetingData.motions.length > 0) {
+        const motionsToInsert = meetingData.motions.map(motion => ({
+            id: motion.id,
+            meeting_id: newMeetingId,
+            title: motion.title,
+            description: motion.description,
+            is_party_proposed: motion.isPartyProposed,
+            topic: motion.topic,
+            proposer_id: motion.proposerId || null
+        }));
+        const { error: motionsError } = await supabase.from('motions').insert(motionsToInsert);
+        if (motionsError) throw motionsError;
+    }
+}
+
+
 export async function updateMeeting(id: string, meetingData: Partial<Meeting>) {
     const meetingUpdate: TablesUpdate<'meetings'> = {
         title: meetingData.title,
@@ -220,6 +254,7 @@ export async function updateMeeting(id: string, meetingData: Partial<Meeting>) {
     if (meetingError) throw meetingError;
 
     // Delete existing motions for this meeting
+    await supabase.from('votes').delete().in('motion_id', meetingData.motions?.map(m => m.id) || []);
     await supabase.from('motions').delete().eq('meeting_id', id);
 
     // Insert new/updated motions
@@ -246,7 +281,7 @@ export async function getAllVotes(): Promise<Vote[]> {
         console.error('Error fetching votes:', error);
         throw error;
     }
-    return data as Vote[];
+    return data.map(v => ({...v, id: String(v.id)}));
 }
 
 export async function updateVotes(motionId: string, votes: { memberId: string, vote: string }[], motionUpdates: Partial<TablesUpdate<'motions'>>) {
@@ -261,6 +296,7 @@ export async function updateVotes(motionId: string, votes: { memberId: string, v
     
     // Upsert votes
     const votesToUpsert = votes.map(v => ({
+        id: `vote-${motionId}-${v.memberId}`,
         motion_id: motionId,
         member_id: v.memberId,
         vote: v.vote,
