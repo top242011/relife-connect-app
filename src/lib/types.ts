@@ -48,7 +48,7 @@
   
   export type MeetingType = 'การประชุมสภา' | 'การประชุมพรรค' | 'การประชุมกรรมาธิการ';
   export type MeetingSession = 'การประชุมสามัญ' | 'การประชุมวิสามัญ';
-  export type Location = 'ท่าพระจันทร์' | 'รังสิต' | 'ลำปาง' | 'ส่วนกลาง';
+  export type Location = 'ท่าพระจันทร์' | 'รังสิต' | 'ลำปาง' | 'ส่วนกลาง' | 'พัทยา';
 
 
   export interface Meeting {

@@ -348,19 +348,19 @@ export type Database = {
       }
       votes: {
         Row: {
-          id: number
+          id: string
           member_id: string | null
           motion_id: string | null
           vote: Database["public"]["Enums"]["vote_type_enum"] | null
         }
         Insert: {
-          id?: number
+          id: string
           member_id?: string | null
           motion_id?: string | null
           vote?: Database["public"]["Enums"]["vote_type_enum"] | null
         }
         Update: {
-          id?: number
+          id?: string
           member_id?: string | null
           motion_id?: string | null
           vote?: Database["public"]["Enums"]["vote_type_enum"] | null

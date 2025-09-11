@@ -233,7 +233,7 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
                                 <FormItem>
                                 <FormLabel>{t('total_aye_votes')}</FormLabel>
                                 <FormControl>
-                                    <Input type="number" placeholder="e.g., 150" {...field} value={field.value ?? ''} />
+                                    <Input type="number" placeholder="e.g., 150" {...field} value={field.value ?? ''} onChange={e => field.onChange(parseInt(e.target.value, 10) || undefined)} />
                                 </FormControl>
                                 <FormMessage />
                                 </FormItem>
@@ -246,7 +246,7 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
                                 <FormItem>
                                 <FormLabel>{t('total_nay_votes')}</FormLabel>
                                 <FormControl>
-                                    <Input type="number" placeholder="e.g., 100" {...field} value={field.value ?? ''} />
+                                    <Input type="number" placeholder="e.g., 100" {...field} value={field.value ?? ''} onChange={e => field.onChange(parseInt(e.target.value, 10) || undefined)} />
                                 </FormControl>
                                 <FormMessage />
                                 </FormItem>
@@ -259,7 +259,7 @@ export function RecordVotesForm({ meeting, motion, children }: { meeting: Meetin
                                 <FormItem>
                                 <FormLabel>{t('total_abstain_votes')}</FormLabel>
                                 <FormControl>
-                                    <Input type="number" placeholder="e.g., 10" {...field} value={field.value ?? ''} />
+                                    <Input type="number" placeholder="e.g., 10" {...field} value={field.value ?? ''} onChange={e => field.onChange(parseInt(e.target.value, 10) || undefined)} />
                                 </FormControl>
                                 <FormMessage />
                                 </FormItem>

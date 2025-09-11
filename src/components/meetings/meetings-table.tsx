@@ -57,7 +57,7 @@ export function MeetingsTable({ data }: { data: Meeting[] }) {
       header: t('title'),
       cell: ({ row }) => {
           const meeting = row.original;
-          const displayTitle = (meeting as any).displayTitle || meeting.title;
+          const displayTitle = meeting.title;
           return (
             <div>
               <div className="font-medium">{displayTitle}</div>
@@ -146,25 +146,7 @@ export function MeetingsTable({ data }: { data: Meeting[] }) {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const processedData = React.useMemo(() => {
-    const sortedData = [...data].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    const counts: Record<string, number> = {};
-
-    return sortedData.map(meeting => {
-      let displayTitle = meeting.meetingNumber 
-        ? `${meeting.title} (${t('meeting_number_short')} ${meeting.meetingNumber})`
-        : meeting.title;
-
-      if (!meeting.meetingNumber) {
-        const key = `${meeting.meetingType}-${meeting.meetingSession}`;
-        counts[key] = (counts[key] || 0) + 1;
-        displayTitle = `${t(meeting.meetingType as any)} ${t(meeting.meetingSession as any)} ${t('meeting_number_short')} ${counts[key]}`;
-      }
-
-      return {
-        ...meeting,
-        displayTitle,
-      };
-    }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return [...data].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [data, t]);
 
   const table = useReactTable({
