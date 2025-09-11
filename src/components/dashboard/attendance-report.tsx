@@ -94,17 +94,18 @@ export function AttendanceReport() {
             .filter(v => v.vote === 'Absent' || v.vote === 'Leave')
             .map(vote => {
                 const member = members.find(m => m.id === vote.memberId);
-                const meeting = meetings.find(m => m.motions.some(mo => mo.id === vote.motionId));
+                const meetingWithMotion = meetings.find(m => m.motions.some(mo => mo.id === vote.motionId));
                 return {
                     id: vote.id,
                     memberName: member?.name,
                     memberId: member?.id,
-                    meetingTitle: meeting?.title,
-                    meetingId: meeting?.id,
-                    date: meeting?.date,
+                    meetingTitle: meetingWithMotion?.title,
+                    meetingId: meetingWithMotion?.id,
+                    date: meetingWithMotion?.date,
                     status: vote.vote
                 };
             })
+            .filter(item => item.memberName && item.meetingTitle) // Filter out items where member or meeting couldn't be found
             .sort((a,b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime());
     }, [votes, members, meetings]);
 
