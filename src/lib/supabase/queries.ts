@@ -5,7 +5,7 @@ import type { Member, Meeting, Vote, Motion, SystemLog, Role, Permission } from 
 import { Tables, TablesInsert, TablesUpdate } from "./database.types";
 
 // Helper to convert Supabase member to app Member type
-const fromSupabaseMember = (member: Tables<'members'> | any): Member => {
+const fromSupabaseMember = (member: Tables<'members'> & { members_committees?: any[] }): Member => {
     return {
         id: member.id,
         name: member.name,
@@ -15,7 +15,7 @@ const fromSupabaseMember = (member: Tables<'members'> | any): Member => {
         location: member.location,
         education: member.education,
         faculty: member.faculty,
-        committeeMemberships: member.committee_memberships || [],
+        committeeMemberships: (member.members_committees || []).map((mc: any) => mc.committees.name),
         activityLog: member.activity_log,
         volunteerWork: member.volunteer_work,
         contact: member.contact,
@@ -29,7 +29,7 @@ const fromSupabaseMember = (member: Tables<'members'> | any): Member => {
 }
 
 // Helper to convert Supabase meeting to app Meeting type
-const fromSupabaseMeeting = (meeting: any): Meeting => {
+const fromSupabaseMeeting = (meeting: Tables<'meetings'> & { motions: Tables<'motions'>[] }): Meeting => {
     return {
       id: meeting.id,
       title: meeting.title,
@@ -40,13 +40,13 @@ const fromSupabaseMeeting = (meeting: any): Meeting => {
       meetingSession: meeting.meeting_session,
       meetingNumber: meeting.meeting_number,
       committeeName: meeting.committee_name,
-      relatedDocuments: meeting.related_documents || [],
+      relatedDocuments: meeting.related_documents as any[] || [],
       attendees: meeting.attendees || [],
       motions: meeting.motions.map(fromSupabaseMotion),
     };
 };
 
-const fromSupabaseMotion = (motion: any): Motion => {
+const fromSupabaseMotion = (motion: Tables<'motions'>): Motion => {
     return {
         id: motion.id,
         title: motion.title,
@@ -74,7 +74,7 @@ export async function getAllMembers(): Promise<(Member)[]> {
         return { ...m, committee_memberships };
     });
 
-    return members.map(fromSupabaseMember);
+    return members.map(fromSupabaseMember as any);
 }
 
 export async function getMemberById(id: string): Promise<Member | null> {
@@ -86,7 +86,7 @@ export async function getMemberById(id: string): Promise<Member | null> {
     if (!data) return null;
 
     const committee_memberships = (data.members_committees || []).map((mc: any) => mc.committees.name);
-    return fromSupabaseMember({ ...data, committee_memberships });
+    return fromSupabaseMember({ ...data, committee_memberships } as any);
 }
 
 export async function createMember(memberData: Partial<Member>) {
@@ -183,7 +183,7 @@ export async function getAllMeetings(): Promise<Meeting[]> {
         console.error('Error fetching meetings:', error);
         throw error;
     }
-    return data.map(fromSupabaseMeeting);
+    return data.map(fromSupabaseMeeting as any);
 }
 
 export async function getMeetingById(id: string): Promise<Meeting | null> {
@@ -201,7 +201,7 @@ export async function getMeetingById(id: string): Promise<Meeting | null> {
         return null;
     }
     
-    return data ? fromSupabaseMeeting(data) : null;
+    return data ? fromSupabaseMeeting(data as any) : null;
 }
 
 export async function updateMeeting(id: string, meetingData: Partial<Meeting>) {
