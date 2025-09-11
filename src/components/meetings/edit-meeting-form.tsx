@@ -162,15 +162,15 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
     try {
         await updateMeeting(meeting.id, data);
         toast({
-            title: "Meeting Updated",
-            description: "The meeting details have been successfully saved.",
+            title: t("toast_meeting_updated_title"),
+            description: t("toast_meeting_updated_desc"),
         });
         setOpen(false);
         router.refresh();
     } catch (error) {
         toast({
-            title: "Update Failed",
-            description: "An error occurred while saving the meeting.",
+            title: t("toast_update_failed_title"),
+            description: t("toast_update_failed_desc"),
             variant: "destructive",
         });
         console.error("Failed to update meeting:", error);
@@ -184,32 +184,32 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
       </DialogTrigger>
       <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit Meeting: {meeting.title}</DialogTitle>
+          <DialogTitle>{t('edit_meeting_title')}: {meeting.title}</DialogTitle>
           <DialogDescription>
-            Make changes to the meeting details here. Click save when you're done.
+            {t('edit_meeting_subtitle')}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 px-1 py-4">
             
             <FormField control={form.control} name="title" render={({ field }) => (
-                <FormItem><FormLabel>Meeting Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>{t('meeting_title')}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
             <div className="grid grid-cols-2 gap-4">
                 <FormField control={form.control} name="date" render={({ field }) => (
-                    <FormItem><FormLabel>Date</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>{t('date')}</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>
                 )}/>
                  <FormField
                     name="presidingOfficer"
                     control={form.control}
                     render={({ field }) => (
                         <FormItem className="flex flex-col">
-                            <FormLabel>Presiding Officer</FormLabel>
+                            <FormLabel>{t('presiding_officer')}</FormLabel>
                              <Combobox
                                 options={allMembers.map(m => ({ value: m.name, label: m.name }))}
                                 value={field.value || ""}
                                 onChange={field.onChange}
-                                placeholder="Select or type officer..."
+                                placeholder={t('select_or_type_officer')}
                             />
                              <FormMessage />
                         </FormItem>
@@ -217,22 +217,22 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
                     />
             </div>
              <FormField control={form.control} name="meetingNumber" render={({ field }) => (
-                <FormItem><FormLabel>Meeting Number</FormLabel><FormControl><Input {...field} placeholder="e.g., 1/2567" /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>{t('meeting_number')}</FormLabel><FormControl><Input {...field} placeholder="e.g., 1/2567" /></FormControl><FormMessage /></FormItem>
             )}/>
             <div className="grid grid-cols-3 gap-4">
                 <FormField control={form.control} name="location" render={({ field }) => (
-                    <FormItem><FormLabel>Location</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select location" /></SelectTrigger></FormControl><SelectContent>{locations.map(loc => (<SelectItem key={loc} value={loc}>{loc}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem>
+                    <FormItem><FormLabel>{t('location')}</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder={t('select_location')} /></SelectTrigger></FormControl><SelectContent>{locations.map(loc => (<SelectItem key={loc} value={loc}>{t(loc as any)}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem>
                 )}/>
                  <FormField control={form.control} name="meetingType" render={({ field }) => (
-                    <FormItem><FormLabel>Meeting Type</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger></FormControl><SelectContent><SelectItem value="การประชุมสภา">{t('meeting_type_parliament')}</SelectItem><SelectItem value="การประชุมพรรค">{t('meeting_type_party')}</SelectItem><SelectItem value="การประชุมกรรมาธิการ">{t('meeting_type_committee')}</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                    <FormItem><FormLabel>{t('meeting_type')}</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder={t('select_type')} /></SelectTrigger></FormControl><SelectContent><SelectItem value="การประชุมสภา">{t('meeting_type_parliament')}</SelectItem><SelectItem value="การประชุมพรรค">{t('meeting_type_party')}</SelectItem><SelectItem value="การประชุมกรรมาธิการ">{t('meeting_type_committee')}</SelectItem></SelectContent></Select><FormMessage /></FormItem>
                 )}/>
                  <FormField control={form.control} name="meetingSession" render={({ field }) => (
-                    <FormItem><FormLabel>Meeting Session</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select session" /></SelectTrigger></FormControl><SelectContent><SelectItem value="การประชุมสามัญ">{t('session_ordinary')}</SelectItem><SelectItem value="การประชุมวิสามัญ">{t('session_extraordinary')}</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                    <FormItem><FormLabel>{t('meeting_session')}</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder={t('select_session')} /></SelectTrigger></FormControl><SelectContent><SelectItem value="การประชุมสามัญ">{t('session_ordinary')}</SelectItem><SelectItem value="การประชุมวิสามัญ">{t('session_extraordinary')}</SelectItem></SelectContent></Select><FormMessage /></FormItem>
                 )}/>
             </div>
             {meetingType === 'การประชุมกรรมาธิการ' && (
                 <FormField control={form.control} name="committeeName" render={({ field }) => (
-                    <FormItem><FormLabel>Committee Name</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select committee" /></SelectTrigger></FormControl><SelectContent>{committeeNames.map(name => (<SelectItem key={name} value={name}>{name}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem>
+                    <FormItem><FormLabel>{t('committee_name')}</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder={t('select_committee')} /></SelectTrigger></FormControl><SelectContent>{committeeNames.map(name => (<SelectItem key={name} value={name}>{t(name as any)}</SelectItem>))}</SelectContent></Select><FormMessage /></FormItem>
                 )}/>
             )}
              <FormField
@@ -241,17 +241,17 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
                 render={({ field }) => (
                      <FormItem>
                         <div className="flex justify-between items-center">
-                            <FormLabel>Attendees</FormLabel>
+                            <FormLabel>{t('attendees')}</FormLabel>
                             <Select onValueChange={(val) => {
                                 if (val === 'all') field.onChange(availableAttendees.map(m => m.id))
                                 else if (val === 'none') field.onChange([])
                             }}>
                                 <SelectTrigger className="w-[180px]">
-                                    <SelectValue placeholder="Quick Select..." />
+                                    <SelectValue placeholder={t('quick_select_placeholder')} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">Everyone Attending</SelectItem>
-                                    <SelectItem value="none">Everyone Absent/Leave</SelectItem>
+                                    <SelectItem value="all">{t('quick_select_all_attend')}</SelectItem>
+                                    <SelectItem value="none">{t('quick_select_all_absent')}</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -262,7 +262,7 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
                 />
 
              <div>
-                <h3 className="text-lg font-medium mb-2">Agenda / Motions</h3>
+                <h3 className="text-lg font-medium mb-2">{t('agenda_motions')}</h3>
                 <div className="space-y-4">
                 {fields.map((motion, index) => {
                     const availableTopics = motionTopics.includes(motion.topic) ? motionTopics : [motion.topic, ...motionTopics];
@@ -276,7 +276,7 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
                             name={`motions.${index}.title`}
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Motion Title</FormLabel>
+                                    <FormLabel>{t('motion_title')}</FormLabel>
                                     <FormControl><Input {...field} /></FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -287,7 +287,7 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
                             name={`motions.${index}.description`}
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Motion Description</FormLabel>
+                                    <FormLabel>{t('motion_description')}</FormLabel>
                                     <FormControl><Textarea {...field} /></FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -299,16 +299,16 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
                                 name={`motions.${index}.topic`}
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Topic</FormLabel>
+                                        <FormLabel>{t('topic')}</FormLabel>
                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                             <FormControl>
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Select a topic" />
+                                                    <SelectValue placeholder={t('select_a_topic')} />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
                                                 {availableTopics.map(topic => (
-                                                    <SelectItem key={topic} value={topic}>{topic}</SelectItem>
+                                                    <SelectItem key={topic} value={topic}>{t(topic as any)}</SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
@@ -321,7 +321,7 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
                                 control={form.control}
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col">
-                                        <FormLabel>Proposing Member</FormLabel>
+                                        <FormLabel>{t('proposing_member')}</FormLabel>
                                         <MultiSelect a-type="single" options={allMembers.filter(m => m.roles?.includes('isCouncilMember')).map(m => ({value: m.id, label: m.name}))} {...field} />
                                         <FormMessage />
                                     </FormItem>
@@ -341,10 +341,10 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
                                 </FormControl>
                                 <div className="space-y-1 leading-none">
                                     <FormLabel>
-                                    Party-Proposed Motion
+                                    {t('party_proposed_motion')}
                                     </FormLabel>
                                     <FormDescription>
-                                     Indicates this motion is officially put forth by the party.
+                                     {t('party_proposed_motion_desc')}
                                     </FormDescription>
                                 </div>
                                 </FormItem>
@@ -355,16 +355,16 @@ export function EditMeetingForm({ meeting, children }: { meeting: Meeting, child
                 </div>
                 {form.formState.errors.motions?.root && <FormMessage className="mt-2">{form.formState.errors.motions.root.message}</FormMessage>}
                 <Button type="button" variant="outline" size="sm" className="mt-4" onClick={() => append({id: `new-motion-${Date.now()}`, title: '', description: '', isPartyProposed: false, topic: ''})}>
-                    <PlusCircle className="mr-2 h-4 w-4" /> Add Motion
+                    <PlusCircle className="mr-2 h-4 w-4" /> {t('add_motion')}
                 </Button>
             </div>
 
 
             <DialogFooter>
                 <DialogClose asChild>
-                    <Button type="button" variant="secondary">Cancel</Button>
+                    <Button type="button" variant="secondary">{t('cancel')}</Button>
                 </DialogClose>
-                <Button type="submit"><Save className="mr-2 h-4 w-4" /> Save Changes</Button>
+                <Button type="submit"><Save className="mr-2 h-4 w-4" /> {t('save_changes')}</Button>
             </DialogFooter>
           </form>
         </Form>
@@ -384,6 +384,7 @@ const MultiSelect = React.forwardRef<
   }
 >(({ options, value, onChange, "a-type": type = "multi" }, ref) => {
   const [open, setOpen] = React.useState(false);
+  const { t } = useLanguage();
   const isMulti = type === "multi";
 
   const handleSelect = (selectedValue: string) => {
@@ -418,15 +419,15 @@ const MultiSelect = React.forwardRef<
           className="w-full justify-between"
           ref={ref}
         >
-          <span className="truncate">{selectedLabels || "Select..."}</span>
+          <span className="truncate">{selectedLabels || t('select_placeholder')}</span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
         <Command>
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder={t('search_placeholder')} />
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandEmpty>{t('no_results')}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem
@@ -466,6 +467,7 @@ const Combobox = ({
   placeholder: string;
 }) => {
   const [open, setOpen] = React.useState(false);
+  const { t } = useLanguage();
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -503,7 +505,7 @@ const Combobox = ({
           <CommandList>
             <CommandEmpty>
                  <div className="p-2 text-sm text-center">
-                    No member found. You can add a custom name.
+                    {t('no_member_found')}
                 </div>
             </CommandEmpty>
             <CommandGroup>
